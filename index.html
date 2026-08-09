@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Matthew McKelvy — Compensation &amp; Workforce Strategy</title>
-  <meta name="description" content="Five years at Cisco advising a ~25,000-person global go-to-market organization on compensation, workforce planning, and job architecture — including AI-assisted comp infrastructure. Boston, MA.">
+  <meta name="description" content="Five years at Cisco advising a ~25,000-person commercial organization on compensation, benchmarking, job architecture, and offer decisions — with AI-built tooling. Pebble Beach, CA.">
   <link rel="canonical" href="https://mattmckelvy.com/">
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#FAF9F6">
@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Matthew McKelvy">
   <meta property="og:title" content="Matthew McKelvy — Compensation &amp; Workforce Strategy">
-  <meta property="og:description" content="I build the systems companies use to decide what work is worth. Five years at Cisco: comp, workforce planning, and AI-assisted job architecture for a ~25,000-person org.">
+  <meta property="og:description" content="I build the systems companies use to decide what work is worth. Five years at Cisco: GTM comp, benchmarking, job architecture, and decision tools built with AI.">
   <meta property="og:url" content="https://mattmckelvy.com/">
   <meta property="og:image" content="https://mattmckelvy.com/og.png">
   <meta property="og:image:width" content="1200">
@@ -24,10 +24,9 @@
 
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/site.css">
 
   <script type="application/ld+json">
@@ -37,316 +36,225 @@
     "name": "Matthew McKelvy",
     "jobTitle": "Compensation & Workforce Strategy",
     "email": "mailto:mckelvymatthew@gmail.com",
-    "address": { "@type": "PostalAddress", "addressLocality": "Boston", "addressRegion": "MA" },
+    "address": { "@type": "PostalAddress", "addressLocality": "Pebble Beach", "addressRegion": "CA" },
+    "sameAs": ["https://www.linkedin.com/in/mattmckelvy/"],
     "alumniOf": [{ "@type": "CollegeOrUniversity", "name": "Boston University" }],
     "url": "https://mattmckelvy.com/"
   }
   </script>
 </head>
 <body>
-  <a class="skip" href="#profile">Skip to content</a>
-  <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+  <a class="skip" href="#stage">Skip to content</a>
+  <div class="cursor" id="cur" aria-hidden="true"></div>
+  <div class="cursor-ring" id="curRing" aria-hidden="true"></div>
 
-  <header class="top" id="top">
-    <a class="wordmark" href="#profile">M<span>c</span>K</a>
-    <nav class="topnav" aria-label="Sections">
-      <a href="#story">Story</a>
-      <a href="#experience">Experience</a>
-      <a href="#work">Work</a>
-      <a href="#method">Method</a>
-      <a href="#ai">AI</a>
-      <a href="#contact">Contact</a>
+  <header class="top">
+    <button class="wordmark" id="wm" type="button" aria-label="Home">M<span>c</span>K</button>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button role="tab" aria-selected="true"  aria-controls="p-home" id="t-home" data-panel="home">Hello</button>
+      <button role="tab" aria-selected="false" aria-controls="p-story" id="t-story" data-panel="story">Story</button>
+      <button role="tab" aria-selected="false" aria-controls="p-exp" id="t-exp" data-panel="exp">Experience</button>
+      <button role="tab" aria-selected="false" aria-controls="p-work" id="t-work" data-panel="work">Work</button>
+      <button role="tab" aria-selected="false" aria-controls="p-skills" id="t-skills" data-panel="skills">Skills</button>
+      <button role="tab" aria-selected="false" aria-controls="p-contact" id="t-contact" data-panel="contact">Contact</button>
     </nav>
-    <a class="top-cta" href="Matthew-McKelvy-Resume.pdf" download>Résumé<span class="pdf">PDF</span></a>
+    <a class="top-cta" href="Matthew-McKelvy-Resume.pdf" download data-hover>Résumé <span class="pdf">PDF</span></a>
   </header>
 
-  <main>
-    <!-- ============ 01 · PROFILE ============ -->
-    <section class="sec hero" id="profile" aria-labelledby="heroName">
-      <p class="eyebrow reveal" id="heroName">Matthew McKelvy · Compensation &amp; Workforce Strategy · Boston, MA</p>
-      <h1 class="display reveal">I build the systems companies use to decide what work is&nbsp;worth.</h1>
-      <p class="lede reveal">Five years at Cisco advising senior leaders across a ~25,000-person global go-to-market organization on compensation, workforce planning, and organizational structure — most recently rebuilding job architecture with AI assistance and shipping the decision tools compensation teams actually use.</p>
+  <main class="stage" id="stage">
 
-      <dl class="proof reveal" aria-label="Selected facts">
-        <div><dt>Cisco Systems</dt><dd>2021 – 2026</dd></div>
-        <div><dt>GTM organization advised</dt><dd>~25,000 people</dd></div>
-        <div><dt>Job-architecture sign-off</dt><dd>Every Cisco business unit</dd></div>
-        <div><dt>Core domains</dt><dd>Comp · Workforce · Org</dd></div>
-      </dl>
-
-      <div class="hero-actions reveal">
-        <a class="btn solid" href="#story">Read the story</a>
-        <a class="btn" href="Matthew-McKelvy-Resume.pdf" download>Download résumé</a>
-        <a class="btn quiet" href="mailto:mckelvymatthew@gmail.com">mckelvymatthew@gmail.com</a>
+    <!-- ================= HELLO ================= -->
+    <section class="panel active" id="p-home" role="tabpanel" aria-labelledby="t-home">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Matthew McKelvy · Compensation &amp; Workforce Strategy · Pebble Beach, CA</p>
+          <h1 class="display">I build the systems companies use to decide what <em class="worth">work is worth</em>.</h1>
+          <p class="lede">Five years at Cisco advising a ~25,000-person commercial organization — compensation structure, market benchmarking, job architecture, and the offer decisions in between. When the tool didn't exist, I built it. Lately, with AI.</p>
+          <div class="chips" aria-label="Selected facts">
+            <span class="chip"><b>Cisco</b> 2021–2026</span>
+            <span class="chip"><b>~25,000</b> GTM org advised</span>
+            <span class="chip"><b>Every BU</b> signed my job architecture</span>
+          </div>
+          <div class="actions">
+            <button class="btn solid" type="button" data-goto="story" data-hover>Start the tour</button>
+            <a class="btn" href="mailto:mckelvymatthew@gmail.com" data-hover>Email me</a>
+          </div>
+        </div>
+        <figure class="hero-3d">
+          <div id="sys3d" aria-label="Interactive diagram: roles, market, and pay as one connected system. Drag to rotate." role="img"></div>
+          <figcaption>The job. Three planes of data, one system.<br><span>Grab it. Give it a spin.</span></figcaption>
+        </figure>
       </div>
-      <div class="scroll-hint" aria-hidden="true"><span></span></div>
     </section>
 
-    <!-- ============ 02 · THE THROUGH-LINE ============ -->
-    <section class="sec" id="story" aria-labelledby="storyH">
-      <div class="rail"><span class="num">02</span><span class="rail-label">The through-line</span></div>
-      <div class="body">
-        <h2 class="h2 reveal" id="storyH">One continuous problem, at increasing scale.</h2>
-        <p class="prose reveal">Most careers in this field read like a list of programs. Mine is one question asked with better and better instruments: <em>how should an organization structure — and pay for — its work?</em> I started with the shape of teams, moved to the price of talent in a single market, then took on structure and price together for Cisco's largest organization. The tools evolved from spreadsheets to models to dashboards to AI-assisted systems. The question never changed.</p>
-
-        <ol class="throughline reveal" aria-label="Career progression">
-          <li>
-            <span class="tl-when">2021</span>
-            <h3>Workforce &amp; org strategy</h3>
-            <p>The shape of organizations: attrition, grade distribution, org design across Sales and Finance.</p>
-          </li>
-          <li>
-            <span class="tl-when">2023</span>
-            <h3>Regional compensation</h3>
-            <p>The price of talent: benchmarking Cisco's UK pay against market, feeding regional strategy.</p>
-          </li>
-          <li>
-            <span class="tl-when">2023 – 26</span>
-            <h3>GTM compensation</h3>
-            <p>Structure and price together, for ~25,000 people — ranges, exceptions, acquisitions, planning.</p>
-          </li>
-          <li>
-            <span class="tl-when">Now</span>
-            <h3>AI-era comp infrastructure</h3>
-            <p>Rebuilding the machinery itself: job architecture, decision tools, and workflows built with AI.</p>
-          </li>
+    <!-- ================= STORY ================= -->
+    <section class="panel" id="p-story" role="tabpanel" aria-labelledby="t-story" hidden>
+      <div class="panel-inner">
+        <h2 class="h2">One question, asked harder every&nbsp;year.</h2>
+        <p class="prose"><em>How should an organization structure — and pay for — its work?</em> I started with the shape of teams, moved to the price of talent in one market, then took both at once for Cisco's commercial organization. The instruments kept upgrading: spreadsheets → models → dashboards → AI-built systems. The question never changed.</p>
+        <ol class="throughline">
+          <li data-hover><span class="tl-when">2021</span><h3>Workforce &amp; org strategy</h3><p>The shape of organizations — attrition, grade distribution, org design across Sales and Finance.</p></li>
+          <li data-hover><span class="tl-when">2023</span><h3>Regional compensation</h3><p>The price of talent — benchmarking Cisco's UK pay against market for regional strategy.</p></li>
+          <li data-hover><span class="tl-when">2023–26</span><h3>GTM compensation</h3><p>Structure and price together for ~25,000 people — ranges, offers, exceptions, acquisitions.</p></li>
+          <li data-hover><span class="tl-when">Now</span><h3>AI-era comp infrastructure</h3><p>Rebuilding the machinery itself — architecture, decision tools, and workflows built with AI.</p></li>
         </ol>
       </div>
     </section>
 
-    <!-- ============ 03 · EXPERIENCE ============ -->
-    <section class="sec" id="experience" aria-labelledby="expH">
-      <div class="rail"><span class="num">03</span><span class="rail-label">Experience</span></div>
-      <div class="body">
-        <h2 class="h2 reveal" id="expH">Cisco Systems <span class="h2-meta">Aug 2021 – Jul 2026 · five years</span></h2>
-        <p class="prose reveal">Three roles, one employer, widening scope — from analyzing organizations to running compensation for the business that produces Cisco's revenue.</p>
-
-        <article class="role reveal">
+    <!-- ================= EXPERIENCE ================= -->
+    <section class="panel" id="p-exp" role="tabpanel" aria-labelledby="t-exp" hidden>
+      <div class="panel-inner scrolly">
+        <h2 class="h2">Cisco Systems <span class="h2-meta">Aug 2021 – Jul 2026</span></h2>
+        <article class="role">
           <header class="role-head">
-            <div>
-              <h3>Compensation Analyst</h3>
-              <p class="role-org">Go-to-Market Organization · Los Gatos, CA</p>
-            </div>
+            <div><h3>Compensation Analyst</h3><p class="role-org">Go-to-Market Organization · Los Gatos, CA</p></div>
             <p class="role-dates">Oct 2023 – Jul 2026</p>
           </header>
-          <p class="mandate"><span>Mandate</span> Advise senior GTM leaders — a global sales and marketing organization of roughly 25,000 people — on compensation structure, workforce planning, and resource allocation.</p>
+          <p class="mandate"><span>Mandate</span> Trusted comp advisor to leaders of a global commercial organization — sales and marketing, ~25,000 people — on structure, workforce planning, and resource allocation.</p>
           <ul class="role-points">
-            <li>Identified mass attrition across APJC-region roles spanning GTM, operations, and engineering; traced it to market reference ranges that had drifted below peer benchmarks, and drove a full recalibration.</li>
-            <li>Led an AI-assisted refresh of job architecture: structured hundreds of role cards into new job families, family groups, and titles, then secured sign-off from compensation leads in every Cisco business unit ahead of Workday implementation.</li>
-            <li>Designed and shipped a modeling tool for out-of-range hiring exceptions — external market data, internal range positioning, and headcount by management level in a single interface — built hands-on with AI tooling.</li>
-            <li>Built the Tableau dashboard mapping acquired Splunk roles onto Cisco's structure for post-acquisition compensation decisions.</li>
+            <li>Led an AI-assisted job architecture refresh — hundreds of role cards structured into new families, groups, and titles — and won sign-off from comp leads in every Cisco business unit ahead of Workday implementation.</li>
+            <li>Built and shipped a modeling tool for out-of-range offer exceptions: external market data, internal range positioning, and headcount by level on one screen. Market context and internal consistency, finally in the same room.</li>
+            <li>Traced mass APJC attrition to market reference ranges that had drifted below peers; drove the full recalibration.</li>
+            <li>Built the Tableau dashboard mapping acquired Splunk roles onto Cisco's structure for post-acquisition comp decisions.</li>
           </ul>
-          <p class="role-tools">Job architecture · Market benchmarking · Comp modeling · M&amp;A integration · Tableau · Workday · AI tooling</p>
         </article>
-
-        <article class="role reveal">
+        <article class="role">
           <header class="role-head">
-            <div>
-              <h3>People &amp; Communities Representative</h3>
-              <p class="role-org">UK &amp; Ireland Country Consulting Team · Boston, MA</p>
-            </div>
-            <p class="role-dates">Feb 2023 – Oct 2023</p>
+            <div><h3>People &amp; Communities Representative</h3><p class="role-org">UK &amp; Ireland Country Consulting · Boston, MA</p></div>
+            <p class="role-dates">Feb – Oct 2023</p>
           </header>
-          <p class="mandate"><span>Mandate</span> Bring market rigor to a single country's talent economics.</p>
           <ul class="role-points">
-            <li>Led market benchmarking of Cisco's UK compensation against peer data; delivered organizational and workforce analyses that fed regional strategic planning.</li>
+            <li>Led market benchmarking of Cisco's UK compensation against peer data; org and workforce analyses for regional strategic planning.</li>
           </ul>
-          <p class="role-tools">Benchmarking · Workforce analysis · Regional strategy</p>
         </article>
-
-        <article class="role reveal">
+        <article class="role">
           <header class="role-head">
-            <div>
-              <h3>People &amp; Communities Representative</h3>
-              <p class="role-org">Workforce &amp; Organizational Strategy · Boston, MA</p>
-            </div>
+            <div><h3>People &amp; Communities Representative</h3><p class="role-org">Workforce &amp; Organizational Strategy · Boston, MA</p></div>
             <p class="role-dates">Aug 2021 – Feb 2023</p>
           </header>
-          <p class="mandate"><span>Mandate</span> Help Cisco's leadership see its own organization clearly.</p>
           <ul class="role-points">
-            <li>Drove a global workforce strategy program across Sales and Finance, shaping leadership reporting and org design recommendations.</li>
-            <li>Consulted senior leaders on workforce structure — attrition, time-in-grade, and grade-distribution analyses built in Workday Adaptive Planning and presented company-wide.</li>
-            <li>Built the business case behind Cisco's FY2022 org design playbook.</li>
-            <li>Chief of Staff for FLEX, Cisco's HR rotational program.</li>
+            <li>Drove a global workforce strategy program across Sales and Finance; built the business case behind Cisco's FY2022 org design playbook.</li>
+            <li>Attrition, time-in-grade, and grade-distribution analyses in Workday Adaptive Planning, presented company-wide. Chief of Staff for FLEX, Cisco's HR rotational program.</li>
           </ul>
-          <p class="role-tools">Org design · Workforce planning · Workday Adaptive Planning · Executive reporting</p>
         </article>
       </div>
     </section>
 
-    <!-- ============ 04 · SELECTED WORK ============ -->
-    <section class="sec" id="work" aria-labelledby="workH">
-      <div class="rail"><span class="num">04</span><span class="rail-label">Selected work</span></div>
-      <div class="body">
-        <h2 class="h2 reveal" id="workH">Four problems, taken apart.</h2>
-        <p class="prose reveal">No confidential data appears here — methods and outcomes only. Each study follows the same anatomy: the problem, my role, the system built, why it mattered, and what it signals.</p>
-
-        <div class="cases">
-          <details class="case reveal" id="case-apjc">
-            <summary>
-              <span class="case-k">01</span>
-              <span class="case-t">The attrition no one could explain</span>
-              <span class="case-s">Root-cause diagnosis → range recalibration</span>
-              <span class="case-x" aria-hidden="true"></span>
-            </summary>
-            <div class="case-body">
-              <p><b>The problem.</b> Roles across Cisco's APJC region — spanning go-to-market, operations, and engineering — were losing people at an abnormal rate, and the losses didn't map to any one team, manager, or function.</p>
-              <p><b>My role.</b> I spotted the pattern and owned the diagnosis.</p>
-              <p><b>The system.</b> Cross-referencing attrition against compensation positioning showed the real mechanism: market reference ranges for the region had quietly drifted below peer benchmarks. The problem wasn't culture or management — it was pricing. I drove a full recalibration of the affected ranges.</p>
-              <p><b>Business value.</b> Retention problems get expensive twice: once in departures, once in the wrong fixes. Repricing the ranges addressed the cause rather than the symptoms.</p>
-              <p class="case-signal"><b>Signal</b> — I look for the system underneath the symptom.</p>
-            </div>
-          </details>
-
-          <details class="case reveal" id="case-architecture">
-            <summary>
-              <span class="case-k">02</span>
-              <span class="case-t">Rebuilding job architecture, with AI</span>
-              <span class="case-s">Hundreds of roles → one structure, every BU signed</span>
-              <span class="case-x" aria-hidden="true"></span>
-            </summary>
-            <div class="case-body">
-              <p><b>The problem.</b> Ahead of a Workday implementation, Cisco's job architecture — the families, groups, and titles that everything from pay ranges to career paths hangs on — needed a full refresh.</p>
-              <p><b>My role.</b> I led the refresh for my scope and carried it through alignment.</p>
-              <p><b>The system.</b> I used AI tooling to scrape and structure hundreds of role cards, then organized them into new job families, family groups, and titles. The harder half was human: securing sign-off from compensation leads across every Cisco business unit, before the structure was committed to the system of record.</p>
-              <p><b>Business value.</b> Job architecture is load-bearing infrastructure — get it wrong and every downstream comp decision inherits the error. It shipped aligned, on time, ahead of the Workday cutover.</p>
-              <p class="case-signal"><b>Signal</b> — AI for the volume, judgment for the taxonomy, patience for the politics.</p>
-            </div>
-          </details>
-
-          <details class="case reveal" id="case-exceptions">
-            <summary>
-              <span class="case-k">03</span>
-              <span class="case-t">The exception-hiring model</span>
-              <span class="case-s">Three data sources → one decision interface</span>
-              <span class="case-x" aria-hidden="true"></span>
-            </summary>
-            <div class="case-body">
-              <p><b>The problem.</b> Out-of-range hiring exceptions were decided with fragmented evidence — market data in one place, internal range positioning in another, headcount distribution in a third.</p>
-              <p><b>My role.</b> I designed and shipped the tool myself.</p>
-              <p><b>The system.</b> A modeling interface that put external market data, internal range positioning, and headcount by management level side by side — one screen, built hands-on with AI tooling rather than waiting in an engineering queue.</p>
-              <p><b>Business value.</b> Exception decisions moved from assembled-by-hand to answered-on-sight, with the trade-offs visible instead of implied.</p>
-              <p class="case-signal"><b>Signal</b> — when the tool doesn't exist, I build it.</p>
-            </div>
-          </details>
-
-          <details class="case reveal" id="case-splunk">
-            <summary>
-              <span class="case-k">04</span>
-              <span class="case-t">Mapping Splunk onto Cisco</span>
-              <span class="case-s">Acquisition → comp integration dashboard</span>
-              <span class="case-x" aria-hidden="true"></span>
-            </summary>
-            <div class="case-body">
-              <p><b>The problem.</b> Cisco's acquisition of Splunk brought thousands of employees whose roles, levels, and pay structures had to be reconciled with Cisco's own.</p>
-              <p><b>My role.</b> I built the comparison layer for compensation decisions.</p>
-              <p><b>The system.</b> A Tableau dashboard mapping acquired Splunk roles against Cisco's job structure, giving comp decision-makers a shared view of how the two organizations actually lined up.</p>
-              <p><b>Business value.</b> M&amp;A comp integration runs on exactly this mapping; done poorly, it seeds years of internal-equity problems. The dashboard made the decisions inspectable.</p>
-              <p class="case-signal"><b>Signal</b> — I turn messy organizational data into instruments people decide with.</p>
-            </div>
-          </details>
+    <!-- ================= WORK ================= -->
+    <section class="panel" id="p-work" role="tabpanel" aria-labelledby="t-work" hidden>
+      <div class="panel-inner">
+        <h2 class="h2">Four problems, taken apart. <span class="h2-meta">tap one</span></h2>
+        <div class="workgrid">
+          <button class="wcard" type="button" data-case="c1" data-hover>
+            <span class="wk">01</span><h3>The attrition nobody could explain</h3>
+            <p>Benchmark drift, found and fixed.</p>
+          </button>
+          <button class="wcard" type="button" data-case="c2" data-hover>
+            <span class="wk">02</span><h3>Job architecture, rebuilt with AI</h3>
+            <p>Hundreds of roles. Every BU signed.</p>
+          </button>
+          <button class="wcard" type="button" data-case="c3" data-hover>
+            <span class="wk">03</span><h3>The offer-exception model</h3>
+            <p>Three data sources, one decision screen.</p>
+          </button>
+          <button class="wcard" type="button" data-case="c4" data-hover>
+            <span class="wk">04</span><h3>Mapping Splunk onto Cisco</h3>
+            <p>M&amp;A comp integration, made inspectable.</p>
+          </button>
         </div>
-      </div>
-    </section>
 
-    <!-- ============ 05 · METHOD ============ -->
-    <section class="sec" id="method" aria-labelledby="methodH">
-      <div class="rail"><span class="num">05</span><span class="rail-label">Method</span></div>
-      <div class="body">
-        <h2 class="h2 reveal" id="methodH">How I work an ambiguous problem.</h2>
-        <p class="prose reveal">Reverse-engineered from the work above — each step is something I have actually done, not a framework borrowed from a slide.</p>
-        <ol class="method reveal">
-          <li><b>Notice the anomaly.</b><span>The APJC attrition didn't map to any team. That mismatch was the signal.</span></li>
-          <li><b>Trace it to the system.</b><span>Not "people are leaving" — reference ranges had drifted below market.</span></li>
-          <li><b>Name the decision.</b><span>Executives don't need analysis; they need the choice framed. Recalibrate, or keep paying for attrition.</span></li>
-          <li><b>Build the instrument.</b><span>A model, a dashboard, an architecture — whatever makes the trade-offs visible on one screen.</span></li>
-          <li><b>Win the room.</b><span>Every-BU sign-off on job architecture wasn't a technical achievement. It was thirty conversations.</span></li>
-          <li><b>Ship it into the system of record.</b><span>Analysis that never reaches Workday, Tableau, or the planning cycle didn't happen.</span></li>
-        </ol>
-      </div>
-    </section>
-
-    <!-- ============ 06 · CAPABILITIES ============ -->
-    <section class="sec" id="capabilities" aria-labelledby="capH">
-      <div class="rail"><span class="num">06</span><span class="rail-label">Capabilities</span></div>
-      <div class="body">
-        <h2 class="h2 reveal" id="capH">The toolkit, honestly stated.</h2>
-        <div class="caps reveal">
-          <div class="cap">
-            <h3>Compensation</h3>
-            <ul><li>Job architecture &amp; leveling</li><li>Market benchmarking</li><li>Compensation modeling</li><li>Out-of-range exception design</li><li>M&amp;A comp integration</li></ul>
-          </div>
-          <div class="cap">
-            <h3>Workforce &amp; Org</h3>
-            <ul><li>Workforce planning</li><li>Org design analysis</li><li>Attrition &amp; grade-distribution analytics</li><li>Headcount &amp; resource allocation</li></ul>
-          </div>
-          <div class="cap">
-            <h3>Analytics &amp; Systems</h3>
-            <ul><li>Excel (advanced)</li><li>Tableau</li><li>Workday</li><li>Workday Adaptive Planning</li><li>Data storytelling</li></ul>
-          </div>
-          <div class="cap">
-            <h3>AI &amp; Communication</h3>
-            <ul><li>AI-assisted analysis</li><li>AI tool building</li><li>Executive presentation</li><li>Cross-functional consulting</li><li>Stakeholder alignment</li></ul>
+        <div class="casewrap" id="casewrap" hidden>
+          <div class="caseview" role="dialog" aria-modal="true" aria-labelledby="caseTitle">
+            <button class="caseclose" id="caseClose" type="button" aria-label="Close case study" data-hover>✕</button>
+            <div id="caseContent"></div>
           </div>
         </div>
+
+        <template id="tpl-c1">
+          <h3 id="caseTitle">The attrition nobody could explain</h3>
+          <p><b>Problem.</b> Roles across the APJC region — GTM, operations, engineering — were bleeding people, and the losses didn't map to any team or manager.</p>
+          <p><b>My role.</b> Spotted the pattern. Owned the diagnosis.</p>
+          <p><b>The system.</b> Cross-referencing attrition against comp positioning showed the mechanism: market reference ranges had quietly drifted below peer benchmarks. Not culture. Pricing. I drove the full recalibration.</p>
+          <p><b>Value.</b> Retention problems get expensive twice — departures, then the wrong fixes. This fixed the cause.</p>
+          <p class="case-signal">Signal — I look for the system underneath the symptom.</p>
+        </template>
+        <template id="tpl-c2">
+          <h3 id="caseTitle">Job architecture, rebuilt with AI</h3>
+          <p><b>Problem.</b> Ahead of a Workday implementation, the job architecture — families, groups, titles; the skeleton every pay decision hangs on — needed a full refresh.</p>
+          <p><b>My role.</b> Led the refresh, carried it through alignment.</p>
+          <p><b>The system.</b> AI tooling to scrape and structure hundreds of role cards into a new architecture. Then the harder half: sign-off from compensation leads in every Cisco business unit.</p>
+          <p><b>Value.</b> Architecture is load-bearing — get it wrong and every downstream decision inherits the error. Shipped aligned, on time.</p>
+          <p class="case-signal">Signal — AI for the volume, judgment for the taxonomy, patience for the politics.</p>
+        </template>
+        <template id="tpl-c3">
+          <h3 id="caseTitle">The offer-exception model</h3>
+          <p><b>Problem.</b> Out-of-range offer exceptions were decided on fragmented evidence — market data here, internal positioning there, headcount somewhere else.</p>
+          <p><b>My role.</b> Designed and shipped the tool myself, with AI tooling — no engineering queue.</p>
+          <p><b>The system.</b> One screen: external market context, internal range consistency, headcount by level. The trade-offs visible instead of implied.</p>
+          <p><b>Value.</b> Exception calls moved from assembled-by-hand to answered-on-sight.</p>
+          <p class="case-signal">Signal — when structure doesn't exist, I build it.</p>
+        </template>
+        <template id="tpl-c4">
+          <h3 id="caseTitle">Mapping Splunk onto Cisco</h3>
+          <p><b>Problem.</b> An acquisition brought thousands of employees whose roles and pay structures had to reconcile with Cisco's.</p>
+          <p><b>My role.</b> Built the comparison layer comp decisions ran on.</p>
+          <p><b>The system.</b> A Tableau dashboard mapping acquired roles against Cisco's job structure — one shared view of how two companies actually lined up.</p>
+          <p><b>Value.</b> Integration comp done badly seeds years of internal-equity problems. This made the calls inspectable.</p>
+          <p class="case-signal">Signal — messy org data, turned into an instrument people decide with.</p>
+        </template>
       </div>
     </section>
 
-    <!-- ============ 07 · THE AI ARGUMENT ============ -->
-    <section class="sec" id="ai" aria-labelledby="aiH">
-      <div class="rail"><span class="num">07</span><span class="rail-label">The AI argument</span></div>
-      <div class="body">
-        <h2 class="h2 reveal" id="aiH">Why this background compounds now.</h2>
-        <div class="prose-cols reveal">
-          <p>Every large company sits on the same buried asset: years of fragmented workforce, compensation, organizational, and financial data. AI has abruptly changed what that data can do — ranges that recalibrate against live markets, job architecture that stays current instead of decaying between redesigns, exception decisions that arrive with their evidence attached.</p>
-          <p>But the models don't know the org. Turning that possibility into working systems still requires someone who understands the data <em>and</em> the incentives around it — how comp committees actually decide, what Workday will and won't tolerate, why a technically correct taxonomy dies in review, and how a range drifts below market three years before anyone notices the attrition.</p>
-          <p>That translation layer is where I've already been working. The job-architecture refresh, the exception-hiring model, the acquisition mapping — each one was AI or analytics applied to live compensation infrastructure, carried through the human alignment that determines whether systems get adopted or ignored. I didn't spend the last five years watching this shift. I spent them practicing it.</p>
+    <!-- ================= SKILLS ================= -->
+    <section class="panel" id="p-skills" role="tabpanel" aria-labelledby="t-skills" hidden>
+      <div class="panel-inner">
+        <h2 class="h2">What I reach for daily.</h2>
+        <div class="skilldeck" aria-label="Core skills">
+          <span class="skill big" data-hover>GTM &amp; commercial compensation</span>
+          <span class="skill big" data-hover>Market benchmarking &amp; range design</span>
+          <span class="skill big" data-hover>Offer &amp; exception decision support</span>
+          <span class="skill big" data-hover>Job architecture &amp; leveling</span>
+          <span class="skill big" data-hover>Compensation modeling</span>
+          <span class="skill big" data-hover>Executive storytelling</span>
         </div>
+        <p class="kit-label">Also in the kit</p>
+        <div class="skilldeck small" aria-label="Supporting skills">
+          <span class="skill" data-hover>Workforce planning</span>
+          <span class="skill" data-hover>M&amp;A comp integration</span>
+          <span class="skill" data-hover>Org analytics</span>
+          <span class="skill" data-hover>Workday + Adaptive</span>
+          <span class="skill" data-hover>Tableau</span>
+          <span class="skill" data-hover>Excel, the deep end</span>
+          <span class="skill" data-hover>AI-assisted tool building</span>
+          <span class="skill" data-hover>Cross-functional alignment — HR · Finance · hiring teams</span>
+        </div>
+        <p class="ai-note"><b>Why this stack compounds now:</b> comp and workforce data is exactly the fragmented infrastructure AI finally makes powerful — and the models still don't know the org. I've spent five years as the translation layer, and the last two building with the tools.</p>
       </div>
     </section>
 
-    <!-- ============ 08 · BACKGROUND ============ -->
-    <section class="sec" id="background" aria-labelledby="bgH">
-      <div class="rail"><span class="num">08</span><span class="rail-label">Background</span></div>
-      <div class="body">
-        <h2 class="h2 reveal" id="bgH">Education &amp; particulars.</h2>
-        <dl class="bg reveal">
-          <div>
-            <dt>Boston University</dt>
-            <dd>B.S., Communication</dd>
-          </div>
-          <div>
-            <dt>Georgetown University</dt>
-            <dd>Graduate coursework, Technology Management</dd>
-          </div>
-          <div>
-            <dt>Base</dt>
-            <dd>Boston, MA</dd>
-          </div>
-          <div>
-            <dt>Off the clock</dt>
-            <dd>Competitive racquet sports — played seriously.</dd>
-          </div>
+    <!-- ================= CONTACT ================= -->
+    <section class="panel" id="p-contact" role="tabpanel" aria-labelledby="t-contact" hidden>
+      <div class="panel-inner center">
+        <h2 class="display sm">The résumé fits on a page.<br>This didn't.</h2>
+        <div class="actions center">
+          <a class="btn solid" href="mailto:mckelvymatthew@gmail.com" data-hover>Email Matthew</a>
+          <a class="btn" href="Matthew-McKelvy-Resume.pdf" download data-hover>Résumé</a>
+          <a class="btn" href="https://www.linkedin.com/in/mattmckelvy/" data-hover>LinkedIn</a>
+          <button class="btn quiet" type="button" id="copyLink" data-hover>Copy link</button>
+        </div>
+        <dl class="facts">
+          <div><dt>Base</dt><dd>Pebble Beach, CA</dd></div>
+          <div><dt>Education</dt><dd>Boston University, B.S. Communication</dd></div>
+          <div><dt>Also</dt><dd>Georgetown — graduate coursework, Technology Management</dd></div>
+          <div><dt>Off the clock</dt><dd>Competitive racquet sports. Played seriously.</dd></div>
         </dl>
+        <p class="foot-note">mattmckelvy.com · built by hand, like the rest of it</p>
       </div>
-    </section>
-
-    <!-- ============ 09 · CONTACT ============ -->
-    <section class="sec close" id="contact" aria-labelledby="closeH">
-      <h2 class="display sm reveal" id="closeH">The résumé fits on a page.<br>The thinking doesn't.</h2>
-      <div class="hero-actions center reveal">
-        <a class="btn solid" href="mailto:mckelvymatthew@gmail.com">Email Matthew</a>
-        <a class="btn" href="Matthew-McKelvy-Resume.pdf" download>Download résumé</a>
-        <button class="btn quiet" type="button" id="copyLink">Copy link to this site</button>
-        <a class="btn quiet" href="https://www.linkedin.com/in/mattmckelvy/" rel="me">LinkedIn</a>
-      </div>
-      <footer class="foot reveal">
-        <span>Matthew McKelvy · Boston, MA</span>
-        <span class="foot-note">Designed and built as a working sample.</span>
-      </footer>
     </section>
   </main>
 
+  <script src="js/three.min.js" defer></script>
+  <script src="js/system3d.js" defer></script>
   <script src="js/site.js" defer></script>
 </body>
 </html>
