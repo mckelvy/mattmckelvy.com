@@ -5,14 +5,14 @@
   try { reduced = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
 
   /* ---------- slow hue drift: full cycle ≈ 3.5 minutes ---------- */
-  var hue = 18;
+  var hue = 26;
   if (!reduced) {
     var lastT = performance.now();
     (function drift(now) {
       var dt = Math.min((now - lastT) / 1000, 0.1); lastT = now;
       hue = (hue + dt * 1.7) % 360;
       document.documentElement.style.setProperty("--hue", hue.toFixed(2));
-      if (window.SYS3D) window.SYS3D.setHue(hue);
+      if (window.PIT) window.PIT.setHue(hue);
       requestAnimationFrame(drift);
     })(lastT);
   }

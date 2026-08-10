@@ -3,22 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Matthew McKelvy — Compensation &amp; Workforce Strategy</title>
+  <title>Matt McKelvy — Compensation &amp; Workforce Strategy</title>
   <meta name="description" content="Five years at Cisco advising a ~25,000-person commercial organization on compensation, benchmarking, job architecture, and offer decisions — with AI-built tooling. Pebble Beach, CA.">
   <link rel="canonical" href="https://mattmckelvy.com/">
   <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#FAF9F6">
+  <meta name="theme-color" content="#FFFBF2">
 
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Matthew McKelvy">
-  <meta property="og:title" content="Matthew McKelvy — Compensation &amp; Workforce Strategy">
+  <meta property="og:site_name" content="Matt McKelvy">
+  <meta property="og:title" content="Matt McKelvy — Compensation &amp; Workforce Strategy">
   <meta property="og:description" content="I build the systems companies use to decide what work is worth. Five years at Cisco: GTM comp, benchmarking, job architecture, and decision tools built with AI.">
   <meta property="og:url" content="https://mattmckelvy.com/">
   <meta property="og:image" content="https://mattmckelvy.com/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Matthew McKelvy — Compensation &amp; Workforce Strategy">
+  <meta name="twitter:title" content="Matt McKelvy — Compensation &amp; Workforce Strategy">
   <meta name="twitter:description" content="I build the systems companies use to decide what work is worth.">
   <meta name="twitter:image" content="https://mattmckelvy.com/og.png">
 
@@ -26,8 +26,8 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/site.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Rubik:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css?v=4">
 
   <script type="application/ld+json">
   {
@@ -49,7 +49,9 @@
   <div class="cursor-ring" id="curRing" aria-hidden="true"></div>
 
   <header class="top">
-    <button class="wordmark" id="wm" type="button" aria-label="Home">M<span>c</span>K</button>
+    <button class="keycap" id="wm" type="button" aria-label="Home">
+      <span class="keycap-top">mm</span>
+    </button>
     <nav class="tabs" role="tablist" aria-label="Sections">
       <button role="tab" aria-selected="true"  aria-controls="p-home" id="t-home" data-panel="home">Hello</button>
       <button role="tab" aria-selected="false" aria-controls="p-story" id="t-story" data-panel="story">Story</button>
@@ -67,22 +69,17 @@
     <section class="panel active" id="p-home" role="tabpanel" aria-labelledby="t-home">
       <div class="hero-grid">
         <div class="hero-copy">
-          <p class="eyebrow">Matthew McKelvy · Compensation &amp; Workforce Strategy · Pebble Beach, CA</p>
-          <h1 class="display">I build the systems companies use to decide what <em class="worth">work is worth</em>.</h1>
-          <p class="lede">Five years at Cisco advising a ~25,000-person commercial organization — compensation structure, market benchmarking, job architecture, and the offer decisions in between. When the tool didn't exist, I built it. Lately, with AI.</p>
-          <div class="chips" aria-label="Selected facts">
-            <span class="chip"><b>Cisco</b> 2021–2026</span>
-            <span class="chip"><b>~25,000</b> GTM org advised</span>
-            <span class="chip"><b>Every BU</b> signed my job architecture</span>
-          </div>
+          <p class="eyebrow">Matt McKelvy · Compensation &amp; Workforce Strategy · Pebble Beach, CA</p>
+          <h1 class="display">I build the systems companies use to decide <mark class="hl hl-a">what work is worth</mark>.</h1>
+          <p class="lede">Five years at Cisco advising a <mark class="hl hl-b">~25,000-person</mark> commercial organization — compensation structure, market benchmarking, job architecture, and the offer decisions in between. When the tool didn't exist, <mark class="hl hl-c">I built it</mark>. Lately, with AI.</p>
           <div class="actions">
             <button class="btn solid" type="button" data-goto="story" data-hover>Start the tour</button>
             <a class="btn" href="mailto:mckelvymatthew@gmail.com" data-hover>Email me</a>
           </div>
         </div>
-        <figure class="hero-3d">
-          <div id="sys3d" aria-label="Interactive diagram: roles, market, and pay as one connected system. Drag to rotate." role="img"></div>
-          <figcaption>The job. Three planes of data, one system.<br><span>Grab it. Give it a spin.</span></figcaption>
+        <figure class="hero-pit">
+          <div id="pit" role="img" aria-label="A toy box of draggable stickers naming the work: GTM comp, ~25,000 people, job architecture, market data, offers, ranges, Tableau, Workday, Excel, AI tools, M&amp;A. Drag to throw them around."></div>
+          <figcaption>Five years of work, now with gravity.<br><span>Grab a sticker. Throw it. Double-tap to shake the box.</span></figcaption>
         </figure>
       </div>
     </section>
@@ -90,13 +87,13 @@
     <!-- ================= STORY ================= -->
     <section class="panel" id="p-story" role="tabpanel" aria-labelledby="t-story" hidden>
       <div class="panel-inner">
-        <h2 class="h2">One question, asked harder every&nbsp;year.</h2>
+        <h2 class="h2">One question, asked <mark class="hl hl-b">harder every&nbsp;year</mark>.</h2>
         <p class="prose"><em>How should an organization structure — and pay for — its work?</em> I started with the shape of teams, moved to the price of talent in one market, then took both at once for Cisco's commercial organization. The instruments kept upgrading: spreadsheets → models → dashboards → AI-built systems. The question never changed.</p>
         <ol class="throughline">
-          <li data-hover><span class="tl-when">2021</span><h3>Workforce &amp; org strategy</h3><p>The shape of organizations — attrition, grade distribution, org design across Sales and Finance.</p></li>
-          <li data-hover><span class="tl-when">2023</span><h3>Regional compensation</h3><p>The price of talent — benchmarking Cisco's UK pay against market for regional strategy.</p></li>
-          <li data-hover><span class="tl-when">2023–26</span><h3>GTM compensation</h3><p>Structure and price together for ~25,000 people — ranges, offers, exceptions, acquisitions.</p></li>
-          <li data-hover><span class="tl-when">Now</span><h3>AI-era comp infrastructure</h3><p>Rebuilding the machinery itself — architecture, decision tools, and workflows built with AI.</p></li>
+          <li class="tone-peach" data-hover><span class="tl-when">2021</span><h3>Workforce &amp; org strategy</h3><p>The shape of organizations — attrition, grade distribution, org design across Sales and Finance.</p></li>
+          <li class="tone-butter" data-hover><span class="tl-when">2023</span><h3>Regional compensation</h3><p>The price of talent — benchmarking Cisco's UK pay against market for regional strategy.</p></li>
+          <li class="tone-sky" data-hover><span class="tl-when">2023–26</span><h3>GTM compensation</h3><p>Structure and price together for ~25,000 people — ranges, offers, exceptions, acquisitions.</p></li>
+          <li class="tone-mint" data-hover><span class="tl-when">Now</span><h3>AI-era comp infrastructure</h3><p>Rebuilding the machinery itself — architecture, decision tools, and workflows built with AI.</p></li>
         </ol>
       </div>
     </section>
@@ -104,8 +101,8 @@
     <!-- ================= EXPERIENCE ================= -->
     <section class="panel" id="p-exp" role="tabpanel" aria-labelledby="t-exp" hidden>
       <div class="panel-inner scrolly">
-        <h2 class="h2">Cisco Systems <span class="h2-meta">Aug 2021 – Jul 2026</span></h2>
-        <article class="role">
+        <h2 class="h2"><mark class="hl hl-c">Cisco Systems</mark> <span class="h2-meta">Aug 2021 – Jul 2026</span></h2>
+        <article class="role tone-peach">
           <header class="role-head">
             <div><h3>Compensation Analyst</h3><p class="role-org">Go-to-Market Organization · Los Gatos, CA</p></div>
             <p class="role-dates">Oct 2023 – Jul 2026</p>
@@ -118,7 +115,7 @@
             <li>Built the Tableau dashboard mapping acquired Splunk roles onto Cisco's structure for post-acquisition comp decisions.</li>
           </ul>
         </article>
-        <article class="role">
+        <article class="role tone-butter">
           <header class="role-head">
             <div><h3>People &amp; Communities Representative</h3><p class="role-org">UK &amp; Ireland Country Consulting · Boston, MA</p></div>
             <p class="role-dates">Feb – Oct 2023</p>
@@ -127,7 +124,7 @@
             <li>Led market benchmarking of Cisco's UK compensation against peer data; org and workforce analyses for regional strategic planning.</li>
           </ul>
         </article>
-        <article class="role">
+        <article class="role tone-sky">
           <header class="role-head">
             <div><h3>People &amp; Communities Representative</h3><p class="role-org">Workforce &amp; Organizational Strategy · Boston, MA</p></div>
             <p class="role-dates">Aug 2021 – Feb 2023</p>
@@ -145,19 +142,19 @@
       <div class="panel-inner">
         <h2 class="h2">Four problems, taken apart. <span class="h2-meta">tap one</span></h2>
         <div class="workgrid">
-          <button class="wcard" type="button" data-case="c1" data-hover>
+          <button class="wcard tone-peach" type="button" data-case="c1" data-hover>
             <span class="wk">01</span><h3>The attrition nobody could explain</h3>
             <p>Benchmark drift, found and fixed.</p>
           </button>
-          <button class="wcard" type="button" data-case="c2" data-hover>
+          <button class="wcard tone-pink" type="button" data-case="c2" data-hover>
             <span class="wk">02</span><h3>Job architecture, rebuilt with AI</h3>
             <p>Hundreds of roles. Every BU signed.</p>
           </button>
-          <button class="wcard" type="button" data-case="c3" data-hover>
+          <button class="wcard tone-sky" type="button" data-case="c3" data-hover>
             <span class="wk">03</span><h3>The offer-exception model</h3>
             <p>Three data sources, one decision screen.</p>
           </button>
-          <button class="wcard" type="button" data-case="c4" data-hover>
+          <button class="wcard tone-mint" type="button" data-case="c4" data-hover>
             <span class="wk">04</span><h3>Mapping Splunk onto Cisco</h3>
             <p>M&amp;A comp integration, made inspectable.</p>
           </button>
@@ -208,14 +205,14 @@
     <!-- ================= SKILLS ================= -->
     <section class="panel" id="p-skills" role="tabpanel" aria-labelledby="t-skills" hidden>
       <div class="panel-inner">
-        <h2 class="h2">What I reach for daily.</h2>
+        <h2 class="h2">What I reach for <mark class="hl hl-a">daily</mark>.</h2>
         <div class="skilldeck" aria-label="Core skills">
-          <span class="skill big" data-hover>GTM &amp; commercial compensation</span>
-          <span class="skill big" data-hover>Market benchmarking &amp; range design</span>
-          <span class="skill big" data-hover>Offer &amp; exception decision support</span>
-          <span class="skill big" data-hover>Job architecture &amp; leveling</span>
-          <span class="skill big" data-hover>Compensation modeling</span>
-          <span class="skill big" data-hover>Executive storytelling</span>
+          <span class="skill big tone-peach" data-hover>GTM &amp; commercial compensation</span>
+          <span class="skill big tone-butter" data-hover>Market benchmarking &amp; range design</span>
+          <span class="skill big tone-pink" data-hover>Offer &amp; exception decision support</span>
+          <span class="skill big tone-sky" data-hover>Job architecture &amp; leveling</span>
+          <span class="skill big tone-mint" data-hover>Compensation modeling</span>
+          <span class="skill big tone-lilac" data-hover>Executive storytelling</span>
         </div>
         <p class="kit-label">Also in the kit</p>
         <div class="skilldeck small" aria-label="Supporting skills">
@@ -235,26 +232,28 @@
     <!-- ================= CONTACT ================= -->
     <section class="panel" id="p-contact" role="tabpanel" aria-labelledby="t-contact" hidden>
       <div class="panel-inner center">
-        <h2 class="display sm">The résumé fits on a page.<br>This didn't.</h2>
-        <div class="actions center">
-          <a class="btn solid" href="mailto:mckelvymatthew@gmail.com" data-hover>Email Matthew</a>
-          <a class="btn" href="Matthew-McKelvy-Resume.pdf" download data-hover>Résumé</a>
-          <a class="btn" href="https://www.linkedin.com/in/mattmckelvy/" data-hover>LinkedIn</a>
-          <button class="btn quiet" type="button" id="copyLink" data-hover>Copy link</button>
+        <div class="contact-card tone-butter">
+          <h2 class="display sm">The résumé fits on a page.<br>This didn't.</h2>
+          <div class="actions center">
+            <a class="btn solid" href="mailto:mckelvymatthew@gmail.com" data-hover>Email Matt</a>
+            <a class="btn" href="Matthew-McKelvy-Resume.pdf" download data-hover>Résumé</a>
+            <a class="btn" href="https://www.linkedin.com/in/mattmckelvy/" data-hover>LinkedIn</a>
+            <button class="btn quiet" type="button" id="copyLink" data-hover>Copy link</button>
+          </div>
+          <dl class="facts">
+            <div><dt>Base</dt><dd>Pebble Beach, CA</dd></div>
+            <div><dt>Education</dt><dd>Boston University, B.S. Communication</dd></div>
+            <div><dt>Also</dt><dd>Georgetown — graduate coursework, Technology Management</dd></div>
+            <div><dt>Off the clock</dt><dd>Competitive racquet sports. Played seriously.</dd></div>
+          </dl>
         </div>
-        <dl class="facts">
-          <div><dt>Base</dt><dd>Pebble Beach, CA</dd></div>
-          <div><dt>Education</dt><dd>Boston University, B.S. Communication</dd></div>
-          <div><dt>Also</dt><dd>Georgetown — graduate coursework, Technology Management</dd></div>
-          <div><dt>Off the clock</dt><dd>Competitive racquet sports. Played seriously.</dd></div>
-        </dl>
         <p class="foot-note">mattmckelvy.com · built by hand, like the rest of it</p>
       </div>
     </section>
   </main>
 
-  <script src="js/three.min.js" defer></script>
-  <script src="js/system3d.js" defer></script>
-  <script src="js/site.js" defer></script>
+  <script src="js/matter.min.js?v=3" defer></script>
+  <script src="js/pit.js?v=7" defer></script>
+  <script src="js/site.js?v=3" defer></script>
 </body>
 </html>

@@ -1,1 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="8" fill="#FAF9F6"/><text x="30" y="45" font-family="Georgia,serif" font-size="38" font-weight="600" text-anchor="middle" fill="#16150F">M</text><circle cx="49" cy="43" r="4" fill="#8E2A1C"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect x="3" y="3" width="58" height="58" rx="15" fill="#FFEEA8" stroke="#241F33" stroke-width="4"/>
+  <rect x="10" y="9" width="44" height="42" rx="10" fill="#FFFBF2" stroke="#241F33" stroke-width="3"/>
+  <text x="32" y="41" font-family="Arial Rounded MT Bold, 'Helvetica Rounded', Arial, sans-serif" font-weight="800" font-size="28" text-anchor="middle" fill="#241F33">mm</text>
+</svg>
