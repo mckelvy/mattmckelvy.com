@@ -187,8 +187,15 @@
       Composite.remove(world, walls);
       walls = makeWalls(W, H);
       Composite.add(world, walls);
+      /* wake everything so the pile resettles against the new walls,
+         and rain any chip stranded outside the new box back in from the top */
       chips.forEach(function (b) {
-        if (b.position.x > W - 10) Body.setPosition(b, { x: W - 30, y: Math.min(b.position.y, H - 30) });
+        Matter.Sleeping.set(b, false);
+        if (b.position.y > H - 8 || b.position.x < 24 || b.position.x > W - 24) {
+          Body.setPosition(b, { x: 24 + Math.random() * Math.max(1, W - 48), y: -30 - Math.random() * 120 });
+          Body.setVelocity(b, { x: 0, y: 0 });
+          Body.setAngularVelocity(b, 0);
+        }
       });
     }
     size();
