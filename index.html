@@ -4,30 +4,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Matt McKelvy — Compensation &amp; Workforce Strategy</title>
-  <meta name="description" content="Compensation, benchmarking, and job architecture for a ~25,000-person sales org at Cisco — with AI-built tooling. Pebble Beach, CA.">
+  <meta name="description" content="Compensation, benchmarking, and job architecture for a ~25,000-person go-to-market organization at Cisco — with hand-built decision tools. Pebble Beach, CA.">
   <link rel="canonical" href="https://mattmckelvy.com/">
   <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#FFFBF2">
+  <meta name="theme-color" content="#FAF6EF">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Matt McKelvy">
   <meta property="og:title" content="Matt McKelvy — Compensation &amp; Workforce Strategy">
-  <meta property="og:description" content="I work on what work is worth. Comp, benchmarking, and job architecture at Cisco — with AI-built tools.">
+  <meta property="og:description" content="I work on what work is worth. Compensation, benchmarking, and job architecture at Cisco — with hand-built decision tools.">
   <meta property="og:url" content="https://mattmckelvy.com/">
-  <meta property="og:image" content="https://mattmckelvy.com/og.png">
+  <meta property="og:image" content="https://mattmckelvy.com/og.png?v=2">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Matt McKelvy — Compensation &amp; Workforce Strategy">
   <meta name="twitter:description" content="I work on what work is worth.">
-  <meta name="twitter:image" content="https://mattmckelvy.com/og.png">
+  <meta name="twitter:image" content="https://mattmckelvy.com/og.png?v=2">
 
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Rubik:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/site.css?v=6">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css?v=10">
+  <script>document.documentElement.className += " js";</script>
 
   <script type="application/ld+json">
   {
@@ -44,208 +45,378 @@
   </script>
 </head>
 <body>
-  <a class="skip" href="#stage">Skip to content</a>
-  <div class="cursor" id="cur" aria-hidden="true"></div>
-  <div class="cursor-ring" id="curRing" aria-hidden="true"></div>
+<a class="skip" href="#main">Skip to content</a>
 
-  <header class="top">
-    <button class="keycap" id="wm" type="button" aria-label="Home">
-      <span class="keycap-top">mm</span>
-    </button>
-    <nav class="tabs" role="tablist" aria-label="Sections">
-      <button role="tab" aria-selected="true"  aria-controls="p-home" id="t-home" data-panel="home">Hello</button>
-      <button role="tab" aria-selected="false" aria-controls="p-story" id="t-story" data-panel="story">Story</button>
-      <button role="tab" aria-selected="false" aria-controls="p-exp" id="t-exp" data-panel="exp"><span class="tab-full">Experience</span><span class="tab-mini" aria-hidden="true">CV</span></button>
-      <button role="tab" aria-selected="false" aria-controls="p-work" id="t-work" data-panel="work">Work</button>
-      <button role="tab" aria-selected="false" aria-controls="p-skills" id="t-skills" data-panel="skills">Skills</button>
-      <button role="tab" aria-selected="false" aria-controls="p-contact" id="t-contact" data-panel="contact">Contact</button>
-    </nav>
-    <a class="top-cta" href="Matthew-McKelvy-Resume.pdf" download data-hover>Résumé <span class="pdf">PDF</span></a>
+<header class="site-head" id="siteHead">
+  <a class="wordmark" href="#top" aria-label="Matt McKelvy — top of page">
+    <svg class="mark" viewBox="0 0 26 12" aria-hidden="true"><rect x="1" y="5" width="24" height="2" rx="1" fill="currentColor" opacity=".28"/><rect x="1" y="2.5" width="2" height="7" rx="1" fill="currentColor" opacity=".55"/><rect x="23" y="2.5" width="2" height="7" rx="1" fill="currentColor" opacity=".55"/><circle cx="16" cy="6" r="3.2" class="mark-dot"/></svg>
+    <span>Matt&nbsp;McKelvy</span>
+  </a>
+  <nav class="site-nav" aria-label="Sections">
+    <a href="#problems">Work</a>
+    <a href="#story">Story</a>
+    <a href="#experience">Experience</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div class="head-actions">
+    <button class="kbd-hint" id="palOpen" type="button" aria-label="Open command menu"><kbd>⌘</kbd><kbd>K</kbd></button>
+    <a class="btn btn-ink btn-sm" href="Matthew-McKelvy-Resume.pdf" download>Résumé<span class="pdf-tag">PDF</span></a>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============================== HERO ============================== -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <p class="eyebrow reveal">Compensation &amp; workforce strategy · Pebble Beach, CA</p>
+    <h1 class="display reveal">I work on <span class="uline">what work is worth<svg class="uline-svg" viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true"><path d="M4 9 C 60 4, 150 12, 296 6" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg></span>.</h1>
+    <p class="lede reveal">Five years building Cisco&rsquo;s pay infrastructure — job architecture, salary ranges, and the
+      decision tools behind hiring and pay for a <strong>~25,000-person</strong> go-to-market organization.
+      When a tool didn&rsquo;t exist, I built it.</p>
+    <div class="actions reveal">
+      <a class="btn btn-ink" href="Matthew-McKelvy-Resume.pdf" download>Download résumé</a>
+      <a class="btn" href="mailto:mckelvymatthew@gmail.com">Email me</a>
+      <a class="quiet-link" href="https://www.linkedin.com/in/mattmckelvy/">LinkedIn ↗</a>
+    </div>
+  </div>
+
+  <figure class="exhibit reveal" id="ex-hero">
+    <figcaption class="exhibit-head">
+      <span class="ex-label">№&nbsp;0 · An offer, at equilibrium</span>
+      <span class="ex-note">synthetic numbers</span>
+    </figcaption>
+    <div class="exhibit-body" id="heroCanvasHost"
+         data-fallback="Interactive exhibit — a pay offer pulled between market, peers, and budget. Enable JavaScript to drive it."
+         role="img" aria-label="An interactive pay range. A draggable offer marker is pulled between competing forces — market at $193,000, internal peers near $181,000, a budget guide at $197,000, and the candidate&rsquo;s ask at $206,000 — settling around $190,000."></div>
+    <p class="exhibit-caption"><em>Drag the offer. It won&rsquo;t stay where you put it</em> — it settles where market,
+      peers, budget, and the ask balance. Compensation isn&rsquo;t finding a number; it&rsquo;s balancing competing
+      truths. Everything below is that, at scale.</p>
+  </figure>
+
+  <div class="stat-strip reveal" role="list">
+    <div role="listitem"><b data-count="5">5</b><span>years at Cisco Systems</span></div>
+    <div role="listitem"><b><span data-count="25000" data-approx="~">~25,000</span></b><span>people in the GTM org I supported</span></div>
+    <div role="listitem"><b>100s</b><span>of role cards re-architected, with AI</span></div>
+    <div role="listitem"><b data-count="4">4</b><span>working instruments on this page</span></div>
+  </div>
+</section>
+
+<!-- ============================== STORY ============================== -->
+<section class="section" id="story">
+  <header class="sec-head reveal">
+    <span class="sec-no">01</span>
+    <h2>One question, asked harder every year.</h2>
+    <p class="sec-lede"><em>How should an organization structure — and pay for — its work?</em> The same question
+      since 2021. Only the instruments changed: spreadsheets &rarr; models &rarr; dashboards &rarr; AI.</p>
+  </header>
+  <ol class="throughline reveal">
+    <li><span class="tl-when">2021</span><h3>Workforce &amp; org strategy</h3><p>Attrition, grades, org design — across Cisco&rsquo;s Sales and Finance organizations.</p></li>
+    <li><span class="tl-when">2023</span><h3>Regional compensation</h3><p>Cisco&rsquo;s UK pay, benchmarked against peer-company market data.</p></li>
+    <li><span class="tl-when">2023–26</span><h3>GTM compensation</h3><p>Ranges, offers, exceptions, incentives — for ~25,000 people.</p></li>
+    <li><span class="tl-when">Now</span><h3>AI-era comp tools</h3><p>Decision instruments and job architecture, built with AI. This site included.</p></li>
+  </ol>
+</section>
+
+<!-- ============================== PROBLEMS ============================== -->
+<section class="section" id="problems">
+  <header class="sec-head reveal">
+    <span class="sec-no">02</span>
+    <h2>Four problems, taken apart.</h2>
+    <p class="sec-lede">Real problems from the last five years, rebuilt here as working exhibits.
+      The data is synthetic — the real analyses stay at Cisco. The shape of the thinking is the point.</p>
   </header>
 
-  <main class="stage" id="stage">
-
-    <!-- ================= HELLO ================= -->
-    <section class="panel active" id="p-home" role="tabpanel" aria-labelledby="t-home">
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow">Matt McKelvy · Compensation &amp; Workforce Strategy · Pebble Beach, CA</p>
-          <h1 class="display">I work on <mark class="hl hl-a">what work is worth</mark>.</h1>
-          <p class="lede">Five years at Cisco — compensation, benchmarking, and job architecture for a <mark class="hl hl-b">~25,000-person</mark> sales org. When a tool didn't exist, <mark class="hl hl-c">I built it</mark>.</p>
-          <div class="actions">
-            <button class="btn solid" type="button" data-goto="story" data-hover>Look around</button>
-            <a class="btn" href="mailto:mckelvymatthew@gmail.com" data-hover>Email me</a>
+  <!-- ---------- CASE 01 : DRIFT ---------- -->
+  <article class="case" id="case-drift">
+    <header class="case-head reveal">
+      <span class="case-no">Case 01</span>
+      <h3>The attrition nobody could explain.</h3>
+      <p>Across the APJC region, people kept leaving — sales, operations, engineering, all at once.
+        Nothing local explained it: not managers, not workload, not the narrative of the quarter.</p>
+    </header>
+    <figure class="exhibit exhibit-wide reveal" id="ex-drift">
+      <figcaption class="exhibit-head">
+        <span class="ex-label">Exhibit A · The investigation, in five moves</span>
+        <span class="ex-note">synthetic data</span>
+      </figcaption>
+      <div class="drift-grid">
+        <div class="drift-side">
+          <ol class="drift-steps" id="driftSteps">
+            <li data-step="0"><b>Signal</b><span>One region breaks from the pack.</span></li>
+            <li data-step="1"><b>Suspects</b><span>Manager churn, tenure, engagement — flat. None of the usual suspects hold.</span></li>
+            <li data-step="2"><b>Re-plot</b><span>Ranges are supposed to track the market. Plot the two together and watch the gap open.</span></li>
+            <li data-step="3"><b>Discovery</b><span>Attrition tracks the gap. Same shape, same timing. Not culture — pricing.</span></li>
+            <li data-step="4"><b>Decision</b><span>Recalibrate the ranges. The gap closes; the exits slow.</span></li>
+          </ol>
+          <div class="drift-nav">
+            <button class="step-btn" id="driftPrev" type="button" aria-label="Previous step">←</button>
+            <span class="step-count" id="driftCount" aria-live="polite">1 / 5</span>
+            <button class="step-btn" id="driftNext" type="button">Next →</button>
           </div>
         </div>
-        <figure class="hero-pit">
-          <div id="pit" role="img" aria-label="A toy box of draggable stickers naming the work: GTM comp, ~25,000 people, job architecture, market data, offers, ranges, Tableau, Workday, Excel, AI tools, M&amp;A. Drag to throw them around."></div>
-          <figcaption>The work, with gravity. <span>Grab one. Throw it. Double-tap to shake.</span></figcaption>
-        </figure>
+        <div class="exhibit-body drift-body" id="driftCanvasHost"
+             data-fallback="A five-step visual investigation: regional attrition rises, usual explanations fail, and the cause appears when pay ranges are plotted against a drifting market."></div>
       </div>
-    </section>
+      <p class="exhibit-caption" id="driftReadout" aria-live="polite"></p>
+    </figure>
+    <p class="case-out reveal"><b>Outcome.</b> Made the case to leadership; the ranges were corrected.
+      The lesson that stuck: attrition is often a pricing signal wearing an HR costume.</p>
+  </article>
 
-    <!-- ================= STORY ================= -->
-    <section class="panel" id="p-story" role="tabpanel" aria-labelledby="t-story" hidden>
-      <div class="panel-inner">
-        <h2 class="h2">One question, asked <mark class="hl hl-b">harder every&nbsp;year</mark>.</h2>
-        <p class="prose"><em>How should an organization structure — and pay for — its work?</em> Same question since 2021. Only the instruments changed: spreadsheets → models → dashboards → AI.</p>
-        <ol class="throughline">
-          <li class="tone-peach" data-hover><span class="tl-when">2021</span><h3>Workforce &amp; org strategy</h3><p>Attrition, grades, org design — Sales &amp; Finance.</p></li>
-          <li class="tone-butter" data-hover><span class="tl-when">2023</span><h3>Regional compensation</h3><p>Cisco's UK pay, benchmarked against market.</p></li>
-          <li class="tone-sky" data-hover><span class="tl-when">2023–26</span><h3>GTM compensation</h3><p>Ranges, offers, exceptions — ~25,000 people.</p></li>
-          <li class="tone-mint" data-hover><span class="tl-when">Now</span><h3>AI-era comp tools</h3><p>Decision tools and architecture, built with AI.</p></li>
-        </ol>
-      </div>
-    </section>
-
-    <!-- ================= EXPERIENCE ================= -->
-    <section class="panel" id="p-exp" role="tabpanel" aria-labelledby="t-exp" hidden>
-      <div class="panel-inner scrolly">
-        <h2 class="h2"><mark class="hl hl-c">Cisco Systems</mark> <span class="h2-meta">Aug 2021 – Jul 2026</span></h2>
-        <article class="role tone-peach">
-          <header class="role-head">
-            <div><h3>Compensation Analyst</h3><p class="role-org">Go-to-Market Organization · Los Gatos, CA</p></div>
-            <p class="role-dates">Oct 2023 – Jul 2026</p>
-          </header>
-          <p class="mandate"><span>Focus</span> Comp advisor to go-to-market leaders — structure, workforce planning, allocation.</p>
-          <ul class="role-points">
-            <li>AI-assisted job architecture refresh — hundreds of roles, signed off by every business unit.</li>
-            <li>Offer-exception model: market data, ranges, and headcount on one screen.</li>
-            <li>Traced APJC attrition to drifted pay ranges; drove the recalibration.</li>
-            <li>Tableau dashboard mapping Splunk roles onto Cisco, post-acquisition.</li>
-          </ul>
-        </article>
-        <article class="role tone-butter">
-          <header class="role-head">
-            <div><h3>People &amp; Communities Representative</h3><p class="role-org">UK &amp; Ireland Country Consulting · Boston, MA</p></div>
-            <p class="role-dates">Feb – Oct 2023</p>
-          </header>
-          <ul class="role-points">
-            <li>Benchmarked Cisco's UK compensation against peer market data.</li>
-          </ul>
-        </article>
-        <article class="role tone-sky">
-          <header class="role-head">
-            <div><h3>People &amp; Communities Representative</h3><p class="role-org">Workforce &amp; Organizational Strategy · Boston, MA</p></div>
-            <p class="role-dates">Aug 2021 – Feb 2023</p>
-          </header>
-          <ul class="role-points">
-            <li>Global workforce strategy across Sales and Finance; business case for the FY2022 org design playbook.</li>
-            <li>Chief of Staff, FLEX — Cisco's HR rotational program.</li>
-          </ul>
-        </article>
-      </div>
-    </section>
-
-    <!-- ================= WORK ================= -->
-    <section class="panel" id="p-work" role="tabpanel" aria-labelledby="t-work" hidden>
-      <div class="panel-inner">
-        <h2 class="h2">Four problems, taken apart. <span class="h2-meta">tap one</span></h2>
-        <div class="workgrid">
-          <button class="wcard tone-peach" type="button" data-case="c1" data-hover>
-            <span class="wk">01</span><h3>The attrition nobody could explain</h3>
-            <p>Benchmark drift, found and fixed.</p>
-          </button>
-          <button class="wcard tone-pink" type="button" data-case="c2" data-hover>
-            <span class="wk">02</span><h3>Job architecture, rebuilt with AI</h3>
-            <p>Hundreds of roles. Every BU signed.</p>
-          </button>
-          <button class="wcard tone-sky" type="button" data-case="c3" data-hover>
-            <span class="wk">03</span><h3>The offer-exception model</h3>
-            <p>Three data sources, one screen.</p>
-          </button>
-          <button class="wcard tone-mint" type="button" data-case="c4" data-hover>
-            <span class="wk">04</span><h3>Mapping Splunk onto Cisco</h3>
-            <p>M&amp;A comp, made inspectable.</p>
-          </button>
+  <!-- ---------- CASE 02 : ARCHITECTURE ---------- -->
+  <article class="case" id="case-architecture">
+    <header class="case-head reveal">
+      <span class="case-no">Case 02</span>
+      <h3>Job architecture, rebuilt with AI.</h3>
+      <p>Ahead of Cisco&rsquo;s Workday implementation, the GTM job architecture needed a full rebuild:
+        hundreds of role cards, inconsistent titles, families that had drifted apart through a decade of reorganization.</p>
+    </header>
+    <figure class="exhibit exhibit-wide reveal" id="ex-arch">
+      <figcaption class="exhibit-head">
+        <span class="ex-label">Exhibit B · Disorder → architecture</span>
+        <span class="ex-note">illustrative structure</span>
+      </figcaption>
+      <div class="exhibit-body arch-body" id="archCanvasHost"
+           data-fallback="Hundreds of scattered role titles resolve into a clean lattice of job families and levels."></div>
+      <div class="arch-controls">
+        <div class="arch-counters" aria-live="polite">
+          <span><b id="archTitles">417</b> titles</span><span class="arch-sep">→</span>
+          <span><b id="archFams">—</b> families</span><span class="arch-sep">→</span>
+          <span><b id="archLevels">—</b> levels</span>
         </div>
+        <label class="arch-scrub-label" for="archScrub"><span id="archPhase">Disorder</span>
+          <input type="range" id="archScrub" min="0" max="1000" value="0" step="1" aria-label="Scrub from disorder to architecture">
+        </label>
+      </div>
+      <p class="exhibit-caption">Drag the slider — or hover the finished lattice to read the families.</p>
+    </figure>
+    <p class="case-out reveal"><b>Outcome.</b> AI did the reading — scraping and structuring hundreds of role cards
+      into new families, groups, and titles. I did the taxonomy, then carried it through sign-off with compensation
+      leads in every business unit. Volume from the machine; judgment from a human.</p>
+  </article>
 
-        <div class="casewrap" id="casewrap" hidden>
-          <div class="caseview" role="dialog" aria-modal="true" aria-labelledby="caseTitle">
-            <button class="caseclose" id="caseClose" type="button" aria-label="Close case study" data-hover>✕</button>
-            <div id="caseContent"></div>
+  <!-- ---------- CASE 03 : OFFER LAB ---------- -->
+  <article class="case" id="case-offer">
+    <header class="case-head reveal">
+      <span class="case-no">Case 03</span>
+      <h3>The offer that doesn&rsquo;t fit the range.</h3>
+      <p>Out-of-range offers were being argued from scattered evidence — a screenshot here, a gut feeling there —
+        while recruiters waited on deadline. So I built the instrument: market data, range positioning, and internal
+        peers on one screen. This is a synthetic re-creation you can drive.</p>
+    </header>
+    <figure class="exhibit exhibit-plate reveal" id="ex-lab">
+      <figcaption class="exhibit-head">
+        <span class="ex-label">Exhibit C · The offer lab</span>
+        <span class="ex-note">fictional candidate · synthetic data</span>
+      </figcaption>
+      <div class="lab">
+        <div class="lab-controls">
+          <p class="lab-cand">Candidate <b>“R. Osei”</b> — Senior Solutions Engineer <span class="lab-fict">(fictional)</span></p>
+          <div class="lab-field">
+            <span class="lab-key">Level</span>
+            <div class="seg" role="group" aria-label="Job level" id="labLevel">
+              <button type="button" data-v="L3">L3</button>
+              <button type="button" data-v="L4" aria-pressed="true">L4</button>
+              <button type="button" data-v="L5">L5</button>
+            </div>
+          </div>
+          <div class="lab-field">
+            <span class="lab-key">Location</span>
+            <div class="seg" role="group" aria-label="Location" id="labGeo">
+              <button type="button" data-v="bay">SF Bay</button>
+              <button type="button" data-v="atx" aria-pressed="true">Austin</button>
+              <button type="button" data-v="rem">Remote US</button>
+            </div>
+          </div>
+          <div class="lab-field">
+            <span class="lab-key">Skill scarcity</span>
+            <div class="seg" role="group" aria-label="Skill scarcity" id="labScarce">
+              <button type="button" data-v="low">Low</button>
+              <button type="button" data-v="med" aria-pressed="true">Medium</button>
+              <button type="button" data-v="high">High</button>
+            </div>
+          </div>
+          <label class="lab-slider">
+            <span class="lab-key">Market target <b id="labPctOut">P55</b></span>
+            <input type="range" id="labPct" min="40" max="75" value="55" step="1">
+          </label>
+          <label class="lab-slider">
+            <span class="lab-key">Candidate&rsquo;s ask <b id="labAskOut">$196,000</b></span>
+            <input type="range" id="labAsk" min="0" max="1000" value="430" step="1">
+          </label>
+        </div>
+        <div class="lab-stage">
+          <div class="exhibit-body lab-body" id="labCanvasHost"
+               data-fallback="A working offer model: pick level, location, and scarcity; the recommendation moves inside the range against internal peers and market data."></div>
+          <div class="lab-verdict" id="labVerdict" aria-live="polite">
+            <p class="lv-num"><b id="lvBase">$189,400</b><span id="lvMeta">62% through range · compa-ratio 1.02</span></p>
+            <p class="lv-text" id="lvText">Recommend $189,400 — inside range, just above peer median. Defensible.</p>
           </div>
         </div>
-
-        <template id="tpl-c1">
-          <h3 id="caseTitle">The attrition nobody could explain</h3>
-          <p><b>Problem.</b> APJC roles were bleeding people, and no team or manager explained it.</p>
-          <p><b>Found.</b> Pay ranges had quietly drifted below market. Pricing, not culture — recalibrated.</p>
-          <p class="case-signal">The system underneath the symptom.</p>
-        </template>
-        <template id="tpl-c2">
-          <h3 id="caseTitle">Job architecture, rebuilt with AI</h3>
-          <p><b>Problem.</b> The job architecture — families, groups, titles — needed a full refresh before Workday.</p>
-          <p><b>Built.</b> AI structured hundreds of role cards; comp leads in every business unit signed off.</p>
-          <p class="case-signal">AI for the volume, judgment for the taxonomy.</p>
-        </template>
-        <template id="tpl-c3">
-          <h3 id="caseTitle">The offer-exception model</h3>
-          <p><b>Problem.</b> Out-of-range offers were decided on scattered evidence.</p>
-          <p><b>Built.</b> One screen: market data, range positioning, headcount by level. Shipped it myself, with AI.</p>
-          <p class="case-signal">No tool? Build the tool.</p>
-        </template>
-        <template id="tpl-c4">
-          <h3 id="caseTitle">Mapping Splunk onto Cisco</h3>
-          <p><b>Problem.</b> Thousands of acquired roles to reconcile with Cisco's structure.</p>
-          <p><b>Built.</b> A Tableau map of how the two companies actually lined up, for the comp calls that followed.</p>
-          <p class="case-signal">Messy org data → an instrument.</p>
-        </template>
       </div>
-    </section>
+      <p class="exhibit-caption">The production version integrated survey market data, internal range positioning by
+        percentile, and headcount by level — designed and shipped with AI tooling. It turned exception debates from
+        opinions into positions.</p>
+    </figure>
+  </article>
 
-    <!-- ================= SKILLS ================= -->
-    <section class="panel" id="p-skills" role="tabpanel" aria-labelledby="t-skills" hidden>
-      <div class="panel-inner">
-        <h2 class="h2">What I reach for <mark class="hl hl-a">daily</mark>.</h2>
-        <div class="skilldeck" aria-label="Core skills">
-          <span class="skill big tone-peach" data-hover>GTM &amp; commercial compensation</span>
-          <span class="skill big tone-butter" data-hover>Market benchmarking &amp; range design</span>
-          <span class="skill big tone-pink" data-hover>Offer &amp; exception decision support</span>
-          <span class="skill big tone-sky" data-hover>Job architecture &amp; leveling</span>
-          <span class="skill big tone-mint" data-hover>Compensation modeling</span>
-          <span class="skill big tone-lilac" data-hover>Executive storytelling</span>
-        </div>
-        <p class="kit-label">Also in the kit</p>
-        <div class="skilldeck small" aria-label="Supporting skills">
-          <span class="skill" data-hover>Workforce planning</span>
-          <span class="skill" data-hover>M&amp;A comp integration</span>
-          <span class="skill" data-hover>Org analytics</span>
-          <span class="skill" data-hover>Workday + Adaptive</span>
-          <span class="skill" data-hover>Tableau</span>
-          <span class="skill" data-hover>Excel, the deep end</span>
-          <span class="skill" data-hover>AI-assisted tool building</span>
-          <span class="skill" data-hover>Cross-functional alignment</span>
-        </div>
-        <p class="ai-note"><b>Why it compounds:</b> comp data is exactly what AI finally makes useful — I build with both.</p>
-      </div>
-    </section>
+  <!-- ---------- CASE 04 : M&A ---------- -->
+  <article class="case" id="case-mna">
+    <header class="case-head reveal">
+      <span class="case-no">Case 04</span>
+      <h3>Two companies, one architecture.</h3>
+      <p>Cisco acquired Splunk — thousands of people arriving with their own levels, titles, and pay ranges.
+        Every leveling call needed a translation both sides could trust.</p>
+    </header>
+    <figure class="exhibit reveal" id="ex-mna">
+      <figcaption class="exhibit-head">
+        <span class="ex-label">Exhibit D · The translation layer</span>
+        <span class="ex-note">illustrative mapping</span>
+      </figcaption>
+      <div class="exhibit-body mna-body" id="mnaHost"
+           data-fallback="Two level ladders — an acquired company&rsquo;s and the host&rsquo;s — with mapping lines between them; some map cleanly, some split across grades."></div>
+      <p class="exhibit-caption">Hover a level. Some map cleanly; the interesting ones don&rsquo;t.</p>
+    </figure>
+    <p class="case-out reveal"><b>Outcome.</b> A Tableau dashboard mapped acquired roles against Cisco&rsquo;s
+      architecture and ranges — one interface for every post-acquisition leveling and pay decision.
+      M&amp;A compensation is translation work; you need a dictionary both sides trust.</p>
+  </article>
+</section>
 
-    <!-- ================= CONTACT ================= -->
-    <section class="panel" id="p-contact" role="tabpanel" aria-labelledby="t-contact" hidden>
-      <div class="panel-inner center">
-        <div class="contact-card tone-butter">
-          <h2 class="display sm">The résumé fits on a page.<br>This didn't.</h2>
-          <div class="actions center">
-            <a class="btn solid" href="mailto:mckelvymatthew@gmail.com" data-hover>Email Matt</a>
-            <a class="btn" href="Matthew-McKelvy-Resume.pdf" download data-hover>Résumé</a>
-            <a class="btn" href="https://www.linkedin.com/in/mattmckelvy/" data-hover>LinkedIn</a>
-            <button class="btn quiet" type="button" id="copyLink" data-hover>Copy link</button>
-          </div>
-          <dl class="facts">
-            <div><dt>Base</dt><dd>Pebble Beach, CA</dd></div>
-            <div><dt>Education</dt><dd>Boston University, B.S. Communication</dd></div>
-            <div><dt>Also</dt><dd>Georgetown — graduate coursework, Technology Management</dd></div>
-            <div><dt>Off the clock</dt><dd>Competitive racquet sports. Played seriously.</dd></div>
-          </dl>
-        </div>
-        <p class="foot-note">mattmckelvy.com · built by hand, like the rest of it</p>
-      </div>
-    </section>
-  </main>
+<!-- ============================== EXPERIENCE ============================== -->
+<section class="section" id="experience">
+  <header class="sec-head reveal">
+    <span class="sec-no">03</span>
+    <h2>Experience.</h2>
+    <p class="sec-lede">Cisco Systems, 2021–2026 — three roles, one throughline.</p>
+  </header>
 
-  <script src="js/matter.min.js?v=3" defer></script>
-  <script src="js/pit.js?v=9" defer></script>
-  <script src="js/site.js?v=3" defer></script>
+  <article class="role reveal">
+    <header class="role-head">
+      <div><h3>Compensation Analyst</h3><p class="role-org">Go-to-Market Organization · Los Gatos, CA</p></div>
+      <p class="role-dates">Oct 2023 – Jul 2026</p>
+    </header>
+    <ul class="role-points">
+      <li>Compensation partner to senior leaders, HR business partners, and recruiters across a ~25,000-person global sales and marketing organization — first call on leveling, complex offers, retention, and resource allocation.</li>
+      <li>Led an AI-assisted job architecture rebuild ahead of Cisco&rsquo;s Workday implementation: hundreds of role cards structured into new job families, groups, and titles, signed off by compensation leads in every business unit.</li>
+      <li>Ran annual and ad hoc benchmarking against market survey data to maintain job levels and pay ranges for GTM roles; delivered findings and recommendations to leadership.</li>
+      <li>Traced APJC-region attrition to market reference ranges that had drifted below peer benchmarks; made the case for corrections.</li>
+      <li>Built the offer-exception model — external market data, internal range positioning by percentile, headcount by level — and designed and shipped the interface myself using AI tooling.</li>
+      <li>Built a Tableau dashboard mapping acquired Splunk roles onto Cisco&rsquo;s architecture and ranges for post-acquisition leveling and pay decisions.</li>
+      <li>Administered recurring compensation processes — the annual cycle, short-term incentive targets by level, off-cycle adjustments — high volumes against fixed deadlines.</li>
+    </ul>
+  </article>
+
+  <article class="role reveal">
+    <header class="role-head">
+      <div><h3>People &amp; Communities Representative</h3><p class="role-org">UK &amp; Ireland Country Consulting · Boston, MA</p></div>
+      <p class="role-dates">Feb 2023 – Oct 2023</p>
+    </header>
+    <ul class="role-points">
+      <li>Led market benchmarking of Cisco&rsquo;s UK compensation against peer-company data; assessed competitive positioning by role and delivered pay recommendations to regional leadership.</li>
+      <li>Client-facing organizational and workforce analyses supporting UK &amp; Ireland strategic planning.</li>
+    </ul>
+  </article>
+
+  <article class="role reveal">
+    <header class="role-head">
+      <div><h3>People &amp; Communities Representative</h3><p class="role-org">Workforce &amp; Organizational Strategy · Boston, MA</p></div>
+      <p class="role-dates">Aug 2021 – Feb 2023</p>
+    </header>
+    <ul class="role-points">
+      <li>Drove a global workforce strategy program across Cisco&rsquo;s Sales and Finance organizations — functional coordination, leadership reporting, org design recommendations.</li>
+      <li>Built attrition, time-in-grade, and grade-distribution analyses in Workday Adaptive Planning, presented company-wide; the analyses fed directly into range and structure decisions.</li>
+      <li>Business case behind Cisco&rsquo;s FY2022 org design playbook. Chief of Staff for FLEX, Cisco&rsquo;s HR rotational program.</li>
+    </ul>
+  </article>
+
+  <p class="edu reveal"><span class="lab-key">Education</span> Boston University — B.S., Communication ·
+    Georgetown University — graduate coursework, Technology Management</p>
+</section>
+
+<!-- ============================== CAPABILITIES ============================== -->
+<section class="section" id="capabilities">
+  <header class="sec-head reveal">
+    <span class="sec-no">04</span>
+    <h2>Capabilities.</h2>
+  </header>
+  <div class="cap-grid reveal">
+    <div class="cap-col">
+      <h3 class="cap-h">The work</h3>
+      <ul class="cap-list">
+        <li>GTM &amp; commercial compensation</li>
+        <li>Market benchmarking &amp; range design</li>
+        <li>Job architecture &amp; leveling</li>
+        <li>Offers, exceptions &amp; retention</li>
+        <li>Short-term incentive administration</li>
+        <li>Compensation cost modeling &amp; forecasting</li>
+        <li>M&amp;A compensation integration</li>
+        <li>Workforce planning &amp; org analytics</li>
+        <li>Executive storytelling</li>
+      </ul>
+    </div>
+    <div class="cap-col">
+      <h3 class="cap-h">The instruments</h3>
+      <ul class="cap-list">
+        <li>Workday &amp; Workday Adaptive Planning</li>
+        <li>Tableau</li>
+        <li>Excel — the deep end</li>
+        <li>Google Workspace</li>
+        <li>Market survey data &amp; submissions</li>
+        <li>AI-assisted analysis &amp; tool building <span class="cap-note">— this site included</span></li>
+      </ul>
+    </div>
+  </div>
+  <p class="cap-foot reveal">Why it compounds: compensation data is exactly the kind of structured, high-stakes
+    material AI finally makes tractable — and I build with both hands.</p>
+</section>
+
+<!-- ============================== ABOUT ============================== -->
+<section class="section" id="about">
+  <header class="sec-head reveal">
+    <span class="sec-no">05</span>
+    <h2>Off the clock.</h2>
+  </header>
+  <p class="about-p reveal">Based in Pebble Beach, California. Competitive racquet sports — played seriously, still do.
+    I like systems that look simple and aren&rsquo;t, which explains both the career and the hobby.
+    This site is hand-built: no frameworks, no templates, no tracking — view source.</p>
+</section>
+
+<!-- ============================== CONTACT ============================== -->
+<section class="section contact" id="contact">
+  <div class="contact-inner reveal">
+    <span class="sec-no">06</span>
+    <h2 class="contact-h">The résumé fits on a page.<br>This didn&rsquo;t.</h2>
+    <div class="actions">
+      <a class="btn btn-ink" href="mailto:mckelvymatthew@gmail.com">mckelvymatthew@gmail.com</a>
+      <a class="btn" href="Matthew-McKelvy-Resume.pdf" download>Résumé</a>
+      <a class="btn" href="https://www.linkedin.com/in/mattmckelvy/">LinkedIn</a>
+      <button class="btn btn-quiet" type="button" id="copyLink">Copy link</button>
+    </div>
+  </div>
+  <footer class="foot reveal">
+    <p>© 2026 Matt McKelvy · mattmckelvy.com</p>
+    <p>Every chart on this page is synthetic. The judgment behind them is not.</p>
+  </footer>
+</section>
+
+</main>
+
+<!-- ============================== COMMAND PALETTE ============================== -->
+<div class="pal-wrap" id="palWrap" hidden>
+  <div class="pal" role="dialog" aria-modal="true" aria-label="Command menu">
+    <input class="pal-input" id="palInput" type="text" placeholder="Where to? Try “modeling”, “benchmarking”, “résumé”…"
+           autocomplete="off" spellcheck="false" aria-label="Search sections and actions">
+    <ul class="pal-list" id="palList" role="listbox"></ul>
+    <p class="pal-foot"><kbd>↑↓</kbd> navigate <kbd>↵</kbd> go <kbd>esc</kbd> close</p>
+  </div>
+</div>
+
+<script src="js/site.js?v=10" defer></script>
+<script src="js/instruments.js?v=10" defer></script>
+<script src="js/drift.js?v=10" defer></script>
+<script src="js/arch.js?v=10" defer></script>
+<script src="js/lab.js?v=10" defer></script>
 </body>
 </html>
