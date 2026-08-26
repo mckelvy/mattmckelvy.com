@@ -8,7 +8,9 @@
 var CHAR_CONFIG = {
   enabled: true,
   intro: true,
-  scenes: { skate: true, surf: true, tennis: true, exit: true }
+  /* exit disabled: the footage's walk segment is too short to enter the
+     scene honestly at natural gait — no glide, no scene */
+  scenes: { skate: true, surf: true, tennis: true, exit: false }
 };
 /* ============================================================ */
 (function () {
@@ -65,7 +67,7 @@ var CHAR_CONFIG = {
     v.setAttribute("playsinline", "");
     v.preload = "auto";
     v.crossOrigin = "anonymous";
-    v.src = "media/char/" + name + (mobile ? "-m" : "") + ".mp4";
+    var srcUrl = "media/char/" + name + (mobile ? "-m" : "") + ".mp4";
 
     var W = mobile ? 480 : 768, H = mobile ? 730 : 1168;
     var c = this.canvas = document.createElement("canvas");
@@ -139,18 +141,51 @@ var CHAR_CONFIG = {
       })();
     }
 
+    /* A human action must never stall mid-motion. Chrome will not fill the
+       buffer of a paused <video>, so the only guarantee is to own the whole
+       file: fetch it as a blob and play from local memory. */
+    var blobUrl = null;
     this.ready = new Promise(function (res) {
-      if (v.readyState >= 3) res();
-      else {
+      function useDirect() {
+        if (self.dead) return;
+        v.src = srcUrl;
         v.addEventListener("canplaythrough", function h() { v.removeEventListener("canplaythrough", h); res(); });
-        v.addEventListener("canplay", function h2() { v.removeEventListener("canplay", h2); setTimeout(res, 120); });
+        v.load();
       }
-      v.load();
+      if (window.fetch && window.URL && URL.createObjectURL) {
+        fetch(srcUrl).then(function (r) {
+          if (!r.ok) throw new Error("http " + r.status);
+          return r.blob();
+        }).then(function (b) {
+          if (self.dead) return;
+          blobUrl = URL.createObjectURL(b);
+          v.src = blobUrl;
+          v.addEventListener("canplay", function h() { v.removeEventListener("canplay", h); res(); });
+          v.load();
+        }).catch(useDirect);
+      } else useDirect();
+    });
+    this.readyThrough = function () { return self.ready; };
+
+    /* stall guard: if playback rebuffers mid-scene, resolve the character
+       gracefully instead of freezing him mid-action */
+    this.onStall = null;
+    var stallTimer = null;
+    v.addEventListener("waiting", function () {
+      if (stallTimer || self.dead) return;
+      stallTimer = setTimeout(function () {
+        stallTimer = null;
+        if (!self.dead && self.onStall && !v.paused && v.readyState < 3) self.onStall();
+      }, 800);
+    });
+    v.addEventListener("playing", function () {
+      if (stallTimer) { clearTimeout(stallTimer); stallTimer = null; }
     });
 
     this.destroy = function () {
       self.dead = true;
       try { v.pause(); v.removeAttribute("src"); v.load(); } catch (e) {}
+      if (blobUrl) { try { URL.revokeObjectURL(blobUrl); } catch (e) {} blobUrl = null; }
       if (c.parentNode) c.parentNode.removeChild(c);
     };
   }
@@ -168,6 +203,18 @@ var CHAR_CONFIG = {
       es.forEach(function (e) { if (e.isIntersecting) { io.disconnect(); cb(); } });
     }, opts || { threshold: 0.4 });
     io.observe(el);
+  }
+
+  /* one Matthew: surf and tennis share the About neighborhood — tennis
+     holds until the surf pass has resolved (or clearly never started) */
+  var SEQ = { surfStarted: false, surfDone: false };
+  function whenSurfSettled(cb) {
+    var waited = 0;
+    (function poll() {
+      if (SEQ.surfDone || (!SEQ.surfStarted && waited >= 1200) || waited > 14000) { cb(); return; }
+      waited += 200;
+      setTimeout(poll, 200);
+    })();
   }
 
   /* ============================================================
@@ -188,12 +235,21 @@ var CHAR_CONFIG = {
     var vh = innerHeight, vw = innerWidth;
     var stillW = 422, stillH = 1036;
     var doorH = clamp(vh * 0.56, 360, 660);
-    var sStill = doorH / stillH;
-    var sVideo = sStill / D.door.stillScale;
     var floorY = vh * (mobile ? 0.72 : 0.76);
-    var doorCX = vw * (mobile ? 0.46 : 0.35);
-    var doorLeft = doorCX - (stillW * sStill) / 2;
-    var doorTop = floorY - doorH;
+    var doorCX = vw * (mobile ? 0.34 : 0.30);
+    /* the character's natural travel is finite — if his standing spot would
+       fall off the right edge, shrink the whole scene proportionally */
+    var sStill, sVideo, doorLeft, doorTop, standRight;
+    for (var pass = 0; pass < 2; pass++) {
+      sStill = doorH / stillH;
+      sVideo = sStill / D.door.stillScale;
+      doorLeft = doorCX - (stillW * sStill) / 2;
+      doorTop = floorY - doorH;
+      /* rough stand-spot estimate: door arrival + total gait travel */
+      standRight = doorLeft + 422 * sStill + (D.door.walkV * 3.1 + 200) * sVideo;
+      if (standRight > vw - 24) doorH *= (vw - 24 - doorLeft - 422 * sStill) / (standRight - doorLeft - 422 * sStill);
+      else break;
+    }
 
     /* environment: faint dot field, one static paint */
     var env = document.createElement("div");
@@ -238,16 +294,17 @@ var CHAR_CONFIG = {
     ov.appendChild(doorBtn);
 
     /* copy */
+    /* headline top-left, clear of the walking path */
     var come = document.createElement("h1");
     come.className = "char-come";
     come.textContent = "Come in.";
     if (mobile) {
       come.style.left = "50%"; come.style.transform = "translateX(-50%)";
-      come.style.top = Math.max(vh * 0.1, 48) + "px";
+      come.style.top = Math.max(vh * 0.08, 44) + "px";
       come.style.whiteSpace = "nowrap";
     } else {
-      come.style.left = (doorLeft + stillW * sStill + vw * 0.07) + "px";
-      come.style.top = (vh * 0.38) + "px";
+      come.style.left = Math.max(22, vw * 0.05) + "px";
+      come.style.top = (vh * 0.085) + "px";
     }
     ov.appendChild(come);
 
@@ -260,7 +317,7 @@ var CHAR_CONFIG = {
       hint.style.whiteSpace = "nowrap";
     } else {
       hint.style.left = come.style.left;
-      hint.style.top = (vh * 0.38 + 96) + "px";
+      hint.style.top = (vh * 0.085 + Math.max(64, vh * 0.1)) + "px";
     }
     ov.appendChild(hint);
     setTimeout(function () { hint.classList.add("on"); }, 2600);
@@ -313,44 +370,106 @@ var CHAR_CONFIG = {
     var cornerScreenX = doorLeft + (cr[0] - so[0]) * sStill;
     var cornerScreenY = doorTop + (cr[1] - so[1]) * sStill;
     var corner7x = table(D.door.corner, 7.0, 1), corner7y = table(D.door.corner, 7.0, 2);
-    var L1x = cornerScreenX - corner7x * sVideo;
-    var L1y = cornerScreenY - corner7y * sVideo;
-    var feetLine = L1y + table(D.door.foot, 7.0) * sVideo;
-    var L0x = vw + 40 - 260 * sVideo;
-    var T0 = 3.0, TSWAP = D.door.swapT, TEND = 13.35;
+    var L7x = cornerScreenX - corner7x * sVideo;
+    var L7y = cornerScreenY - corner7y * sVideo;
+    var feetLine = L7y + table(D.door.foot, 7.0) * sVideo;
+    var T0 = 1.1, TSWAP = D.door.swapT, TEND = 13.15;
     var swapped = false, started = false;
+
+    /* ---- gait-locked translation ----
+       Ground-locking the planted feet is equivalent to moving the head
+       across the screen at the walk velocity during steady gait, and not
+       at all while standing. The head track is the noise-free anchor. */
+    var P = D.door.walkPhase, V = D.door.walkV;
+    function gEnv(t) {
+      if (t <= P[0] || t >= P[3]) return 0;
+      if (t < P[1]) { var u = (t - P[0]) / (P[1] - P[0]); return u * u * (3 - 2 * u); }
+      if (t <= P[2]) return 1;
+      var d = (P[3] - t) / (P[3] - P[2]); return d * d * (3 - 2 * d);
+    }
+    var Ggrid = [], Gacc = 0;
+    for (var gi = 0; gi <= 7.4 * 48; gi++) {
+      Ggrid.push(Gacc);
+      Gacc += gEnv(gi / 48) / 48;
+    }
+    function G(t) {
+      var idx = clamp(t * 48, 0, Ggrid.length - 1);
+      var i0 = Math.floor(idx);
+      return lerp(Ggrid[i0], Ggrid[Math.min(i0 + 1, Ggrid.length - 1)], idx - i0);
+    }
+    var G7 = G(7.0);
+    var SH7 = L7x + table(D.door.headX, 7.0) * sVideo;
+    function gaitX(t) {
+      /* he walks leftward: earlier in the walk he is further RIGHT by the
+         gait distance still to be covered */
+      var sh = SH7 + V * sVideo * (G7 - G(t));
+      return sh - table(D.door.headX, t) * sVideo;
+    }
+    function cornerX(t) { return cornerScreenX - table(D.door.corner, t, 1) * sVideo; }
+    function cornerY(t) { return cornerScreenY - table(D.door.corner, t, 2) * sVideo; }
+    var startX = gaitX(T0);
+    var startY = feetLine - table(D.door.foot, 2.4) * sVideo;
+
+    /* pre-click: he is already there, standing — a still that comes alive */
+    var standImg = document.createElement("img");
+    standImg.src = "media/char/stand-still.png";
+    standImg.alt = "";
+    standImg.style.cssText = "position:absolute;transform-origin:0 0;transition:opacity .2s";
+    standImg.style.left = (startX + 226 * sVideo) + "px";
+    standImg.style.top = (startY + 10 * sVideo) + "px";
+    standImg.style.width = (400 * sVideo) + "px";
+    stage.appendChild(standImg);
+
+    /* debug overlay (?chardebug) */
+    var DBG = /chardebug/.test(location.search);
+    var dbgEl = null, dbgDot = null;
+    if (DBG) {
+      var fl = document.createElement("div");
+      fl.style.cssText = "position:absolute;left:0;right:0;top:" + floorY + "px;height:1px;background:rgba(255,0,0,.5);z-index:5";
+      ov.appendChild(fl);
+      dbgDot = document.createElement("div");
+      dbgDot.style.cssText = "position:absolute;width:6px;height:6px;border-radius:3px;background:rgba(255,0,0,.8);z-index:5;top:" + (vh * 0.1) + "px";
+      ov.appendChild(dbgDot);
+      dbgEl = document.createElement("pre");
+      dbgEl.style.cssText = "position:absolute;left:12px;bottom:8px;font:11px monospace;color:#c00;z-index:5;margin:0";
+      ov.appendChild(dbgEl);
+    }
 
     player.onFrame = function (t) {
       if (!started || finished) return;
       window.__charT = t;
       var x, y;
-      if (t < TSWAP) {
-        var p = easeIO((t - T0) / (TSWAP - T0));
-        x = lerp(L0x, L1x, p);
-        y = feetLine - table(D.door.foot, Math.max(t, 2.5)) * sVideo;
-        /* hide the video's own door while the still stands in */
-        if (t > 5.28) {
-          var edge = Math.min(table(D.door.clip, t) + 6, 520);
-          player.setClip(edge / 768);
-        } else player.setClip(0);
+      var gx = gaitX(t);
+      var yGait = feetLine - table(D.door.foot, Math.max(t, 2.4)) * sVideo;
+      if (t < 6.85) {
+        x = gx; y = yGait;
+      } else if (t < 7.05) {
+        var m = (t - 6.85) / 0.2;
+        x = lerp(gx, cornerX(t), m);
+        y = lerp(yGait, cornerY(t), m);
       } else {
-        if (!swapped) {
-          swapped = true;
-          player.setClip(0);
-          dimg.style.opacity = "0";
-          shadow.style.opacity = "0";
-          shadow.style.transition = "opacity .4s";
-        }
-        x = cornerScreenX - table(D.door.corner, t, 1) * sVideo;
-        y = cornerScreenY - table(D.door.corner, t, 2) * sVideo;
-        if (t > 6.4 && player.video.playbackRate !== 1.12) player.video.playbackRate = 1.12;
-        /* the invitation has been accepted — let it go */
-        if (t > 10.6 && come.style.opacity !== "0") {
-          come.style.transition = "opacity 1.2s ease";
-          come.style.opacity = "0";
-        }
+        x = cornerX(t); y = cornerY(t);
+      }
+      /* the sliding video door is erased in the asset itself during the
+         approach; at the swap the real door takes over from the still */
+      if (t >= TSWAP && !swapped) {
+        swapped = true;
+        dimg.style.opacity = "0";
+        shadow.style.opacity = "0";
+        shadow.style.transition = "opacity .4s";
+      }
+      /* door mechanics may run a touch quicker; the gait itself never does */
+      if (t >= TSWAP && t > 9.5 && player.video.playbackRate !== 1.2) player.video.playbackRate = 1.2;
+      if (t > 10.6 && come.style.opacity !== "0") {
+        come.style.transition = "opacity 1.2s ease";
+        come.style.opacity = "0";
       }
       place(player, x, y, sVideo);
+      if (DBG) {
+        dbgEl.textContent = "t=" + t.toFixed(2) + " x=" + x.toFixed(0) + " g=" + gEnv(t).toFixed(2) +
+          " head=" + (x + table(D.door.headX, t) * sVideo).toFixed(0);
+        dbgDot.style.left = (x + table(D.door.headX, t) * sVideo) + "px";
+      }
       if (t >= TEND) beginExit();
     };
     player.video.addEventListener("ended", function () { if (!finished) beginExit(); });
@@ -366,6 +485,28 @@ var CHAR_CONFIG = {
       setTimeout(function () { cleanup(true); }, 980);
     }
 
+    /* warm-up: once the first frames are buffered, replace the still with
+       the live (paused) canvas so the click starts motion instantly */
+    var warm = false;
+    player.ready.then(function () {
+      if (finished) return;
+      var v = player.video;
+      var onSeek = function () {
+        v.removeEventListener("seeked", onSeek);
+        if (finished) return;
+        player.drawFrame();
+        place(player, startX, startY, sVideo);
+        pc.style.opacity = "1";
+        standImg.style.opacity = "0";
+        warm = true;
+      };
+      v.addEventListener("seeked", onSeek);
+      v.currentTime = T0;
+    });
+
+    /* a stalled network must never freeze a person mid-stride */
+    player.onStall = function () { cleanup(true); };
+
     var armed = false;
     doorBtn.addEventListener("click", function () {
       if (armed || finished) return;
@@ -373,15 +514,13 @@ var CHAR_CONFIG = {
       hint.classList.remove("on");
       doorBtn.style.cursor = "default";
       doorBtn.setAttribute("aria-label", "Entering…");
-      player.ready.then(function () {
+      player.readyThrough(14.4).then(function () {
         if (finished) return;
-        player.video.currentTime = T0;
-        player.video.playbackRate = 1.3;
+        if (!warm) { player.drawFrame(); pc.style.opacity = "1"; standImg.style.opacity = "0"; }
+        player.video.playbackRate = 1.0;
         var p = player.video.play();
         if (p && p.catch) p.catch(function () { cleanup(true); });
         started = true;
-        pc.style.transition = "opacity .25s";
-        pc.style.opacity = "1";
       });
     });
   }
@@ -425,9 +564,15 @@ var CHAR_CONFIG = {
       pc.style.opacity = "0";
       wrap.appendChild(pc);
       line.classList.add("on");
-      player.ready.then(function () {
-        setTimeout(start, 650);
+      /* the whole trick must be in the buffer before he commits to it */
+      player.readyThrough(6.6).then(function () {
+        setTimeout(start, 500);
       });
+      player.onStall = function () {
+        pc.style.transition = "opacity .3s";
+        pc.style.opacity = "0";
+        setTimeout(function () { player.destroy(); }, 350);
+      };
       function start() {
         var rect = lineWrap.getBoundingClientRect();
         var wr = wrap.getBoundingClientRect();
@@ -459,25 +604,25 @@ var CHAR_CONFIG = {
     }, { threshold: 0.95, rootMargin: "0px 0px -14% 0px" });
   }
 
-  /* ---------- surf: the light behaves like water ---------- */
+  /* ---------- surf: the light behaves like water, on the way to Pebble Beach ---------- */
   function sceneSurf() {
-    var sec = document.getElementById("case-mna");
-    var next = document.getElementById("experience");
-    if (!sec || !next) return;
+    var sec = document.getElementById("about");
+    var next = sec;
+    if (!sec) return;
     relative(sec);
-    var bandH = clamp(innerHeight * 0.3, 200, 340);
+    var bandH = clamp(innerHeight * 0.24, 170, 250);
     var wrap = document.createElement("div");
     wrap.className = "char-layer";
-    wrap.style.cssText += "left:50%;width:100vw;margin-left:-50vw;bottom:" + (-bandH - 30) + "px;height:" + bandH + "px";
+    wrap.style.cssText += "left:50%;width:100vw;margin-left:-50vw;top:" + (-bandH - 8) + "px;height:" + bandH + "px";
     var fc = document.createElement("canvas");
     fc.width = Math.min(innerWidth, 1800); fc.height = bandH;
     fc.style.cssText = "position:absolute;inset:0;width:100%;height:100%";
     wrap.appendChild(fc);
     sec.appendChild(wrap);
 
-    /* trigger on the in-flow outcome paragraph — overhanging absolute
-       wrappers don't intersect reliably */
-    var anchor = sec.querySelector(".outcome") || sec;
+    /* trigger from the in-flow kicker — overhanging absolute wrappers
+       don't intersect reliably */
+    var anchor = sec.querySelector(".kicker") || sec;
     watch(anchor, surfStart, { threshold: 0.9, rootMargin: "0px 0px -8% 0px" });
     function surfStart() {
       var fctx = fc.getContext("2d");
@@ -508,13 +653,19 @@ var CHAR_CONFIG = {
         var now = (performance.now() - t0) / 1000;
         amp += (ampT - amp) * 0.03;
         fctx.clearRect(0, 0, W, Hb);
+        /* each wave is a lit surface that dissolves with depth — light,
+           not a filled pool */
         var layers = [
-          { off: 30, fill: "rgba(29,29,31,.075)" },
-          { off: 12, fill: "rgba(0,102,204,.09)" },
-          { off: 0, fill: "rgba(29,29,31,.10)" }
+          { off: 26, rgb: "29,29,31", a: 0.09, fall: 60 },
+          { off: 11, rgb: "0,102,204", a: 0.11, fall: 70 },
+          { off: 0, rgb: "29,29,31", a: 0.13, fall: 85 }
         ];
         for (var li = 0; li < layers.length; li++) {
           var L = layers[li];
+          var sy0 = surfBase + L.off;
+          var grad = fctx.createLinearGradient(0, sy0 - 14, 0, sy0 + L.fall);
+          grad.addColorStop(0, "rgba(" + L.rgb + "," + (L.a * amp).toFixed(3) + ")");
+          grad.addColorStop(1, "rgba(" + L.rgb + ",0)");
           fctx.beginPath();
           fctx.moveTo(0, Hb);
           for (var x = 0; x <= W; x += 8) {
@@ -522,7 +673,7 @@ var CHAR_CONFIG = {
           }
           fctx.lineTo(W, Hb);
           fctx.closePath();
-          fctx.fillStyle = L.fill;
+          fctx.fillStyle = grad;
           fctx.fill();
           /* the waterline, in the site's hairline voice */
           if (li === 2) {
@@ -531,7 +682,7 @@ var CHAR_CONFIG = {
               var yy = surfY(x2 + li * 160, now * (1 + li * 0.2));
               x2 === 0 ? fctx.moveTo(x2, yy) : fctx.lineTo(x2, yy);
             }
-            fctx.strokeStyle = "rgba(29,29,31," + (0.14 * amp).toFixed(3) + ")";
+            fctx.strokeStyle = "rgba(29,29,31," + (0.15 * amp).toFixed(3) + ")";
             fctx.lineWidth = 1;
             fctx.stroke();
           }
@@ -548,7 +699,14 @@ var CHAR_CONFIG = {
         requestAnimationFrame(fluid);
       })();
 
-      player.ready.then(function () {
+      SEQ.surfStarted = true;
+      player.onStall = function () {
+        ampT = 0; SEQ.surfDone = true;
+        pc.style.transition = "opacity .35s";
+        pc.style.opacity = "0";
+        setTimeout(function () { player.destroy(); }, 400);
+      };
+      player.readyThrough(8.6).then(function () {
         var subjH = clamp(innerHeight * (mobile ? 0.24 : 0.3), 170, 340);
         var s = subjH / 950;
         var dur = 7.2;
@@ -575,7 +733,7 @@ var CHAR_CONFIG = {
           var y = sy - boardY * s - 14 * s;
           place(player, x - 384 * s, y, s);
           if (t > dur || x < -vwW * 0.18) {
-            ampT = 0; playing = false;
+            ampT = 0; playing = false; SEQ.surfDone = true;
             pc.style.transition = "opacity .4s";
             pc.style.opacity = "0";
             setTimeout(function () { player.destroy(); }, 450);
@@ -614,12 +772,19 @@ var CHAR_CONFIG = {
     var baseW = Math.round(300 * s * 1.6);
     wrap.appendChild(base);
 
-    watch(sec, function () {
+    watch(sec, function () { whenSurfSettled(startTennis); }, { threshold: 0.35 });
+    function startTennis() {
       var player = new Player("tennis");
       var pc = player.canvas;
       pc.style.opacity = "0";
       wrap.appendChild(pc);
-      player.ready.then(function () {
+      player.onStall = function () {
+        base.classList.remove("on");
+        pc.style.transition = "opacity .4s";
+        pc.style.opacity = "0";
+        setTimeout(function () { player.destroy(); }, 450);
+      };
+      player.readyThrough(9.6).then(function () {
         var wr = wrap.getBoundingClientRect();
         var cx, footScreenY;
         if (mobile) {
@@ -665,7 +830,7 @@ var CHAR_CONFIG = {
           pc.style.opacity = "1";
         }).catch(function () { player.destroy(); });
       });
-    }, { threshold: 0.35 });
+    }
   }
 
   /* ---------- exit: he walks in one last time, settles, and lets go ---------- */
