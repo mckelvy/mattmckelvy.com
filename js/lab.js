@@ -1,24 +1,23 @@
-/* Exhibit C — the offer lab. A working (synthetic) recreation of the
-   out-of-range offer model: level, geo, scarcity, market target, ask →
-   a recommendation with a position, not just a number. */
+/* 03 · Offer exceptions — one number, one range, the evidence underneath.
+   The recommendation is draggable; the model pulls it back. Synthetic. */
 (function () {
   "use strict";
   MK.ready(function () {
     var host = document.getElementById("labCanvasHost");
     if (!host) return;
 
-    /* ------------- palette (plate) ------------- */
     var C = {
-      ink: "#F0E9DC", ink2: "#CFC6B5", faint: "#8D8474",
-      line: "rgba(243,236,224,.16)", lineSoft: "rgba(243,236,224,.08)",
-      market: "#7FA6E8", amber: "#E8A03C", low: "#D97862", good: "#77B598"
+      ink: "#F5F5F7", dim: "rgba(245,245,247,.45)", dim2: "rgba(245,245,247,.28)",
+      hair: "rgba(245,245,247,.14)", band: "rgba(245,245,247,.07)",
+      blue: "#2997FF", amber: "#FFB340", low: "#FF7A66", plate: "#060607"
     };
 
-    /* ------------- model ------------- */
+    /* ------------- model (unchanged logic) ------------- */
     var MIDS = { L3: 150000, L4: 185000, L5: 224000 };
     var GEO = { bay: 1.18, atx: 1.0, rem: 0.94 };
     var GEO_NAME = { bay: "SF Bay", atx: "Austin", rem: "Remote US" };
     var SCARCE = { low: 0.985, med: 1.0, high: 1.045 };
+    var SCARCE_WORD = { low: "common", med: "contested", high: "scarce" };
 
     var S = { level: "L4", geo: "atx", scarce: "med", pct: 55, askT: 430 / 1000 };
 
@@ -30,43 +29,35 @@
       var rng = MK.rng(S.level.charCodeAt(1) * 7919 + S.geo.charCodeAt(0) * 131);
       var peers = [];
       for (var i = 0; i < 14; i++) {
-        var g = (rng() + rng() + rng() + rng() - 2) / 2;   /* ~normal */
+        var g = (rng() + rng() + rng() + rng() - 2) / 2;
         peers.push(mid * 0.985 * (1 + g * 0.11));
       }
       peers.sort(function (a, b) { return a - b; });
       var pMed = (peers[6] + peers[7]) / 2;
-      var askLo = min * 0.85, askHi = max * 1.3;
-      var ask = MK.lerp(askLo, askHi, S.askT);
+      var ask = MK.lerp(min * 0.85, max * 1.3, S.askT);
       var rec = 0.62 * target + 0.30 * pMed + 0.08 * ask;
       return { mid: mid, min: min, max: max, p50: p50, target: target,
                peers: peers, pMed: pMed, p90: peers[12], ask: ask, rec: rec };
     }
 
     function verdict(m) {
-      var pen = (m.rec - m.min) / (m.max - m.min);
-      var compa = m.rec / m.mid;
-      var meta = Math.round(pen * 100) + "% through range · compa " + compa.toFixed(2) +
-                 " · peer median " + MK.fmt$(m.pMed);
       var cls = "", text;
       if (m.rec > m.max) {
         cls = "is-exception";
-        var over = m.rec - m.max;
         var marketCase = m.target > m.max * 0.99;
         var strong = marketCase && S.scarce === "high";
-        text = "Exception territory — " + MK.fmt$(over) + " above range max. The evidence: market P" + S.pct +
+        text = "Exception territory — " + MK.fmt$(m.rec - m.max) + " above range max. Market P" + S.pct +
                " prices this at " + MK.fmt$(m.target) + (marketCase ? ", itself above the range" : ", inside the range") +
-               "; scarcity is " + S.scarce.toUpperCase() +
-               (S.scarce === "high" ? ", which supports it" : ", which doesn't help") +
-               "; the ask is " + MK.fmt$(m.ask) + ". " +
+               "; the skill is " + SCARCE_WORD[S.scarce] + "; the ask is " + MK.fmt$(m.ask) + ". " +
                (strong ? "Defensible — take it to sign-off with the market case in hand."
                        : "Weak case — counter at " + MK.fmt$(m.max) + " and sell the range, not the exception.");
       } else if (m.rec < m.min) {
         cls = "is-low";
         text = "Below range minimum. Raise to at least " + MK.fmt$(m.min) +
-               " — hiring under min creates equity debt you'll repay with interest at the first cycle.";
+               " — hiring under min creates equity debt you repay with interest at the first cycle.";
       } else if (m.rec > m.p90) {
-        text = "Approvable at " + MK.fmt$(m.rec) + ", but it lands above roughly nine in ten current " + S.level +
-               " peers in " + GEO_NAME[S.geo] + ". Expect compression questions — pair the cash with a scope story.";
+        text = "Approvable, but it lands above roughly nine in ten current " + S.level + " peers in " +
+               GEO_NAME[S.geo] + ". Expect compression questions — pair the cash with a scope story.";
       } else if (m.rec >= m.pMed) {
         text = "Recommend " + MK.fmt$(m.rec) + " — inside range, above peer median" +
                (S.scarce === "high" ? ", justified by scarcity." : ". Clean, defensible, repeatable.");
@@ -74,7 +65,7 @@
         text = "Recommend " + MK.fmt$(m.rec) + " — inside range, below peer median. Room to move if they negotiate" +
                (m.ask > m.rec * 1.08 ? ", and they will: the ask is " + MK.fmt$(m.ask) + "." : ".");
       }
-      return { cls: cls, meta: meta, text: text, pen: pen };
+      return { cls: cls, text: text };
     }
 
     /* ------------- animated scalars ------------- */
@@ -90,120 +81,213 @@
     var A = {
       lo: anim(m0.min * 0.86, 3.2), hi: anim(m0.max * 1.18, 3.2),
       min: anim(m0.min, 3.6), max: anim(m0.max, 3.6), mid: anim(m0.mid, 3.6),
-      target: anim(m0.target, 5), ask: anim(m0.ask, 6), rec: anim(m0.rec, 4.2),
-      pMed: anim(m0.pMed, 4)
+      target: anim(m0.target, 5), ask: anim(m0.ask, 6), pMed: anim(m0.pMed, 4)
     };
     var peersA = m0.peers.map(function (p) { return anim(p, 3.4); });
     var vd = verdict(m0);
+    var M = m0;
+
+    /* the recommendation is a physical object: draggable, spring-loaded */
+    var disp = m0.rec, vel = 0, dragging = false, hover = false;
 
     var lvBase = document.getElementById("lvBase"),
         lvMeta = document.getElementById("lvMeta"),
-        lvText = document.getElementById("lvText"),
-        lvBox = document.getElementById("labVerdict");
+        lvText = document.getElementById("lvText");
 
-    function apply() {
-      var m = model();
-      A.min.t = m.min; A.max.t = m.max; A.mid.t = m.mid;
-      A.lo.t = m.min * 0.86; A.hi.t = m.max * 1.18;
-      A.target.t = m.target; A.ask.t = m.ask; A.rec.t = m.rec; A.pMed.t = m.pMed;
-      m.peers.forEach(function (p, i) { peersA[i].t = p; });
-      vd = verdict(m);
-      if (lvMeta) lvMeta.textContent = vd.meta;
+    var live = document.createElement("span");
+    live.setAttribute("aria-live", "polite");
+    live.style.cssText = "position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)";
+    host.appendChild(live);
+
+    function apply(announce) {
+      M = model();
+      A.min.t = M.min; A.max.t = M.max; A.mid.t = M.mid;
+      A.lo.t = M.min * 0.86; A.hi.t = M.max * 1.18;
+      A.target.t = M.target; A.ask.t = M.ask; A.pMed.t = M.pMed;
+      M.peers.forEach(function (p, i) { peersA[i].t = p; });
+      vd = verdict(M);
       if (lvText) lvText.textContent = vd.text;
-      if (lvBox) { lvBox.className = "lab-verdict " + vd.cls; }
+      if (lvBase) lvBase.parentElement.className = "lab-number " + vd.cls;
       var pctOut = document.getElementById("labPctOut");
       if (pctOut) pctOut.textContent = "P" + S.pct;
       var askOut = document.getElementById("labAskOut");
-      if (askOut) askOut.textContent = MK.fmt$(m.ask);
+      if (askOut) askOut.textContent = MK.fmt$(M.ask);
+      if (announce) live.textContent = "Recommendation " + MK.fmt$(M.rec) + ". " + vd.text;
       if (inst) inst.wake();
     }
 
+    function metaFor(v) {
+      var pen = (v - A.min.t) / (A.max.t - A.min.t);
+      var compa = v / A.mid.t;
+      var s = Math.round(pen * 100) + "% through range · compa " + compa.toFixed(2);
+      if (dragging) {
+        var d = v - M.rec;
+        return "Your number · " + s + " · " + (d >= 0 ? "+" : "−") + MK.fmt$(Math.abs(d)).slice(1) + " vs the model";
+      }
+      if (v > A.max.t * 1.001) return "Recommended base · " + s + " · above range max";
+      return "Recommended base · " + s + " · peer median " + MK.fmt$(A.pMed.t);
+    }
+
     /* ------------- canvas ------------- */
+    var pad = 46;
+    function X(v, w) { return pad + (v - A.lo.v) / (A.hi.v - A.lo.v) * (w - pad * 2); }
+    function VAL(px, w) { return A.lo.v + (px - pad) / (w - pad * 2) * (A.hi.v - A.lo.v); }
+
     var inst = MK.instrument(host, function (ctx, w, h, dt) {
       var busy = false;
       for (var k in A) if (tick(A[k], dt)) busy = true;
       peersA.forEach(function (p, i) { if (tick(p, dt * (1 - i * 0.02))) busy = true; });
-      if (MK.reduced) { for (var k2 in A) A[k2].v = A[k2].t; peersA.forEach(function (p) { p.v = p.t; }); busy = false; }
 
-      var pad = 44;
-      function X(v) { return pad + (v - A.lo.v) / (A.hi.v - A.lo.v) * (w - pad * 2); }
-      var axisY = h * 0.44, bandH = 40;
+      /* spring the displayed number toward the model's recommendation */
+      if (!dragging) {
+        var acc = (M.rec - disp) * 90 - vel * 14;
+        vel += acc * dt;
+        disp += vel * dt;
+        if (Math.abs(vel) > 40 || Math.abs(M.rec - disp) > 60) busy = true;
+        else { disp = M.rec; vel = 0; }
+      }
+      if (MK.reduced) { for (var k2 in A) A[k2].v = A[k2].t; peersA.forEach(function (p) { p.v = p.t; }); if (!dragging) disp = M.rec; busy = false; }
+
+      var axisY = h * 0.40, bandH = 44;
 
       /* axis */
-      ctx.strokeStyle = C.lineSoft; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(16, axisY); ctx.lineTo(w - 16, axisY); ctx.stroke();
+      ctx.strokeStyle = C.hair; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(14, axisY); ctx.lineTo(w - 14, axisY); ctx.stroke();
 
-      /* $ gridline labels every 20k within domain */
-      ctx.font = MK.font.mono(9); ctx.fillStyle = C.faint; ctx.textAlign = "center";
-      var step = 20000;
-      var t0 = Math.ceil(A.lo.v / step) * step;
-      for (var gv = t0; gv < A.hi.v; gv += step) {
-        var gx = X(gv);
-        ctx.strokeStyle = C.lineSoft;
+      /* $ ticks */
+      ctx.font = MK.font(12); ctx.fillStyle = C.dim2; ctx.textAlign = "center";
+      var t0 = Math.ceil(A.lo.v / 20000) * 20000;
+      for (var gv = t0; gv < A.hi.v; gv += 20000) {
+        var gx = X(gv, w);
         ctx.beginPath(); ctx.moveTo(gx, axisY - 3); ctx.lineTo(gx, axisY + 3); ctx.stroke();
-        if (w > 480 || Math.round(gv / step) % 2 === 0) ctx.fillText(MK.fmtK(gv), gx, h - 10);
+        if (w > 560 || Math.round(gv / 20000) % 2 === 0) ctx.fillText(MK.fmtK(gv), gx, h - 10);
       }
 
       /* range band */
-      var bx0 = X(A.min.v), bx1 = X(A.max.v), midX = X(A.mid.v);
-      ctx.fillStyle = "rgba(243,236,224,.06)";
-      ctx.beginPath();
-      if (ctx.roundRect) ctx.roundRect(bx0, axisY - bandH / 2, bx1 - bx0, bandH, 5);
-      else ctx.rect(bx0, axisY - bandH / 2, bx1 - bx0, bandH);
-      ctx.fill();
+      var bx0 = X(A.min.v, w), bx1 = X(A.max.v, w), midX = X(A.mid.v, w);
+      ctx.fillStyle = C.band;
+      ctx.fillRect(bx0, axisY - bandH / 2, bx1 - bx0, bandH);
       ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5;
       [bx0, bx1].forEach(function (rx) {
-        ctx.beginPath(); ctx.moveTo(rx, axisY - bandH / 2 - 5); ctx.lineTo(rx, axisY + bandH / 2 + 5); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(rx, axisY - bandH / 2 - 4); ctx.lineTo(rx, axisY + bandH / 2 + 4); ctx.stroke();
       });
-      ctx.strokeStyle = C.line;
+      ctx.strokeStyle = C.hair;
       ctx.beginPath(); ctx.moveTo(midX, axisY - bandH / 2); ctx.lineTo(midX, axisY + bandH / 2); ctx.stroke();
-      ctx.fillStyle = C.faint; ctx.font = MK.font.mono(9);
-      ctx.fillText("MIN " + MK.fmtK(A.min.v), bx0, axisY - bandH / 2 - 11);
-      ctx.fillText("MID", midX, axisY - bandH / 2 - 11);
-      ctx.fillText("MAX " + MK.fmtK(A.max.v), bx1, axisY - bandH / 2 - 11);
+      ctx.fillStyle = C.dim; ctx.font = MK.font(12);
+      ctx.fillText("Min " + MK.fmtK(A.min.v), bx0, axisY - bandH / 2 - 14);
+      ctx.fillText("Mid", midX, axisY - bandH / 2 - 14);
+      ctx.fillText("Max " + MK.fmtK(A.max.v), bx1, axisY - bandH / 2 - 14);
+
+      /* forces, revealed while holding the number */
+      var mx = X(disp, w);
+      if (dragging) {
+        function force(fx, y, color, k) {
+          var strength = MK.clamp(Math.abs(fx - mx) / (w * 0.3) * k, 0, 1);
+          if (strength < 0.02) return;
+          ctx.strokeStyle = color;
+          ctx.globalAlpha = 0.25 + strength * 0.55;
+          ctx.lineWidth = 1 + strength;
+          ctx.beginPath(); ctx.moveTo(mx, y); ctx.lineTo(fx, y); ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
+        force(X(A.target.v, w), axisY - 8, C.blue, 1.0);
+        force(X(A.pMed.v, w), axisY + 8, "rgba(245,245,247,.7)", 1.0);
+        force(X(A.ask.v, w), axisY + 16, C.amber, 0.6);
+      }
 
       /* market target */
-      var tx = X(A.target.v);
-      ctx.strokeStyle = C.market; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(tx, axisY - bandH / 2 - 24); ctx.lineTo(tx, axisY + bandH / 2 + 4); ctx.stroke();
-      ctx.fillStyle = C.market; ctx.font = MK.font.mono(9.5, 700);
-      ctx.fillText("MKT P" + S.pct, tx, axisY - bandH / 2 - 30);
+      var tx = X(A.target.v, w);
+      ctx.strokeStyle = C.blue; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(tx, axisY - bandH / 2 - 26); ctx.lineTo(tx, axisY + bandH / 2 + 2); ctx.stroke();
+      ctx.fillStyle = C.blue; ctx.font = MK.font(12, 600);
+      ctx.fillText("Market P" + S.pct, tx, axisY - bandH / 2 - 34);
 
       /* ask */
-      var ax = X(A.ask.v);
+      var ax = X(A.ask.v, w);
       ctx.fillStyle = C.amber;
-      ctx.beginPath(); ctx.moveTo(ax, axisY + bandH / 2 + 4); ctx.lineTo(ax - 5, axisY + bandH / 2 + 12); ctx.lineTo(ax + 5, axisY + bandH / 2 + 12); ctx.closePath(); ctx.fill();
-      ctx.font = MK.font.mono(9);
-      ctx.fillText("ASK", ax, axisY + bandH / 2 + 24);
+      ctx.beginPath(); ctx.moveTo(ax, axisY + bandH / 2 + 4); ctx.lineTo(ax - 4.5, axisY + bandH / 2 + 12); ctx.lineTo(ax + 4.5, axisY + bandH / 2 + 12); ctx.closePath(); ctx.fill();
+      ctx.font = MK.font(12);
+      ctx.fillText("Ask", ax, axisY + bandH / 2 + 26);
 
-      /* peers */
-      ctx.fillStyle = "rgba(243,236,224,.42)";
+      /* peers (compressed on short canvases so labels never collide) */
+      var ps = h < 215 ? 0.72 : 1;
+      ctx.fillStyle = "rgba(245,245,247,.34)";
       peersA.forEach(function (p, i) {
-        var px = X(p.v), py = axisY + bandH / 2 + 34 + (i % 3) * 9;
-        ctx.beginPath(); ctx.arc(px, py, 3, 0, Math.PI * 2); ctx.fill();
+        var px = X(p.v, w), py = axisY + bandH / 2 + (40 + (i % 3) * 9) * ps;
+        ctx.beginPath(); ctx.arc(px, py, 2.6, 0, 6.2832); ctx.fill();
       });
-      var pmx = X(A.pMed.v);
-      ctx.strokeStyle = "rgba(243,236,224,.5)"; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(pmx, axisY + bandH / 2 + 28); ctx.lineTo(pmx, axisY + bandH / 2 + 58); ctx.stroke();
-      ctx.fillStyle = C.faint; ctx.textAlign = "left";
-      ctx.fillText("PEERS · " + S.level + " · " + GEO_NAME[S.geo].toUpperCase(), Math.min(X(peersA[0].v), w - 190), axisY + bandH / 2 + 74);
+      var pmx = X(A.pMed.v, w);
+      ctx.strokeStyle = "rgba(245,245,247,.45)"; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(pmx, axisY + bandH / 2 + 34 * ps); ctx.lineTo(pmx, axisY + bandH / 2 + 64 * ps); ctx.stroke();
+      ctx.fillStyle = C.dim; ctx.textAlign = "left"; ctx.font = MK.font(12);
+      ctx.fillText("Peers — " + S.level + " · " + GEO_NAME[S.geo], Math.min(X(peersA[0].v, w), w - 170), axisY + bandH / 2 + 82 * ps);
 
-      /* recommendation marker */
-      var rx = X(A.rec.v);
-      var recCol = A.rec.v > A.max.v * 1.001 ? C.amber : A.rec.v < A.min.v ? C.low : C.ink;
+      /* the recommendation */
+      var over = disp > A.max.v * 1.001, under = disp < A.min.v * 0.999;
+      var recCol = over ? C.amber : under ? C.low : C.ink;
       ctx.strokeStyle = recCol; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(rx, axisY - bandH / 2 - 8); ctx.lineTo(rx, axisY + bandH / 2 + 8); ctx.stroke();
-      ctx.beginPath(); ctx.arc(rx, axisY, 9, 0, Math.PI * 2);
+      ctx.beginPath(); ctx.moveTo(mx, axisY - bandH / 2 - 6); ctx.lineTo(mx, axisY + bandH / 2 + 6); ctx.stroke();
+      ctx.beginPath(); ctx.arc(mx, axisY, hover || dragging ? 10 : 8, 0, 6.2832);
       ctx.fillStyle = recCol; ctx.fill();
-      ctx.beginPath(); ctx.arc(rx, axisY, 3, 0, Math.PI * 2);
-      ctx.fillStyle = "#1B1712"; ctx.fill();
-      ctx.font = MK.font.mono(13, 700); ctx.fillStyle = recCol; ctx.textAlign = "center";
-      ctx.fillText(MK.fmt$(A.rec.v), MK.clamp(rx, 64, w - 64), axisY - bandH / 2 - 44);
+      ctx.beginPath(); ctx.arc(mx, axisY, 2.6, 0, 6.2832);
+      ctx.fillStyle = C.plate; ctx.fill();
 
-      /* live number in the verdict panel follows the spring */
-      if (lvBase) lvBase.textContent = MK.fmt$(A.rec.v);
+      /* the number and its meta follow the physical object */
+      if (lvBase) lvBase.textContent = MK.fmt$(disp);
+      if (lvMeta) lvMeta.textContent = metaFor(disp);
+      if (lvBase) {
+        var numCls = "lab-number " + (over ? "is-exception" : under ? "is-low" : dragging ? "" : vd.cls);
+        if (lvBase.parentElement.className !== numCls) lvBase.parentElement.className = numCls;
+      }
 
-      return busy;
+      return busy || dragging;
+    });
+    if (!inst) return;
+
+    MK.trackPointer(inst, {
+      down: function (p) {
+        var mx = X(disp, inst.w), axisY = inst.h * 0.40;
+        if (Math.abs(p.x - mx) < 30 && Math.abs(p.y - axisY) < 50) {
+          dragging = true; vel = 0;
+          inst.canvas.style.cursor = "grabbing";
+          return true;
+        }
+        return false;
+      },
+      move: function (p) {
+        if (dragging) {
+          disp = MK.clamp(VAL(p.x, inst.w), A.lo.v, A.hi.v);
+        } else {
+          var mx = X(disp, inst.w);
+          hover = Math.abs(p.x - mx) < 30 && Math.abs(p.y - inst.h * 0.40) < 50;
+          inst.canvas.style.cursor = hover ? "grab" : "default";
+        }
+      },
+      up: function () {
+        if (!dragging) return;
+        dragging = false;
+        inst.canvas.style.cursor = hover ? "grab" : "default";
+        if (disp > M.max * 1.005) {
+          host.dataset.exception = "1";
+          live.textContent = "Released above range max — exception territory. The model pulls it back to " + MK.fmt$(M.rec) + ".";
+        } else {
+          delete host.dataset.exception;
+          live.textContent = "Released. The evidence settles it at " + MK.fmt$(M.rec) + ".";
+        }
+      },
+      leave: function () { hover = false; }
+    });
+
+    /* keyboard access on the canvas */
+    inst.canvas.tabIndex = 0;
+    inst.canvas.setAttribute("aria-label", "Draggable recommendation. Arrow keys nudge it; it springs back to the model.");
+    MK.on(inst.canvas, "keydown", function (e) {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        disp += (e.key === "ArrowRight" ? 1 : -1) * (A.max.v - A.min.v) * 0.03;
+        vel = 0;
+        inst.wake();
+      }
     });
 
     /* ------------- controls ------------- */
@@ -216,7 +300,7 @@
           btns.forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
           b.setAttribute("aria-pressed", "true");
           S[key] = b.dataset.v;
-          apply();
+          apply(true);
         });
       });
     }
@@ -224,10 +308,10 @@
     seg("labGeo", "geo");
     seg("labScarce", "scarce");
     var pct = document.getElementById("labPct");
-    if (pct) MK.on(pct, "input", function () { S.pct = +pct.value; apply(); });
+    if (pct) MK.on(pct, "input", function () { S.pct = +pct.value; apply(false); });
     var ask = document.getElementById("labAsk");
-    if (ask) MK.on(ask, "input", function () { S.askT = ask.value / 1000; apply(); });
+    if (ask) MK.on(ask, "input", function () { S.askT = ask.value / 1000; apply(false); });
 
-    apply();
+    apply(false);
   });
 })();

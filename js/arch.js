@@ -1,35 +1,29 @@
-/* Exhibit B — job architecture: disorder → families → lattice.
-   417 title-nodes resolve into 12 families × 6 levels. Illustrative. */
+/* 02 · Job architecture — disorder resolves as you scroll.
+   417 title-nodes → 12 families × 6 levels. Native scroll drives it. */
 (function () {
   "use strict";
   MK.ready(function () {
     var host = document.getElementById("archCanvasHost");
-    var scrub = document.getElementById("archScrub");
-    if (!host || !scrub) return;
+    var runway = document.getElementById("archRunway");
+    var caption = document.getElementById("archCaption");
+    if (!host || !runway) return;
 
-    var FAMS = ["SALES","SALES ENG","MARKETING","CUST SUCCESS","RENEWALS","PARTNERS",
-                "SALES OPS","ENABLEMENT","DEAL DESK","ANALYTICS","PROGRAMS","COMMS"];
-    var LVLS = ["IC1","IC2","IC3","IC4","M1","M2"];
-    var LVL_W = [0.26,0.24,0.20,0.15,0.09,0.06];
+    var FAMS = ["Sales", "Sales eng", "Marketing", "Success", "Renewals", "Partners",
+                "Ops", "Enablement", "Deal desk", "Analytics", "Programs", "Comms"];
+    var LVLS = ["IC1", "IC2", "IC3", "IC4", "M1", "M2"];
+    var LVL_W = [0.26, 0.24, 0.20, 0.15, 0.09, 0.06];
     var COUNT = 417, DUPS = 46;
 
     var rnd = MK.rng(1207);
     var nodes = [];
     (function build() {
-      /* real nodes */
       var per = [];
-      for (var f = 0; f < 12; f++) {
-        for (var l = 0; l < 6; l++) {
-          var n = Math.max(1, Math.round((COUNT - DUPS) / 12 * LVL_W[l] + (rnd() - 0.5) * 2));
-          per.push({ f: f, l: l, n: n });
-        }
-      }
+      for (var f = 0; f < 12; f++)
+        for (var l = 0; l < 6; l++)
+          per.push({ f: f, l: l, n: Math.max(1, Math.round((COUNT - DUPS) / 12 * LVL_W[l] + (rnd() - 0.5) * 2)) });
       per.forEach(function (cell) {
-        for (var i = 0; i < cell.n; i++) {
-          nodes.push({ f: cell.f, l: cell.l, slot: i, dup: false });
-        }
+        for (var i = 0; i < cell.n; i++) nodes.push({ f: cell.f, l: cell.l, slot: i, dup: false });
       });
-      /* duplicate titles that merge into an existing slot */
       for (var d = 0; d < DUPS; d++) {
         var src = nodes[Math.floor(rnd() * nodes.length)];
         nodes.push({ f: src.f, l: src.l, slot: src.slot, dup: true });
@@ -39,15 +33,14 @@
         nd.delay = rnd() * 0.14;
         nd.spd = 3 + rnd() * 3.4;
         nd.jx = rnd(); nd.jy = rnd(); nd.jr = rnd();
+        nd.ph = rnd() * Math.PI * 2;
       });
     })();
 
-    /* three keyframe layouts, recomputed on resize */
-    var PAD = { l: 46, r: 16, t: 20, b: 44 };
+    var PAD = { l: 54, r: 20, t: 16, b: 40 };
     function layout(w, h) {
       var iw = w - PAD.l - PAD.r, ih = h - PAD.t - PAD.b;
       var r2 = MK.rng(88);
-      /* cluster centers for the "families emerge" phase — 4 × 3 blobs */
       var cx = [], cy = [];
       for (var f = 0; f < 12; f++) {
         cx.push(PAD.l + ((f % 4) + 0.5) / 4 * iw + (r2() - 0.5) * 30);
@@ -56,130 +49,131 @@
       var colW = iw / 12, rowH = ih / 6;
       var slotCols = Math.max(2, Math.floor((colW - 8) / 7));
       nodes.forEach(function (nd) {
-        /* K0 — disorder: clumpy scatter */
         var clump = Math.floor(nd.jr * 9);
         var ax = PAD.l + (0.08 + 0.84 * ((clump * 0.37) % 1)) * iw;
         var ay = PAD.t + (0.1 + 0.8 * ((clump * 0.61) % 1)) * ih;
-        nd.k0x = ax + (nd.jx - 0.5) * iw * 0.34;
-        nd.k0y = ay + (nd.jy - 0.5) * ih * 0.5;
-        nd.k0x = MK.clamp(nd.k0x, PAD.l + 4, w - PAD.r - 4);
-        nd.k0y = MK.clamp(nd.k0y, PAD.t + 4, h - PAD.b - 4);
-        /* K1 — family blobs */
+        nd.k0x = MK.clamp(ax + (nd.jx - 0.5) * iw * 0.34, PAD.l + 4, w - PAD.r - 4);
+        nd.k0y = MK.clamp(ay + (nd.jy - 0.5) * ih * 0.5, PAD.t + 4, h - PAD.b - 4);
         var ang = nd.jx * Math.PI * 2, rad = Math.sqrt(nd.jy) * Math.min(colW * 1.7, 58);
         nd.k1x = cx[nd.f] + Math.cos(ang) * rad;
         nd.k1y = cy[nd.f] + Math.sin(ang) * rad * 0.72;
-        /* K2 — the lattice */
         var sc = nd.slot % slotCols, sr = Math.floor(nd.slot / slotCols);
         nd.k2x = PAD.l + nd.f * colW + colW / 2 + (sc - (slotCols - 1) / 2) * 7;
         nd.k2y = PAD.t + nd.l * rowH + rowH / 2 + (sr - 1) * 7 - 2;
       });
     }
 
-    /* scrub value springs; node positions spring to targets */
-    var tRaw = 0, tS = 0, hoverFam = -1, played = false, userTouched = false, autoT = null;
+    var tRaw = 0, tS = 0, hoverFam = -1, time = 0;
+    var capState = -1;
+    var CAPS = [
+      "Four hundred seventeen titles, as found.",
+      "Families emerge.",
+      "Twelve families. Six levels."
+    ];
+    function syncCaption() {
+      var s = tS < 0.3 ? 0 : tS < 0.74 ? 1 : 2;
+      if (s === capState || !caption) return;
+      capState = s;
+      caption.classList.add("fade");
+      setTimeout(function () {
+        caption.textContent = CAPS[s];
+        caption.classList.remove("fade");
+      }, MK.reduced ? 0 : 220);
+    }
 
-    var phaseEl = document.getElementById("archPhase");
-    var famEl = document.getElementById("archFams");
-    var lvlEl = document.getElementById("archLevels");
-    function syncCounters() {
-      if (phaseEl) phaseEl.textContent = tS < 0.33 ? "Disorder" : tS < 0.72 ? "Families emerge" : "Architecture";
-      if (famEl) famEl.textContent = tS > 0.4 ? "12" : "—";
-      if (lvlEl) lvlEl.textContent = tS > 0.78 ? "6" : "—";
+    /* progress from native scroll through the runway */
+    function readScroll() {
+      var r = runway.getBoundingClientRect();
+      var span = r.height - innerHeight;
+      if (span <= 0) { tRaw = 1; return; }
+      tRaw = MK.clamp(-r.top / span, 0, 1);
     }
 
     var inst = MK.instrument(host, function (ctx, w, h, dt) {
       var busy = false;
-      /* auto-play once on first view */
-      if (autoT !== null && !userTouched) {
-        autoT += dt / 5.2;
-        tRaw = MK.ease(MK.clamp(autoT - 0.12, 0, 1));
-        scrub.value = Math.round(tRaw * 1000);
-        if (autoT >= 1.15) autoT = null; else busy = true;
-      }
-      tS += (tRaw - tS) * Math.min(1, dt * 5);
-      if (Math.abs(tRaw - tS) > 0.002) busy = true; else tS = tRaw;
-      if (MK.reduced) { tS = tRaw; }
-      syncCounters();
+      time += dt;
+      readScroll();
+      tS += (tRaw - tS) * Math.min(1, dt * 6);
+      if (Math.abs(tRaw - tS) > 0.0015) busy = true; else tS = tRaw;
+      if (MK.reduced) tS = 1;
+      syncCaption();
 
       var tA = MK.ease(MK.clamp(tS / 0.52, 0, 1));
-      var tB = MK.ease(MK.clamp((tS - 0.52) / 0.48, 0, 1));
-
-      /* frame rails */
-      ctx.strokeStyle = MK.lineSoft; ctx.lineWidth = 1;
+      var tB = MK.ease(MK.clamp((tS - 0.52) / 0.44, 0, 1));
 
       var iw = w - PAD.l - PAD.r, colW = iw / 12, rowH = (h - PAD.t - PAD.b) / 6;
 
-      /* lattice grid fades in */
+      /* lattice hairlines resolve in */
       if (tB > 0.15) {
         ctx.globalAlpha = MK.clamp((tB - 0.15) / 0.6, 0, 1);
+        ctx.strokeStyle = MK.ui.hair; ctx.lineWidth = 1;
         for (var l = 0; l <= 6; l++) {
           var gy = PAD.t + l * rowH;
           ctx.beginPath(); ctx.moveTo(PAD.l, gy); ctx.lineTo(w - PAD.r, gy); ctx.stroke();
         }
-        ctx.font = MK.font.mono(9); ctx.fillStyle = MK.ink3; ctx.textAlign = "right";
+        ctx.font = MK.font(12); ctx.fillStyle = MK.ui.ink3; ctx.textAlign = "right";
         LVLS.forEach(function (lv, i) {
-          ctx.fillText(lv, PAD.l - 8, PAD.t + i * rowH + rowH / 2 + 3);
+          ctx.fillText(lv, PAD.l - 12, PAD.t + i * rowH + rowH / 2 + 4);
         });
         ctx.globalAlpha = 1;
       }
 
-      /* nodes */
+      var idle = 1 - tA; /* disorder breathes a little */
       nodes.forEach(function (nd) {
-        var dA = MK.clamp((tA * 1.16 - nd.delay) / 1, 0, 1);
-        var dB = MK.clamp((tB * 1.16 - nd.delay) / 1, 0, 1);
-        var txp = MK.lerp(MK.lerp(nd.k0x, nd.k1x, MK.ease(dA)), nd.k2x, MK.ease(dB));
-        var typ = MK.lerp(MK.lerp(nd.k0y, nd.k1y, MK.ease(dA)), nd.k2y, MK.ease(dB));
+        var dA = MK.clamp((tA * 1.16 - nd.delay), 0, 1);
+        var dB = MK.clamp((tB * 1.16 - nd.delay), 0, 1);
+        var bx = nd.k0x + Math.sin(time * 0.4 + nd.ph) * 3 * idle;
+        var by = nd.k0y + Math.cos(time * 0.33 + nd.ph) * 2.4 * idle;
+        var txp = MK.lerp(MK.lerp(bx, nd.k1x, MK.ease(dA)), nd.k2x, MK.ease(dB));
+        var typ = MK.lerp(MK.lerp(by, nd.k1y, MK.ease(dA)), nd.k2y, MK.ease(dB));
         if (nd.x === 0 && nd.y === 0) { nd.x = txp; nd.y = typ; }
         nd.x += (txp - nd.x) * Math.min(1, dt * nd.spd);
         nd.y += (typ - nd.y) * Math.min(1, dt * nd.spd);
-        if (Math.abs(txp - nd.x) + Math.abs(typ - nd.y) > 0.3) busy = true;
+        if (Math.abs(txp - nd.x) + Math.abs(typ - nd.y) > 0.35) busy = true;
         if (MK.reduced) { nd.x = txp; nd.y = typ; }
+        if (idle > 0.02) busy = true;
 
-        var isHover = hoverFam === nd.f && tS > 0.85;
+        var isHover = hoverFam === nd.f && tS > 0.9;
         if (nd.dup) {
-          /* duplicates run warm until they merge into their slot */
-          var merged = tB > 0.9;
-          ctx.fillStyle = merged ? "rgba(29,25,21,.55)" : "rgba(200,64,26," + (0.75 - tB * 0.4) + ")";
-          if (merged) return; /* absorbed */
+          if (tB > 0.9) return; /* absorbed into its slot */
+          ctx.fillStyle = "rgba(217,130,11," + (0.65 - tB * 0.4).toFixed(3) + ")";
         } else {
-          ctx.fillStyle = isHover ? MK.accent : "rgba(29,25,21," + (0.38 + tB * 0.25) + ")";
+          ctx.fillStyle = isHover ? MK.ui.blue : "rgba(29,29,31," + (0.30 + tB * 0.26).toFixed(3) + ")";
         }
-        var s = isHover ? 4.6 : 3.6;
+        var s = isHover ? 4.4 : 3.4;
         ctx.fillRect(nd.x - s / 2, nd.y - s / 2, s, s);
       });
 
-      /* disorder annotation */
-      if (tS < 0.3) {
-        ctx.globalAlpha = 1 - tS / 0.3;
-        ctx.font = "italic 500 13px 'Fraunces', Georgia, serif";
-        ctx.fillStyle = MK.ink2; ctx.textAlign = "left";
-        ctx.fillText("the same job, four different titles", PAD.l + iw * 0.55, PAD.t + 16);
+      /* duplicate annotation, early */
+      if (tS < 0.24) {
+        ctx.globalAlpha = 1 - tS / 0.24;
+        ctx.font = MK.font(13);
+        ctx.fillStyle = MK.ui.ink3; ctx.textAlign = "left";
+        ctx.fillText("The same job, four different titles", PAD.l + iw * 0.56, PAD.t + 18);
         ctx.globalAlpha = 1;
       }
 
       /* family names */
-      if (tB > 0.5) {
-        ctx.globalAlpha = MK.clamp((tB - 0.5) / 0.4, 0, 1);
-        ctx.font = MK.font.mono(8.5); ctx.textAlign = "left";
+      if (tB > 0.55) {
+        ctx.globalAlpha = MK.clamp((tB - 0.55) / 0.4, 0, 1);
+        ctx.font = MK.font(11.5);
+        ctx.textAlign = "center";
+        var every = colW < 62 ? 2 : 1;
         FAMS.forEach(function (fm, i) {
-          var fx = PAD.l + i * colW + colW / 2;
-          ctx.save();
-          ctx.translate(fx + 3, h - PAD.b + 12);
-          ctx.rotate(0.5);
-          ctx.fillStyle = hoverFam === i ? MK.accent : MK.ink3;
-          ctx.fillText(fm, 0, 0);
-          ctx.restore();
+          if (i % every) return;
+          ctx.fillStyle = hoverFam === i ? MK.ui.blue : MK.ui.ink3;
+          ctx.fillText(fm, PAD.l + i * colW + colW / 2, h - PAD.b + 22);
         });
         ctx.globalAlpha = 1;
       }
 
       /* hover readout */
-      if (hoverFam >= 0 && tS > 0.85) {
-        var n = nodes.filter(function (nd) { return nd.f === hoverFam && !nd.dup; }).length;
-        ctx.font = MK.font.mono(10, 700); ctx.fillStyle = MK.accent; ctx.textAlign = "right";
-        ctx.fillText(FAMS[hoverFam] + " · " + n + " ROLES · 6 LEVELS", w - PAD.r, PAD.t - 6);
+      if (hoverFam >= 0 && tS > 0.9) {
+        var n = 0;
+        for (var i2 = 0; i2 < nodes.length; i2++) if (nodes[i2].f === hoverFam && !nodes[i2].dup) n++;
+        ctx.font = MK.font(12, 600); ctx.fillStyle = MK.ui.blue; ctx.textAlign = "right";
+        ctx.fillText(FAMS[hoverFam] + " — " + n + " roles, 6 levels", w - PAD.r, PAD.t + 4);
       }
-
       return busy;
     }, function (inst) {
       inst.onResize = function (w, h) { layout(w, h); };
@@ -187,34 +181,14 @@
     if (!inst) return;
     layout(inst.w || host.clientWidth, inst.h || host.clientHeight);
 
-    /* start auto-play when it first scrolls into view */
-    if ("IntersectionObserver" in window && !MK.reduced) {
-      var pio = new IntersectionObserver(function (es) {
-        es.forEach(function (e) {
-          if (e.isIntersecting && !played) {
-            played = true; autoT = 0; inst.wake();
-            pio.disconnect();
-          }
-        });
-      }, { threshold: 0.45 });
-      pio.observe(host);
-    } else {
-      tRaw = 1; scrub.value = 1000;
-    }
-
-    MK.on(scrub, "input", function () {
-      userTouched = true; autoT = null;
-      tRaw = scrub.value / 1000;
-      inst.wake();
-    });
-    MK.on(scrub, "pointerdown", function () { userTouched = true; autoT = null; });
+    MK.on(window, "scroll", function () { if (inst.visible) inst.wake(); }, { passive: true });
 
     MK.on(inst.canvas, "pointermove", function (e) {
       var r = inst.canvas.getBoundingClientRect();
       var x = e.clientX - r.left;
       var iw = inst.w - PAD.l - PAD.r;
       var f = Math.floor((x - PAD.l) / (iw / 12));
-      hoverFam = (f >= 0 && f < 12 && tS > 0.85) ? f : -1;
+      hoverFam = (f >= 0 && f < 12 && tS > 0.9) ? f : -1;
       inst.wake();
     }, { passive: true });
     MK.on(inst.canvas, "pointerleave", function () { hoverFam = -1; inst.wake(); });
