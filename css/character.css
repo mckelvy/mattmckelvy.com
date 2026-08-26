@@ -1,0 +1,109 @@
+/* ============================================================
+   Character experience layer — fully isolated.
+   Remove this file + js/character.js + the two includes in
+   index.html and the site returns to its previous state.
+   Depth system: rear char layers z:-1 (above the light field,
+   below all content); intro overlay z:200 (above nav).
+   ============================================================ */
+
+/* ---------- scene layers ---------- */
+.char-layer{
+  position:absolute;
+  z-index:-1;
+  pointer-events:none;
+  contain:layout style;
+}
+.char-layer canvas{display:block;will-change:transform;transform-origin:0 0}
+.char-fade{transition:opacity .3s ease}
+.char-hidden{opacity:0}
+
+/* the grind line — drawn in the same voice as the site's hairlines */
+.char-rail-line{
+  position:absolute;left:0;right:0;top:0;height:1px;
+  background:rgba(0,0,0,.12);
+  transform:scaleX(0);transform-origin:left center;
+  transition:transform .9s cubic-bezier(.25,.1,.25,1);
+}
+.char-rail-line.on{transform:scaleX(1)}
+
+/* tennis baseline */
+.char-baseline{
+  position:absolute;height:1px;background:rgba(0,0,0,.14);
+  opacity:0;transition:opacity .8s ease;
+}
+.char-baseline::after{
+  content:"";position:absolute;left:50%;top:-5px;width:1px;height:5px;
+  background:rgba(0,0,0,.14);
+}
+.char-baseline.on{opacity:1}
+
+/* ---------- intro overlay ---------- */
+.char-intro{
+  position:fixed;inset:0;z-index:200;
+  background:#FBFAF9;
+  overflow:hidden;
+  transition:opacity .45s ease;
+}
+.char-intro *{box-sizing:border-box}
+.char-intro.is-exiting{pointer-events:none}
+
+.char-env{position:absolute;inset:0}
+.char-env canvas{position:absolute;inset:0;width:100%;height:100%}
+
+.char-door-btn{
+  position:absolute;
+  background:none;border:0;padding:0;margin:0;cursor:pointer;
+  transition:filter .4s ease;
+}
+.char-door-btn img{display:block;width:100%;height:100%}
+.char-door-btn:hover{filter:brightness(1.03)}
+.char-door-btn:focus-visible{outline:2px solid #0066CC;outline-offset:6px;border-radius:2px}
+/* light under the door — barely there */
+.char-door-glow{
+  position:absolute;left:6%;right:6%;bottom:-6px;height:10px;
+  background:radial-gradient(50% 100% at 50% 0%, rgba(0,0,0,.18), rgba(0,0,0,0) 70%);
+  filter:blur(2px);
+}
+.char-door-shadow{
+  position:absolute;left:-4%;right:-14%;bottom:-7px;height:16px;
+  background:radial-gradient(55% 100% at 46% 0%, rgba(29,29,31,.16), rgba(29,29,31,0) 72%);
+  filter:blur(3px);
+}
+
+.char-come{
+  position:absolute;
+  font-size:clamp(40px,6vw,84px);
+  line-height:1.05;letter-spacing:-.015em;font-weight:600;color:#1D1D1F;
+  margin:0;
+}
+.char-hint{
+  position:absolute;
+  font-size:14px;letter-spacing:-.01em;color:#86868B;margin:0;
+  opacity:0;transition:opacity 1.2s ease;
+}
+.char-hint.on{opacity:1}
+
+.char-skip{
+  position:absolute;top:18px;right:max(22px,5vw);
+  font-family:inherit;font-size:12px;letter-spacing:-.008em;color:#86868B;
+  background:none;border:0;padding:8px 10px;cursor:pointer;
+  transition:color .25s;
+}
+.char-skip:hover{color:#1D1D1F}
+
+.char-stage{position:absolute;inset:0;pointer-events:none}
+.char-stage canvas,.char-stage img{
+  position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform;
+}
+#charStillDoor{transition:opacity .35s ease}
+
+/* reduced-motion / simple variant reveal */
+.char-intro.simple .char-stage{display:none}
+
+@media (max-width:640px){
+  .char-skip{top:10px}
+}
+
+@media print{
+  .char-intro,.char-layer,.char-rail-line,.char-baseline{display:none!important}
+}
