@@ -129,6 +129,11 @@
     MK.on(c, "pointerleave", function () { inst.pointer = null; if (handlers.leave) handlers.leave(); inst.wake(); });
   };
 
+  /* Instruments that live inside the case reader register a mount function
+     here and are built on demand, when their case is actually opened. */
+  MK.cases = {};
+  MK.register = function (name, mount) { MK.cases[name] = mount; };
+
   MK.ready = function (fn) {
     var did = false;
     function once() { if (!did) { did = true; fn(); } }
@@ -153,29 +158,20 @@
       var vh = innerHeight;
       function topOf(id) { var el = document.getElementById(id); return el ? el.getBoundingClientRect().top + scrollY : 0; }
       function bottomOf(id) { var el = document.getElementById(id); return el ? el.getBoundingClientRect().bottom + scrollY : 0; }
-      var labTop = topOf("case-offer"), labBot = bottomOf("case-offer");
-      /* the sticky architecture scene releases at runwayBottom - vh;
-         daylight holds until the visitor has scrolled past it */
-      var runB = bottomOf("archRunway");
+      var labTop = topOf("model"), labBot = bottomOf("model");
       var raw = [
         [0, "#FFFFFF"],
         [topOf("work") - vh * 0.6, "#FBFAF9"],
-        [topOf("case-drift") - vh * 0.4, "#F4F3F1"],
-        [bottomOf("case-drift") - vh * 0.6, "#F4F3F1"],
-        [topOf("case-architecture") - vh * 0.2, "#FAFAFA"],
-        [runB - vh - 200, "#F4F4F5"],
-        [runB - vh + 340, "#E8E8EB"],
-        [labTop - vh * 0.72, "#98989E"],
-        [labTop - vh * 0.42, "#3A3A3F"],
+        [topOf("work") + vh * 0.2, "#F5F4F2"],
+        [labTop - vh * 0.78, "#A6A6AC"],
+        [labTop - vh * 0.44, "#3E3E44"],
         [labTop - vh * 0.12, "#0C0C0D"],
         [labTop + vh * 0.4, "#060607"],
-        [labBot - vh * 0.9, "#060607"],
-        [labBot - vh * 0.25, "#3F3F44"],
-        [topOf("case-mna") - vh * 0.35, "#D9D9DD"],
-        [topOf("case-mna") + vh * 0.2, "#F2F2F4"],
-        [topOf("experience") - vh * 0.4, "#FBFBFC"],
-        [topOf("capabilities") - vh * 0.3, "#F6F6F7"],
-        [topOf("about") - vh * 0.3, "#F3F3F5"],
+        [labBot - vh * 0.85, "#060607"],
+        [labBot - vh * 0.22, "#3F3F44"],
+        [topOf("experience") - vh * 0.55, "#DEDEE2"],
+        [topOf("experience") - vh * 0.15, "#FAFAFB"],
+        [topOf("about") - vh * 0.3, "#F4F4F6"],
         [topOf("contact") - vh * 0.4, "#FBFBFC"],
         [document.body.scrollHeight, "#FFFFFF"]
       ];
@@ -230,9 +226,84 @@
   MK.ready(function () {
 
     /* legacy hashes from earlier versions */
-    var legacy = { home: "top", exp: "experience", skills: "capabilities", story: "experience", problems: "work" };
+    var legacy = {
+      home: "top", exp: "experience", skills: "experience", story: "experience",
+      problems: "work", capabilities: "experience", "case-offer": "model"
+    };
     var h = location.hash.replace("#", "");
     if (legacy[h]) location.replace("#" + legacy[h]);
+
+    /* ============ the case reader ============
+       The homepage shows trailers. The proof lives in here, and its
+       instruments are only built when someone actually asks for one. */
+    var reader = document.getElementById("reader"),
+        readerBody = document.getElementById("readerBody"),
+        readerClose = document.getElementById("readerClose"),
+        readerReturn = null, readerOpen = false, built = {};
+
+    var CASE_INSTRUMENT = { drift: "drift", arch: "arch", mna: "mna" };
+
+    function openCase(name, origin) {
+      var tpl = document.getElementById("case-" + name);
+      if (!tpl || !reader) return;
+      readerReturn = origin || document.activeElement;
+      readerBody.innerHTML = "";
+      readerBody.appendChild(tpl.content.cloneNode(true));
+      reader.hidden = false;
+      document.body.classList.add("reader-open");
+      /* the page behind is genuinely out of reach */
+      [].forEach.call(document.body.children, function (el) {
+        if (el === reader) return;
+        if (!el.hasAttribute("inert")) { el.setAttribute("inert", ""); el._readerHeld = true; }
+      });
+      requestAnimationFrame(function () {
+        reader.classList.add("is-open");
+        readerBody.scrollTop = 0;
+        var mount = MK.cases[CASE_INSTRUMENT[name]];
+        if (mount) { try { mount(readerBody); } catch (e) {} }
+        readerClose.focus({ preventScroll: true });
+      });
+      readerOpen = true;
+      try { history.replaceState(null, "", "#" + name); } catch (e) {}
+    }
+
+    function closeCase() {
+      if (!readerOpen) return;
+      readerOpen = false;
+      reader.classList.remove("is-open");
+      [].forEach.call(document.body.children, function (el) {
+        if (el._readerHeld) { el.removeAttribute("inert"); delete el._readerHeld; }
+      });
+      document.body.classList.remove("reader-open");
+      setTimeout(function () {
+        reader.hidden = true;
+        readerBody.innerHTML = "";
+        if (readerReturn && readerReturn.focus) readerReturn.focus({ preventScroll: true });
+      }, reduced ? 0 : 320);
+      try { history.replaceState(null, "", location.pathname); } catch (e) {}
+    }
+
+    if (reader) {
+      MK.on(readerClose, "click", closeCase);
+      MK.on(reader, "click", function (e) { if (e.target === reader) closeCase(); });
+      MK.on(window, "keydown", function (e) {
+        if (!readerOpen) return;
+        if (e.key === "Escape") { e.preventDefault(); closeCase(); }
+      });
+    }
+
+    [].forEach.call(document.querySelectorAll("[data-case]"), function (btn) {
+      MK.on(btn, "click", function () { openCase(btn.dataset.case, btn); });
+    });
+    [].forEach.call(document.querySelectorAll("[data-goto]"), function (btn) {
+      MK.on(btn, "click", function () {
+        var t = document.querySelector(btn.dataset.goto);
+        if (t) t.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+      });
+    });
+    /* a shared link straight into a case */
+    if (/^(drift|arch|mna)$/.test(h)) setTimeout(function () { openCase(h); }, 350);
+    MK.openCase = openCase;
 
     /* reveals */
     var reveals = [].slice.call(document.querySelectorAll(".reveal"));
@@ -268,13 +339,12 @@
 
     var ITEMS = [
       { t: "Top", k: "go", id: "#top", kw: "home hero start matthew mckelvy" },
-      { t: "Work — four problems", k: "go", id: "#work", kw: "cases problems selected" },
-      { t: "Benchmark drift", k: "go", id: "#case-drift", kw: "attrition apjc market benchmarking analysis 01" },
-      { t: "Job architecture", k: "go", id: "#case-architecture", kw: "ai leveling families titles workday taxonomy 02" },
-      { t: "Offer exceptions", k: "go", id: "#case-offer", kw: "modeling model lab offers simulator recruiting comp 03" },
-      { t: "Acquisition", k: "go", id: "#case-mna", kw: "splunk m&a mapping integration merger translation 04" },
-      { t: "Experience", k: "go", id: "#experience", kw: "cv resume roles cisco history gtm" },
-      { t: "Capabilities", k: "go", id: "#capabilities", kw: "skills tools excel tableau workday adaptive" },
+      { t: "Selected work", k: "go", id: "#work", kw: "cases problems four" },
+      { t: "The offer model", k: "go", id: "#model", kw: "offer exceptions range compa penetration market pricing decision 03" },
+      { t: "Market pricing — benchmark drift", k: "case", act: "drift", kw: "attrition apjc survey positioning analysis 01" },
+      { t: "Job architecture", k: "case", act: "arch", kw: "ai leveling families job profiles workday taxonomy 02" },
+      { t: "Acquisition — job mapping", k: "case", act: "mna", kw: "splunk m&a leveling integration translation 04" },
+      { t: "Experience", k: "go", id: "#experience", kw: "cv resume roles cisco history gtm capabilities skills tools" },
       { t: "About", k: "go", id: "#about", kw: "personal racquet pebble beach human off the clock" },
       { t: "Contact", k: "go", id: "#contact", kw: "email reach hire talk" },
       { t: "Download résumé", k: "pdf", act: "resume", kw: "cv download resume pdf" },
@@ -323,6 +393,8 @@
       if (it.k === "go") {
         var target = document.querySelector(it.id);
         if (target) target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+      } else if (it.k === "case") {
+        openCase(it.act);
       } else if (it.act === "resume") {
         var a = document.createElement("a"); a.href = "Matthew-McKelvy-Resume.pdf"; a.download = ""; a.click();
       } else if (it.act === "email") location.href = "mailto:mckelvymatthew@gmail.com";

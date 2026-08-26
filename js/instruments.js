@@ -119,8 +119,8 @@
   });
 
   /* ================= THE TRANSLATION LADDER ================= */
-  MK.ready(function () {
-    var host = document.getElementById("mnaHost");
+  MK.register("mna", function (root) {
+    var host = root.querySelector("#mnaHost");
     if (!host) return;
     host.classList.add("live");
     host.style.position = "relative";

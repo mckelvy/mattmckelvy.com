@@ -3,9 +3,10 @@
    Synthetic data. */
 (function () {
   "use strict";
-  MK.ready(function () {
-    var host = document.getElementById("driftCanvasHost");
+  MK.register("drift", function (root) {
+    var host = root.querySelector("#driftCanvasHost");
     if (!host) return;
+    var $ = function (id) { return root.querySelector("#" + id); };
 
     var N = 14;
     var AMER = [9.2,9.5,9.1,9.8,10.1,9.7,9.4,10.0,9.6,9.9,10.2,9.8,9.5,9.7];
@@ -27,11 +28,11 @@
     var drawT = { attr: 0, hypo: 0, mkt: 0, ovl: 0, recal: 0 };
 
     var READOUTS = [
-      "APJC annualized attrition climbs from about 10% to nearly 20% over ten quarters, while every other region holds.",
-      "Manager churn, tenure mix, engagement — all flat. The org chart isn't the story.",
-      "Range midpoints moved about +2% a year, on schedule. The APJC market moved nearly four times faster.",
-      "Lay the attrition curve over the pay gap: same shape, same timing. Not culture — pricing.",
-      "Ranges recalibrated to market. The gap closes, and projected attrition bends back toward baseline."
+      "Annualized attrition in one region climbs from about 10% to nearly 20% over ten quarters, while the others hold.",
+      "Manager churn, tenure mix and engagement stay flat throughout. None of them explains the pattern.",
+      "Range midpoints moved on the normal structure cycle, about 2% a year. Surveyed market rates in that labor market moved roughly three times faster.",
+      "The exits track the widening gap between structure and market. Association, not proof — but the competing explanations were already ruled out.",
+      "Ranges recalibrated to current survey data. The gap closes, and projected attrition returns toward the regional baseline."
     ];
 
     function setStep(s) {
@@ -45,10 +46,10 @@
       if (inst) inst.wake();
     }
 
-    var stepsEl = document.getElementById("driftSteps");
+    var stepsEl = $("driftSteps");
     var lis = stepsEl ? [].slice.call(stepsEl.children) : [];
-    var prev = document.getElementById("driftPrev"), next = document.getElementById("driftNext");
-    var count = document.getElementById("driftCount"), readout = document.getElementById("driftReadout");
+    var prev = $("driftPrev"), next = $("driftNext");
+    var count = $("driftCount"), readout = $("driftReadout");
     function syncUI() {
       lis.forEach(function (li, i) { li.classList.toggle("on", i === step); });
       if (count) count.textContent = (step + 1) + " of " + TOTAL;

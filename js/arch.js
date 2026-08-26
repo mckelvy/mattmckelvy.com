@@ -1,12 +1,13 @@
-/* 02 · Job architecture — disorder resolves as you scroll.
-   417 title-nodes → 12 families × 6 levels. Native scroll drives it. */
+/* 02 · Job architecture — disorder resolves into structure.
+   Title-nodes settle into an illustrative lattice of job families and
+   levels. Time-based: it plays once on open, and replays on request. */
 (function () {
   "use strict";
-  MK.ready(function () {
-    var host = document.getElementById("archCanvasHost");
-    var runway = document.getElementById("archRunway");
-    var caption = document.getElementById("archCaption");
-    if (!host || !runway) return;
+  MK.register("arch", function (root) {
+    var host = root.querySelector("#archCanvasHost");
+    var caption = root.querySelector("#archCaption");
+    var replay = root.querySelector("#archReplay");
+    if (!host) return;
 
     var FAMS = ["Sales", "Sales eng", "Marketing", "Success", "Renewals", "Partners",
                 "Ops", "Enablement", "Deal desk", "Analytics", "Programs", "Comms"];
@@ -66,12 +67,12 @@
     var tRaw = 0, tS = 0, hoverFam = -1, time = 0;
     var capState = -1;
     var CAPS = [
-      "Four hundred seventeen titles, as found.",
-      "Families emerge.",
-      "Twelve families. Six levels."
+      "Titles as found — duplicated, inconsistently levelled.",
+      "Related work gathers into job families.",
+      "Twelve families, six levels. Duplicates absorbed into a single profile."
     ];
     function syncCaption() {
-      var s = tS < 0.3 ? 0 : tS < 0.74 ? 1 : 2;
+      var s = tS < 0.32 ? 0 : tS < 0.93 ? 1 : 2;
       if (s === capState || !caption) return;
       capState = s;
       caption.classList.add("fade");
@@ -81,21 +82,22 @@
       }, MK.reduced ? 0 : 220);
     }
 
-    /* progress from native scroll through the runway */
-    function readScroll() {
-      var r = runway.getBoundingClientRect();
-      var span = r.height - innerHeight;
-      if (span <= 0) { tRaw = 1; return; }
-      tRaw = MK.clamp(-r.top / span, 0, 1);
-    }
+    /* time-based: the resolve plays itself, once, and can be replayed */
+    var playT = -0.15, playing = true;
+    var DUR = 4.6;
+    function restart() { playT = -0.1; playing = true; if (inst) inst.wake(); }
 
     var inst = MK.instrument(host, function (ctx, w, h, dt) {
       var busy = false;
       time += dt;
-      readScroll();
+      if (playing) {
+        playT += dt;
+        tRaw = MK.clamp(playT / DUR, 0, 1);
+        if (playT >= DUR) playing = false; else busy = true;
+      }
       tS += (tRaw - tS) * Math.min(1, dt * 6);
       if (Math.abs(tRaw - tS) > 0.0015) busy = true; else tS = tRaw;
-      if (MK.reduced) tS = 1;
+      if (MK.reduced) { tS = 1; tRaw = 1; playing = false; }
       syncCaption();
 
       var tA = MK.ease(MK.clamp(tS / 0.52, 0, 1));
@@ -181,7 +183,7 @@
     if (!inst) return;
     layout(inst.w || host.clientWidth, inst.h || host.clientHeight);
 
-    MK.on(window, "scroll", function () { if (inst.visible) inst.wake(); }, { passive: true });
+    if (replay) MK.on(replay, "click", restart);
 
     MK.on(inst.canvas, "pointermove", function (e) {
       var r = inst.canvas.getBoundingClientRect();
