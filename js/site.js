@@ -158,23 +158,18 @@
       var vh = innerHeight;
       function topOf(id) { var el = document.getElementById(id); return el ? el.getBoundingClientRect().top + scrollY : 0; }
       function bottomOf(id) { var el = document.getElementById(id); return el ? el.getBoundingClientRect().bottom + scrollY : 0; }
-      var labTop = topOf("model"), labBot = bottomOf("model");
+      /* v6: one light page. The travel is a whisper — paper warms
+         through the middle of the argument and clears again at the end. */
       var raw = [
         [0, "#FFFFFF"],
-        [topOf("work") - vh * 0.6, "#FBFAF9"],
-        [topOf("work") + vh * 0.2, "#F5F4F2"],
-        [labTop - vh * 0.78, "#A6A6AC"],
-        [labTop - vh * 0.44, "#3E3E44"],
-        [labTop - vh * 0.12, "#0C0C0D"],
-        [labTop + vh * 0.4, "#060607"],
-        [labBot - vh * 0.85, "#060607"],
-        [labBot - vh * 0.22, "#3F3F44"],
-        [topOf("experience") - vh * 0.55, "#DEDEE2"],
-        [topOf("experience") - vh * 0.15, "#FAFAFB"],
-        [topOf("about") - vh * 0.3, "#F4F4F6"],
-        [topOf("contact") - vh * 0.4, "#FBFBFC"],
+        [topOf("approach") - vh * 0.4, "#FFFFFF"],
+        [topOf("approach") + vh * 0.3, "#FBFAF9"],
+        [topOf("example") - vh * 0.2, "#F7F6F4"],
+        [topOf("experience") - vh * 0.3, "#FAFAFB"],
+        [topOf("contact") - vh * 0.4, "#FFFFFF"],
         [document.body.scrollHeight, "#FFFFFF"]
       ];
+      void bottomOf;
       raw.sort(function (a, b) { return a[0] - b[0]; });
       stops = raw.map(function (s) { return { y: s[0], c: hex(s[1]) }; });
     }
@@ -228,82 +223,12 @@
     /* legacy hashes from earlier versions */
     var legacy = {
       home: "top", exp: "experience", skills: "experience", story: "experience",
-      problems: "work", capabilities: "experience", "case-offer": "model"
+      problems: "experience", capabilities: "experience", "case-offer": "experience",
+      pov: "approach", work: "experience", model: "experience", about: "contact",
+      drift: "experience", arch: "experience", mna: "experience"
     };
     var h = location.hash.replace("#", "");
     if (legacy[h]) location.replace("#" + legacy[h]);
-
-    /* ============ the case reader ============
-       The homepage shows trailers. The proof lives in here, and its
-       instruments are only built when someone actually asks for one. */
-    var reader = document.getElementById("reader"),
-        readerBody = document.getElementById("readerBody"),
-        readerClose = document.getElementById("readerClose"),
-        readerReturn = null, readerOpen = false, built = {};
-
-    var CASE_INSTRUMENT = { drift: "drift", arch: "arch", mna: "mna" };
-
-    function openCase(name, origin) {
-      var tpl = document.getElementById("case-" + name);
-      if (!tpl || !reader) return;
-      readerReturn = origin || document.activeElement;
-      readerBody.innerHTML = "";
-      readerBody.appendChild(tpl.content.cloneNode(true));
-      reader.hidden = false;
-      document.body.classList.add("reader-open");
-      /* the page behind is genuinely out of reach */
-      [].forEach.call(document.body.children, function (el) {
-        if (el === reader) return;
-        if (!el.hasAttribute("inert")) { el.setAttribute("inert", ""); el._readerHeld = true; }
-      });
-      requestAnimationFrame(function () {
-        reader.classList.add("is-open");
-        readerBody.scrollTop = 0;
-        var mount = MK.cases[CASE_INSTRUMENT[name]];
-        if (mount) { try { mount(readerBody); } catch (e) {} }
-        readerClose.focus({ preventScroll: true });
-      });
-      readerOpen = true;
-      try { history.replaceState(null, "", "#" + name); } catch (e) {}
-    }
-
-    function closeCase() {
-      if (!readerOpen) return;
-      readerOpen = false;
-      reader.classList.remove("is-open");
-      [].forEach.call(document.body.children, function (el) {
-        if (el._readerHeld) { el.removeAttribute("inert"); delete el._readerHeld; }
-      });
-      document.body.classList.remove("reader-open");
-      setTimeout(function () {
-        reader.hidden = true;
-        readerBody.innerHTML = "";
-        if (readerReturn && readerReturn.focus) readerReturn.focus({ preventScroll: true });
-      }, reduced ? 0 : 320);
-      try { history.replaceState(null, "", location.pathname); } catch (e) {}
-    }
-
-    if (reader) {
-      MK.on(readerClose, "click", closeCase);
-      MK.on(reader, "click", function (e) { if (e.target === reader) closeCase(); });
-      MK.on(window, "keydown", function (e) {
-        if (!readerOpen) return;
-        if (e.key === "Escape") { e.preventDefault(); closeCase(); }
-      });
-    }
-
-    [].forEach.call(document.querySelectorAll("[data-case]"), function (btn) {
-      MK.on(btn, "click", function () { openCase(btn.dataset.case, btn); });
-    });
-    [].forEach.call(document.querySelectorAll("[data-goto]"), function (btn) {
-      MK.on(btn, "click", function () {
-        var t = document.querySelector(btn.dataset.goto);
-        if (t) t.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
-      });
-    });
-    /* a shared link straight into a case */
-    if (/^(drift|arch|mna|pov)$/.test(h)) setTimeout(function () { openCase(h); }, 350);
-    MK.openCase = openCase;
 
     /* reveals */
     var reveals = [].slice.call(document.querySelectorAll(".reveal"));
@@ -338,17 +263,11 @@
     if (!wrap) return;
 
     var ITEMS = [
-      { t: "Top", k: "go", id: "#top", kw: "home hero start matthew mckelvy" },
-      { t: "Point of view — paying for AI skills", k: "go", id: "#pov", kw: "ai skills premium fluency scarcity role transformation new work architecture" },
-      { t: "The full framework — AI skills & pay", k: "case", act: "pov", kw: "framework research notes governance radar fde forward deployed engineer benchmark" },
-      { t: "Selected work", k: "go", id: "#work", kw: "cases problems four" },
-      { t: "The offer model", k: "go", id: "#model", kw: "offer exceptions range compa penetration market pricing decision 03" },
-      { t: "Market pricing — benchmark drift", k: "case", act: "drift", kw: "attrition apjc survey positioning analysis 01" },
-      { t: "Job architecture", k: "case", act: "arch", kw: "ai leveling families job profiles workday taxonomy 02" },
-      { t: "Acquisition — job mapping", k: "case", act: "mna", kw: "splunk m&a leveling integration translation 04" },
-      { t: "Experience", k: "go", id: "#experience", kw: "cv resume roles cisco history gtm capabilities skills tools" },
-      { t: "About", k: "go", id: "#about", kw: "personal racquet pebble beach human off the clock" },
-      { t: "Contact", k: "go", id: "#contact", kw: "email reach hire talk" },
+      { t: "Top", k: "go", id: "#top", kw: "home hero start matthew mckelvy ai skills pay" },
+      { t: "How I'd approach it", k: "go", id: "#approach", kw: "approach steps work changed market smallest change decision" },
+      { t: "Forward Deployed Engineer", k: "go", id: "#example", kw: "example fde emerging role benchmark job family level" },
+      { t: "Experience", k: "go", id: "#experience", kw: "cv resume cisco gtm architecture benchmarking tools proof" },
+      { t: "Contact", k: "go", id: "#contact", kw: "email reach talk close" },
       { t: "Download résumé", k: "pdf", act: "resume", kw: "cv download resume pdf" },
       { t: "Email", k: "act", act: "email", kw: "mail contact reach out" },
       { t: "LinkedIn", k: "act", act: "li", kw: "linkedin profile social" }
@@ -395,8 +314,6 @@
       if (it.k === "go") {
         var target = document.querySelector(it.id);
         if (target) target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
-      } else if (it.k === "case") {
-        openCase(it.act);
       } else if (it.act === "resume") {
         var a = document.createElement("a"); a.href = "Matthew-McKelvy-Resume.pdf"; a.download = ""; a.click();
       } else if (it.act === "email") location.href = "mailto:mckelvymatthew@gmail.com";
