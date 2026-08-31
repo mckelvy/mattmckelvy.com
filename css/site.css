@@ -209,6 +209,101 @@ main{position:relative}
 .step-count{font-size:12px;color:var(--ink-3);letter-spacing:-.005em}
 #driftReadout{margin-top:10px;min-height:2.9em;max-width:60ch}
 
+/* ---------------- point of view ---------------- */
+.scene .container.pov-beat{margin-top:clamp(90px,13vh,150px)}
+.outcome em{font-style:normal;color:var(--ink)}
+.pov-axis{
+  display:flex;justify-content:space-between;gap:18px;
+  margin-top:clamp(44px,6vh,76px);
+  font-size:12.5px;letter-spacing:-.005em;color:var(--ink-2);
+}
+.pov-axis .ax-to{display:inline-flex;align-items:center;gap:6px}
+.pov-axis svg{width:11px;height:11px}
+.stages{
+  list-style:none;
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  margin-top:10px;border-top:1px solid var(--hair);
+}
+.stage{padding:24px 26px 8px 0}
+.stage + .stage{border-left:1px solid var(--hair);padding-left:26px}
+.st-no{font-size:13px;letter-spacing:-.005em;color:var(--ink-3)}
+.st-name{
+  display:block;margin-top:6px;font-size:19px;font-weight:600;
+  letter-spacing:-.012em;color:var(--ink);
+}
+.st-what{
+  display:block;margin-top:10px;font-size:14px;line-height:1.5;
+  letter-spacing:-.01em;color:var(--ink-2);
+}
+.st-pay{
+  display:block;margin-top:12px;font-size:15px;line-height:1.5;
+  letter-spacing:-.012em;color:var(--ink-2);
+}
+.st-pay b{color:var(--ink);font-weight:600}
+.pov-note{
+  margin-top:26px;font-size:13.5px;line-height:1.6;letter-spacing:-.006em;
+  color:var(--ink-2);max-width:74ch;
+}
+.pov-note .link{font-size:inherit}
+
+/* the decomposition — work on the left, market on the right */
+.decomp{margin-top:clamp(40px,6vh,64px);border-top:1px solid var(--hair)}
+.decomp-head{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;
+  padding:14px 0 4px;font-size:12px;letter-spacing:-.005em;color:var(--ink-3);
+}
+.decomp-head span:last-child{text-align:right}
+.decomp-row{
+  display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  gap:18px;align-items:baseline;
+  padding:15px 0;border-bottom:1px solid var(--hair);
+}
+.dc-work{font-size:16px;font-weight:600;letter-spacing:-.012em;color:var(--ink)}
+.dc-lead{
+  align-self:center;height:1px;min-width:40px;flex:1;
+  background-image:linear-gradient(90deg,var(--hair) 0 2px,transparent 2px 7px);
+  background-size:7px 1px;background-repeat:repeat-x;
+}
+.dc-mkt{font-size:15px;letter-spacing:-.012em;color:var(--ink-2);text-align:right}
+.decomp-close{margin-top:20px;font-size:15px;line-height:1.55;letter-spacing:-.012em;color:var(--ink-2);max-width:62ch}
+
+/* the operating model — one line of verbs */
+.op-seq{
+  display:flex;flex-wrap:wrap;column-gap:16px;row-gap:6px;align-items:baseline;
+  margin-top:clamp(36px,5vh,56px);
+  font-size:clamp(20px,2.2vw,27px);font-weight:600;letter-spacing:-.013em;color:var(--ink);
+}
+.op-seq .sep{color:var(--ink-3);font-weight:400;font-size:.8em}
+.op-line{
+  margin-top:18px;font-size:15px;line-height:1.55;letter-spacing:-.012em;
+  color:var(--ink-2);max-width:66ch;
+}
+.pov-close{margin-top:clamp(48px,7vh,80px)}
+.pov-close .outcome{margin-top:0}
+.pov-cta{margin-top:26px;font-size:17px}
+
+/* reader: the framework's research notes */
+.rd-sources{list-style:none;margin-top:14px}
+.rd-sources li{
+  padding:10px 0;border-bottom:1px solid var(--hair);
+  font-size:13.5px;line-height:1.55;letter-spacing:-.006em;color:var(--ink-2);
+}
+.rd-sources li:last-child{border-bottom:0}
+.rd-sources a{color:var(--link);text-decoration:none}
+.rd-sources a:hover{text-decoration:underline}
+.rd-seq{list-style:none;counter-reset:seq;margin-top:8px}
+.rd-seq li{
+  counter-increment:seq;
+  display:grid;grid-template-columns:44px minmax(0,1fr);gap:0 14px;
+  padding:16px 0;border-bottom:1px solid var(--hair);
+}
+.rd-seq li::before{
+  content:"0" counter(seq);
+  font-size:13px;color:var(--ink-3);font-variant-numeric:tabular-nums;padding-top:3px;
+}
+.rd-seq b{font-size:17px;font-weight:600;letter-spacing:-.012em;color:var(--ink)}
+.rd-seq p{grid-column:2;margin-top:5px;font-size:15px;line-height:1.5;letter-spacing:-.012em;color:var(--ink-2);max-width:58ch}
+
 /* ---------------- selected work: trailers ---------------- */
 .trailers{
   display:grid;grid-template-columns:1fr 1fr;
@@ -348,7 +443,11 @@ main{position:relative}
 .mna-viz{height:min(420px,54vh)}
 
 /* ---------------- contact / footer ---------------- */
-.contact-mail{margin-top:clamp(36px,5vh,56px);font-size:clamp(24px,3vw,40px);font-weight:600;letter-spacing:-.015em}
+.contact-mail{
+  margin-top:clamp(36px,5vh,56px);
+  font-size:clamp(19px,6.4vw,40px);
+  font-weight:600;letter-spacing:-.015em;overflow-wrap:anywhere;
+}
 .contact-mail .link{gap:0}
 .contact-row{display:flex;gap:32px;flex-wrap:wrap;margin-top:26px;font-size:17px}
 .foot{
@@ -484,6 +583,11 @@ body.reader-open{overflow:hidden}
 
 /* ---------------- responsive ---------------- */
 @media (max-width:900px){
+  .stages{grid-template-columns:1fr 1fr}
+  .stage{padding:22px 20px 8px 0}
+  .stage + .stage{border-left:0;padding-left:0}
+  .stage:nth-child(even){border-left:1px solid var(--hair);padding-left:20px}
+  .stage:nth-child(n+3){border-top:1px solid var(--hair)}
   .drift{grid-template-columns:1fr}
   .drift-steps{display:flex;flex-wrap:wrap;gap:0 22px;border-bottom:1px solid var(--hair);padding-bottom:10px}
   .drift-steps li{border-top:0;padding:8px 0}
@@ -495,7 +599,16 @@ body.reader-open{overflow:hidden}
 @media (max-width:640px){
   :root{--pad:22px}
   .nav-links{gap:18px}
-  .nav-links a:nth-child(2),.nav-links a:nth-child(3){display:none}
+  .nav-links a:nth-child(2),.nav-links a:nth-child(3),.nav-links a:nth-child(4){display:none}
+  .stages{grid-template-columns:1fr}
+  .stage:nth-child(even){border-left:0;padding-left:0}
+  .stage + .stage{border-top:1px solid var(--hair)}
+  .decomp-head{grid-template-columns:1fr}
+  .decomp-head span:last-child{display:none}
+  .decomp-row{grid-template-columns:1fr;gap:3px;padding:13px 0}
+  .dc-lead{display:none}
+  .dc-mkt{text-align:left;font-size:14px}
+  .dc-mkt::before{content:"\2192\00a0";color:var(--ink-3)}
   .hero{padding-top:96px}
   .hero-actions{gap:22px}
   .statement{font-size:clamp(40px,11vw,52px)}

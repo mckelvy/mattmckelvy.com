@@ -302,7 +302,7 @@
       });
     });
     /* a shared link straight into a case */
-    if (/^(drift|arch|mna)$/.test(h)) setTimeout(function () { openCase(h); }, 350);
+    if (/^(drift|arch|mna|pov)$/.test(h)) setTimeout(function () { openCase(h); }, 350);
     MK.openCase = openCase;
 
     /* reveals */
@@ -339,6 +339,8 @@
 
     var ITEMS = [
       { t: "Top", k: "go", id: "#top", kw: "home hero start matthew mckelvy" },
+      { t: "Point of view — paying for AI skills", k: "go", id: "#pov", kw: "ai skills premium fluency scarcity role transformation new work architecture" },
+      { t: "The full framework — AI skills & pay", k: "case", act: "pov", kw: "framework research notes governance radar fde forward deployed engineer benchmark" },
       { t: "Selected work", k: "go", id: "#work", kw: "cases problems four" },
       { t: "The offer model", k: "go", id: "#model", kw: "offer exceptions range compa penetration market pricing decision 03" },
       { t: "Market pricing — benchmark drift", k: "case", act: "drift", kw: "attrition apjc survey positioning analysis 01" },
