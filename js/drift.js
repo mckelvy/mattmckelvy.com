@@ -24,11 +24,11 @@
     var drawT = { attr: 0, pat: 0, mkt: 0, gap: 0, recal: 0 };
 
     var READOUTS = [
-      "Attrition in one region climbed while the others held. That was the signal, not yet the finding.",
-      "The exits cut across go-to-market, operations, and engineering inside one geography, which pointed toward a market explanation rather than a team-level one.",
-      "Range midpoints for that market, re-plotted against surveyed market movement. Midpoints had moved on the annual structure adjustment. The market had moved faster, and the gap compounded.",
-      "The market reference ranges for those roles had drifted below peer benchmarks, and the attrition traced to that gap. An association read with judgment, not a proof of cause.",
-      "Recommendation: recalibrate the ranges to current peer benchmarks, starting with the roles furthest from market, so leadership could see where compensation review was most warranted."
+      "Attrition in one region climbed while the others held. That was the signal. It was not yet the answer.",
+      "The exits cut across go-to-market, operations, and engineering, all in one geography. Three functions with the same problem usually share a market, not a manager.",
+      "Range midpoints for that market, re-plotted against the peer median. Midpoints had moved on the annual structure adjustment. The market had moved faster, and the gap compounded.",
+      "The market reference ranges for those roles had drifted below the peer median, and the attrition traced to that gap. Correlation, not proof, but the strongest explanation on the table.",
+      "Recommendation: recalibrate the ranges to the current peer median, then review the incumbents against the new midpoints, starting where the gap was widest. A range is a structure. Retention is decided one paycheck at a time."
     ];
 
     function setStep(s) {
@@ -153,7 +153,7 @@
           ctx.beginPath(); ctx.moveTo(M.l, yM(g)); ctx.lineTo(w - M.r, yM(g)); ctx.stroke();
           label(ctx, String(g), M.l - 10, yM(g) + 4, MK.ui.ink3, 12, "right");
         });
-        label(ctx, "Pay, indexed to year 1", M.l, M.t - 10, MK.ui.ink3, 12);
+        label(ctx, "Midpoint vs peer median, indexed", M.l, M.t - 10, MK.ui.ink3, 12);
         label(ctx, "Year 1", xAt(0, w), h - 8);
         label(ctx, "Year 3", xAt(N - 1, w), h - 8, MK.ui.ink3, 12, "right");
 
@@ -176,12 +176,12 @@
         drawLine(ctx, MKT, w, yM, dm, { color: MK.ui.blue, width: 2, alpha: P.mkt });
         ctx.globalAlpha = P.mkt;
         if (dm > 0.96) {
-          label(ctx, "Market P50", w - M.r + 10, yM(MKT[N - 1]) + 4, MK.ui.blue, 12, "left", 600);
+          label(ctx, "Peer median", w - M.r + 10, yM(MKT[N - 1]) + 4, MK.ui.blue, 12, "left", 600);
           label(ctx, "Range midpoint", w - M.r + 10, yM(midNow[N - 1]) + 4, MK.ui.ink, 12, "left", 600);
           if (P.recal < 0.5) {
             var gapY = (yM(MKT[N - 1]) + yM(midNow[N - 1])) / 2;
             ctx.globalAlpha = P.mkt * (1 - recalP * 2);
-            label(ctx, P.gap > 0.7 ? "Below peer benchmarks" : "The gap", xAt(N - 1, w) - 14, gapY + 4, MK.ui.amber, 13, "right", 600);
+            label(ctx, P.gap > 0.7 ? "Below the peer median" : "The gap", xAt(N - 1, w) - 14, gapY + 4, MK.ui.amber, 13, "right", 600);
             ctx.globalAlpha = P.mkt;
           }
         }

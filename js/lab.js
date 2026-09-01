@@ -86,14 +86,14 @@
         v.text = "Above the range maximum by " + MK.fmt$(S.ote - m.max) + ", at " + v.mp + " of the market composite. It needs approval before the offer goes out. The case is usually market data, scarcity, or scope, and it is worth documenting so the next one is comparable.";
       } else if (S.ote > m.zoneHi) {
         v.flag = "Above guideline (exception)"; v.tone = "watch";
-        v.text = "Inside the range but above the " + m.seg.name + " third. Defensible where the market or a scarce skill justifies it. Check the " +
+        v.text = "Inside the range but above the " + m.seg.third + " third, where " + m.seg.who + " would usually be placed. Defensible where the market or a scarce skill justifies it. Check the " +
           m.peers.length + " incumbents first" + (v.peersBelow >= 6 ? ". This would land above most of them, and compression is the risk you inherit." : ".");
       } else if (S.ote < m.zoneLo) {
         v.flag = "Below guideline"; v.tone = "watch";
-        v.text = "Inside the range but below where a " + m.seg.name + " hire would normally be placed. It may be accepted, and it tends to reappear as an off-cycle correction within the year.";
+        v.text = "Inside the range but below the " + m.seg.third + " third, where " + m.seg.who + " would usually be placed. It may be accepted, and it tends to come back as an off-cycle correction within the year.";
       } else {
         v.flag = "Within guidelines"; v.tone = "ok";
-        v.text = "Sits in the " + m.seg.name + " third of the range, against a market target of " +
+        v.text = "Sits in the " + m.seg.third + " third of the range, where " + m.seg.who + " is usually placed, against a market target of " +
           D.targets[S.tgt].name + ". Defensible on the structure, the market, and the internal comparison, which is what makes it repeatable for the next one.";
       }
       return v;
@@ -162,8 +162,8 @@
       }
       h += "<h5>Priced into the range</h5>" + list(P.priced);
       h += "<h5>Premium drivers</h5>" + list(P.drivers);
-      h += "<h5>Why it is paid here</h5><p>" + P.why + "</p>";
-      h += "<h5>Why this is a real role</h5><p>" + P.real + "</p>";
+      h += "<h5>Why the pay mix looks like this</h5><p>" + P.why + "</p>";
+      h += "<h5>Where this job shows up</h5><p>" + P.real + "</p>";
       if (R.sibling) h += "<p class='mp-foot'>" + D.panel.aiFooter + "</p>";
       return h;
     }
@@ -293,7 +293,7 @@
       });
       if (w >= 620) {
         ctx.fillStyle = C.faint; ctx.textAlign = "left"; ctx.font = MK.font(11.5);
-        ctx.fillText("Internal peers, illustrative", pad - 34, lanP + 28);
+        ctx.fillText("Internal peers", pad - 34, lanP + 28);
       }
 
       /* ---- the proposal ---- */

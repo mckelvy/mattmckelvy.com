@@ -69,7 +69,7 @@
     var CAPS = [
       "Titles as found: duplicated, inconsistently leveled.",
       "Related work gathers into job families.",
-      "Twelve job families, six management levels. Duplicates absorbed into a single job profile."
+      "Twelve job families, six levels. Duplicates absorbed into a single job profile."
     ];
     function syncCaption() {
       var s = tS < 0.32 ? 0 : tS < 0.93 ? 1 : 2;

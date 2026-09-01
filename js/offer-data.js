@@ -102,9 +102,9 @@ window.OFFER_DATA = {
 
   /* placement guideline: candidate assessment maps to range thirds */
   assess: {
-    dev:  { name: "developing",     lo: 0,       hi: 1 / 3 },
-    prof: { name: "proficient",     lo: 1 / 3,   hi: 2 / 3 },
-    exp:  { name: "deep expertise", lo: 2 / 3,   hi: 1 }
+    dev:  { name: "meets the role",   third: "lower",  who: "a candidate who meets the role",   lo: 0,     hi: 1 / 3 },
+    prof: { name: "fully qualified",  third: "middle", who: "a fully qualified candidate",       lo: 1 / 3, hi: 2 / 3 },
+    exp:  { name: "exceeds the role", third: "upper",  who: "a candidate who exceeds the role", lo: 2 / 3, hi: 1 }
   },
 
   /* internal peers: illustrative compa-ratios vs the zone-adjusted midpoint */
@@ -150,7 +150,7 @@ window.OFFER_DATA = {
     r1: {
       priced: ["Full-cycle enterprise selling (six- and seven-figure ACV, multi-threaded, 6 to 12 month cycles)", "Qualification discipline (MEDDICC/MEDDPICC), forecast accuracy, self-sourced pipeline", "Executive relationships and business-case selling", "Procurement, legal, and security-review navigation", "Partner and channel co-sell"],
       drivers: ["Consistent attainment and President's Club history", "Strategic or named-account experience", "Vertical depth (financial services, healthcare, public sector)"],
-      why: "The rep carries the closing risk, so half of OTE is at risk (50/50) and quota is set as a multiple of OTE.",
+      why: "The rep carries the closing risk, so half of OTE is at risk (50/50). Quota comes from territory and capacity, and the quota-to-OTE ratio is the sanity check.",
       real: "The standard quota-carrying closer at enterprise software vendors."
     },
     r2: {
@@ -168,7 +168,7 @@ window.OFFER_DATA = {
     r4: {
       priced: ["Everything in role 1, plus consumption and usage-based selling and forecasting (tokens, compute, committed spend) rather than seat-based ARR", "Use-case discovery for a new category, working with product teams so customers can build on the platform", "Technical-buyer fluency (CTO, CDO, Head of AI) and AI-specific objections (data usage and training rights, model risk, privacy, governance, evaluation)", "Pilot-to-enterprise expansion", "Hyperscaler and SI partner ecosystems, including marketplace transactions"],
       drivers: ["Enterprise pedigree combined with real AI product fluency is a thin pool", "Consumption-based deals that are large and hard to forecast"],
-      why: "Demand and scarcity, and the employer type decides where the premium shows up. AI-native labs pay it through OTE, base-heavier mixes, and equity. Hyperscalers level the AI seller as a specialist overlay with the same base range as other specialists, so the premium lives in level placement, variable target, and equity.",
+      why: "Demand, scarcity, and the employer's model decide where the premium shows up. AI-native labs pay it through OTE, base-heavier mixes, and equity. Hyperscalers level the AI seller as a specialist overlay on the same base range as other specialists, so the premium lives in level placement, variable target, and equity.",
       real: "The direct-quota enterprise seller at AI-native vendors. Hyperscalers run the same work as a specialist overlay titled AI Sales Specialist (Google Cloud)."
     },
     aiFooter: "Hot-skill premiums are administered as a market premium or a specialist job profile, reviewed annually, not by inflating the whole job family. The skill adds no value on its own, and companies pay for its application to deliver differentiated performance (WorldatWork / Korn Ferry)."
