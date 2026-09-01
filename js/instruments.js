@@ -1,5 +1,5 @@
-/* The hero field — a market of faint points that reveals its structure
-   under your attention. Plus the acquisition ladder. */
+/* The hero field: a market of faint points that reveals its structure
+   under your attention. */
 (function () {
   "use strict";
 
@@ -106,7 +106,7 @@
     }
     MK.on(window, "scroll", onScroll, { passive: true });
 
-    /* the hero canvas ignores clicks — let text be selectable above it */
+    /* the hero canvas ignores clicks, so text stays selectable above it */
     host.style.pointerEvents = "none";
     /* but we still need pointer positions: read from window */
     MK.on(window, "pointermove", function (e) {
@@ -116,117 +116,5 @@
       inst.pointer = { x: e.clientX - r.left, y: e.clientY - r.top };
       inst.wake();
     }, { passive: true });
-  });
-
-  /* ================= THE TRANSLATION LADDER ================= */
-  MK.register("mna", function (root) {
-    var host = root.querySelector("#mnaHost");
-    if (!host) return;
-    host.classList.add("live");
-    host.style.position = "relative";
-
-    var LEFT = [
-      { id: "A1", name: "Associate" },
-      { id: "A2", name: "Mid-level" },
-      { id: "A3", name: "Senior" },
-      { id: "A4", name: "Staff" },
-      { id: "A5", name: "Principal" },
-      { id: "M1", name: "Manager" }
-    ];
-    var RIGHT = ["Grade 5", "Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10"];
-    var MAPS = [
-      { from: 0, to: [0], note: "Associate → Grade 5. Clean. Most of the organization maps like this." },
-      { from: 1, to: [1], note: "Mid-level → Grade 6. Clean, though the title changes — translation includes vocabulary." },
-      { from: 2, to: [2], note: "Senior → Grade 7. “Senior” means something different in each company. Same work, new label." },
-      { from: 3, to: [3, 4], note: "Staff → Grade 8 or 9. It splits on scope, not tenure. This is where the judgment lives." },
-      { from: 4, to: [5], note: "Principal → Grade 10. Maps high — level them down and you build a retention problem on day one." },
-      { from: 5, to: [3, 4], note: "Manager → Grade 8 or 9. People-manager scope isn’t a grade. Calibrate to span and business size." }
-    ];
-
-    var NS = "http://www.w3.org/2000/svg";
-    var svg = document.createElementNS(NS, "svg");
-    svg.setAttribute("viewBox", "0 0 960 340");
-    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-    svg.style.cssText = "width:100%;height:calc(100% - 58px);display:block";
-    host.appendChild(svg);
-
-    var note = document.createElement("p");
-    note.style.cssText = "position:absolute;left:0;right:0;bottom:0;height:48px;margin:0;font-size:17px;line-height:1.4;letter-spacing:-.019em;color:#6E6E73;text-align:center;transition:opacity .3s";
-    note.setAttribute("aria-live", "polite");
-    host.appendChild(note);
-
-    function el(tag, attrs, parent) {
-      var e = document.createElementNS(NS, tag);
-      for (var k in attrs) e.setAttribute(k, attrs[k]);
-      (parent || svg).appendChild(e);
-      return e;
-    }
-
-    var LX = 232, RX = 728, TOP = 44, ROW = 50;
-    function rowY(i) { return TOP + i * ROW; }
-
-    var head = "font:600 13px -apple-system,system-ui,'Helvetica Neue',sans-serif;letter-spacing:-.01px";
-    el("text", { x: LX, y: 14, "text-anchor": "end", fill: "#86868B", style: head }).textContent = "Acquired company";
-    el("text", { x: RX, y: 14, "text-anchor": "start", fill: "#86868B", style: head }).textContent = "Host architecture";
-
-    var pathEls = [], leftEls = [], rightEls = [];
-    MAPS.forEach(function (m, mi) {
-      m.to.forEach(function (ti) {
-        var y1 = rowY(m.from), y2 = rowY(ti);
-        var p = el("path", {
-          d: "M " + (LX + 24) + " " + y1 + " C " + (LX + 180) + " " + y1 + ", " + (RX - 180) + " " + y2 + ", " + (RX - 24) + " " + y2,
-          fill: "none", stroke: "rgba(0,0,0,.14)", "stroke-width": 1.5,
-          "stroke-dasharray": m.to.length > 1 ? "0.1 8" : "none",
-          "stroke-linecap": "round"
-        });
-        p.dataset.map = mi;
-        pathEls.push(p);
-      });
-    });
-    LEFT.forEach(function (l, i) {
-      var g = el("g", { style: "cursor:pointer", tabindex: "0", role: "button" });
-      g.setAttribute("aria-label", l.name + " — show mapping");
-      g.dataset.map = i;
-      var y = rowY(i);
-      el("rect", { x: 0, y: y - 20, width: LX + 40, height: 40, fill: "transparent" }, g);
-      var t = el("text", { x: LX, y: y + 6, "text-anchor": "end", fill: "#1D1D1F",
-        style: "font:400 19px -apple-system,system-ui,'Helvetica Neue',sans-serif;letter-spacing:-.02px" }, g);
-      t.textContent = l.name;
-      g._label = t;
-      leftEls.push(g);
-    });
-    RIGHT.forEach(function (r, i) {
-      var y = rowY(i);
-      var t = el("text", { x: RX, y: y + 6, "text-anchor": "start", fill: "#6E6E73",
-        style: "font:400 19px -apple-system,system-ui,'Helvetica Neue',sans-serif;letter-spacing:-.02px" });
-      t.textContent = r;
-      rightEls.push(t);
-    });
-
-    var active = -1;
-    function setActive(mi) {
-      active = mi;
-      pathEls.forEach(function (p) {
-        var on = +p.dataset.map === mi;
-        p.setAttribute("stroke", on ? "#0066CC" : mi === -1 ? "rgba(0,0,0,.14)" : "rgba(0,0,0,.06)");
-        p.setAttribute("stroke-width", on ? 2 : 1.5);
-      });
-      leftEls.forEach(function (g, i) {
-        g._label.setAttribute("fill", i === mi ? "#0066CC" : mi === -1 ? "#1D1D1F" : "#86868B");
-      });
-      rightEls.forEach(function (t, i) {
-        var hot = mi >= 0 && MAPS[mi].to.indexOf(i) !== -1;
-        t.setAttribute("fill", hot ? "#0066CC" : "#6E6E73");
-      });
-      note.textContent = mi >= 0 ? MAPS[mi].note : "Hover a level. Some map cleanly — the interesting ones don’t.";
-    }
-    leftEls.forEach(function (g, i) {
-      MK.on(g, "pointerenter", function () { setActive(i); });
-      MK.on(g, "focus", function () { setActive(i); });
-      MK.on(g, "click", function () { setActive(active === i ? -1 : i); });
-      MK.on(g, "keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setActive(active === i ? -1 : i); } });
-    });
-    MK.on(svg, "pointerleave", function () { setActive(-1); });
-    setActive(-1);
   });
 })();

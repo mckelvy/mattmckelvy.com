@@ -1,5 +1,5 @@
 /* ============================================================
-   The offer model — section [ 03 / 04 ].
+   The offer model: section [ 03 / 04 ].
 
    Reprices OTE (on-target earnings) for four GTM roles at a
    fixed level (Senior IC, Radford P4-equivalent). Three things
@@ -58,7 +58,7 @@
                loB: loB, hiB: hiB, domLo: loB - (hiB - loB) * 0.02, domHi: hiB + (hiB - loB) * 0.02 };
     }
 
-    /* market position: log-linear interpolation across P25/P50/P75/P90 */
+    /* market position: log-linear interpolation across P25/P50/P75/P90, reported to the nearest 5 */
     function marketPosition(m, v) {
       var p = m.pct;
       if (v < p.p25) return "below P25";
@@ -67,7 +67,7 @@
       for (var i = 0; i < 3; i++) {
         if (v <= pts[i + 1][1]) {
           var f = (ln(v) - ln(pts[i][1])) / (ln(pts[i + 1][1]) - ln(pts[i][1]));
-          return "≈ P" + Math.round(MK.lerp(pts[i][0], pts[i + 1][0], f));
+          return "≈ P" + Math.round(MK.lerp(pts[i][0], pts[i + 1][0], f) / 5) * 5;
         }
       }
       return "≈ P90";
@@ -83,18 +83,14 @@
           MK.fmt$(m.min) + ", or the role and zone are the wrong frame for this candidate.";
       } else if (S.ote > m.max) {
         v.flag = "Above range maximum (exception, requires approval)"; v.tone = "exception";
-        var mktHigh = m.pct.p75 > m.max;
-        v.text = "Above the range maximum by " + MK.fmt$(S.ote - m.max) + ", so this needs approval, not a rationale after the fact. " +
-          (mktHigh
-            ? "Market P75 for this role already clears the range maximum, which is the case worth making (and a signal the market target may be set too low for this role)."
-            : "The market composite does not carry this on its own. Expect to justify it on scarcity or scope instead.");
+        v.text = "Above the range maximum by " + MK.fmt$(S.ote - m.max) + ", at " + v.mp + " of the market composite. That needs approval before the offer, not a rationale after it: make the case on market data, scarcity, or scope, and document it so the next one is comparable.";
       } else if (S.ote > m.zoneHi) {
         v.flag = "Above guideline (exception)"; v.tone = "watch";
         v.text = "Inside the range but above the " + m.seg.name + " third. Defensible where the market or a scarce skill justifies it. Check the " +
-          m.peers.length + " incumbents first" + (v.peersBelow >= 6 ? "; this would land above most of them, and compression is the risk you inherit." : ".");
+          m.peers.length + " incumbents first" + (v.peersBelow >= 6 ? ". This would land above most of them, and compression is the risk you inherit." : ".");
       } else if (S.ote < m.zoneLo) {
         v.flag = "Below guideline"; v.tone = "watch";
-        v.text = "Inside the range but below where a " + m.seg.name + " hire would normally be placed. It may be accepted; it tends to reappear as an off-cycle correction within the year.";
+        v.text = "Inside the range but below where a " + m.seg.name + " hire would normally be placed. It may be accepted, and it tends to reappear as an off-cycle correction within the year.";
       } else {
         v.flag = "Within guidelines"; v.tone = "ok";
         v.text = "Sits in the " + m.seg.name + " third of the range, against a market target of " +
@@ -127,7 +123,6 @@
       base: document.getElementById("lvBase"),
       roleCap: document.getElementById("lvRoleCap"),
       derived: document.getElementById("lvDerived"),
-      quota: document.getElementById("lvQuota"),
       flag: document.getElementById("lvFlag"),
       text: document.getElementById("lvText"),
       compa: document.getElementById("mCompa"),
@@ -160,7 +155,7 @@
         var sib = D.roles[R.sibling], zm = M.zm;
         var d50 = R.pct.p50 - sib.pct.p50, d90 = R.pct.p90 - sib.pct.p90;
         var b50 = R.pct.p50 * R.mix.base - sib.pct.p50 * sib.mix.base;
-        h += "<p class='mp-delta'>Versus " + sib.short + " at P50: +" + MK.fmtK(d50 * zm) + " OTE (+" +
+        h += "<p class='mp-delta'>In this composite, versus " + sib.short + " at P50: +" + MK.fmtK(d50 * zm) + " OTE (+" +
           Math.round(d50 / sib.pct.p50 * 100) + "%)" +
           (S.role === "r3" ? ", +" + MK.fmtK(b50 * zm) + " base (+" + Math.round(b50 / (sib.pct.p50 * sib.mix.base) * 100) + "%)" : "") +
           ". At P90: +" + MK.fmtK(d90 * zm) + " (+" + Math.round(d90 / sib.pct.p90 * 100) + "%).</p>";
@@ -168,7 +163,6 @@
       h += "<h5>Priced into the range</h5>" + list(P.priced);
       h += "<h5>Premium drivers</h5>" + list(P.drivers);
       h += "<h5>Why it is paid here</h5><p>" + P.why + "</p>";
-      h += "<h5>Demand signal</h5><p>" + P.demand + "</p>";
       h += "<h5>Why this is a real role</h5><p>" + P.real + "</p>";
       if (R.sibling) h += "<p class='mp-foot'>" + D.panel.aiFooter + "</p>";
       return h;
@@ -192,13 +186,6 @@
       if (el.derived) el.derived.textContent = "Base " + MK.fmt$(S.ote * R.mix.base) +
         " + " + R.varWord + " " + MK.fmt$(S.ote * R.mix.variable) +
         " (" + fmtPct(R.mix.base) + "/" + fmtPct(R.mix.variable) + ")";
-      if (el.quota) {
-        if (R.quotaAtP50Z1) {
-          el.quota.hidden = false;
-          el.quota.textContent = "Illustrative quota ≈ 5x OTE (about " +
-            "$" + (Math.round(R.quotaAtP50Z1 * M.zm / 50000) * 50000 / 1000000).toFixed(2).replace(/0$/, "") + "M at market)";
-        } else el.quota.hidden = true;
-      }
       if (el.flag) el.flag.textContent = V.flag;
       if (el.verdict) el.verdict.className = "lab-verdict is-" + V.tone;
       if (el.text) el.text.textContent = V.text;
@@ -281,12 +268,21 @@
       ctx.strokeStyle = C.hair;
       ctx.beginPath(); ctx.moveTo(bmid, lanR - barH / 2); ctx.lineTo(bmid, lanR + barH / 2); ctx.stroke();
 
-      ctx.font = MK.font(11.5); ctx.fillStyle = C.dim; ctx.textAlign = "center";
-      ctx.fillText("Min " + MK.fmtK(A.min.v), bx0, lanR - barH / 2 - 11);
-      ctx.fillText("Mid " + MK.fmtK(A.mid.v), bmid, lanR - barH / 2 - 11);
-      ctx.fillText("Max " + MK.fmtK(A.max.v), bx1, lanR - barH / 2 - 11);
+      ctx.font = MK.font(11.5); ctx.fillStyle = C.dim;
+      var narrow = w < 620, top = lanR - barH / 2 - 11, bot = lanR + barH / 2;
+      if (!narrow) {
+        ctx.textAlign = "center";
+        ctx.fillText("Min " + MK.fmtK(A.min.v), bx0, top);
+        ctx.fillText("Mid " + MK.fmtK(A.mid.v), bmid, top);
+        ctx.fillText("Max " + MK.fmtK(A.max.v), bx1, top);
+      } else {
+        /* narrow canvases: the range is too short for three centered labels, so they take separate rows */
+        ctx.textAlign = "left";   ctx.fillText("Min " + MK.fmtK(A.min.v), bx0, top);
+        ctx.textAlign = "right";  ctx.fillText("Max " + MK.fmtK(A.max.v), bx1, top - 14);
+        ctx.textAlign = "center"; ctx.fillText("Mid " + MK.fmtK(A.mid.v), bmid, bot + 18);
+      }
       ctx.textAlign = "left"; ctx.fillStyle = C.dim;
-      ctx.fillText(M.R.short + " · " + D.zones[S.zone].name, pad - 34, lanR + barH / 2 + 22);
+      ctx.fillText(M.R.short + " · " + D.zones[S.zone].name, pad - 34, bot + (narrow ? 36 : 22));
 
       /* ---- lane 3: internal peers (illustrative) ---- */
       ctx.fillStyle = "rgba(245,245,247,.34)";
