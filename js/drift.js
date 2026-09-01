@@ -13,7 +13,7 @@
     var EMEA = [10.1,9.8,10.4,10.0,10.6,10.2,10.8,10.4,10.9,10.5,11.0,10.6,10.3,10.7];
     var APJC = [10.4,10.2,10.8,11.3,12.1,12.8,13.9,14.8,15.9,16.8,17.9,18.6,19.2,19.6];
     var MID  = [100,100,100,102,102,102,102,104,104,104,104,106,106,106];
-    var MKT  = [100,101,102,104,106,108,110,113,115,118,120,122,124,126];
+    var MKT  = [100,101,102,104,105,107,108,110,112,113,115,116,117,118];
     var RECAL_I = 10;
     var APJC_FIX = [16.4,14.4,12.9];
     var HYPO = {
@@ -28,10 +28,10 @@
     var drawT = { attr: 0, hypo: 0, mkt: 0, ovl: 0, recal: 0 };
 
     var READOUTS = [
-      "Annualized attrition in one region climbs from about 10% to nearly 20% over ten quarters, while the others hold.",
+      "Annualized attrition in one region climbs from about 10% to nearly 20% over three years, while the others hold.",
       "Manager churn, tenure mix and engagement stay flat throughout. None of them explains the pattern.",
       "Range midpoints moved on the normal structure cycle, about 2% a year. Surveyed market rates in that labor market moved roughly three times faster.",
-      "The exits track the widening gap between structure and market. Association, not proof — but the competing explanations were already ruled out.",
+      "The exits track the widening gap between structure and market. Association, not proof, but the competing explanations were already ruled out.",
       "Ranges recalibrated to current survey data. The gap closes, and projected attrition returns toward the regional baseline."
     ];
 
@@ -169,7 +169,7 @@
         ctx.globalAlpha = P.mkt;
         var yM = function (v) { return M.t + (1 - (v - 96) / (132 - 96)) * plotH; };
         var recalP = MK.ease(P.recal);
-        var midNow = MID.map(function (v, i) { return i >= RECAL_I ? MK.lerp(v, 124, recalP) : v; });
+        var midNow = MID.map(function (v, i) { return i >= RECAL_I ? MK.lerp(v, 115, recalP) : v; });
         ctx.strokeStyle = MK.ui.hair; ctx.lineWidth = 1;
         [100, 110, 120, 130].forEach(function (g) {
           ctx.beginPath(); ctx.moveTo(M.l, yM(g)); ctx.lineTo(w - M.r, yM(g)); ctx.stroke();
@@ -197,7 +197,7 @@
         drawLine(ctx, MKT, w, yM, dm, { color: MK.ui.blue, width: 2 });
         if (dm > 0.96) {
           label(ctx, "Market P50", w - M.r + 10, yM(MKT[N - 1]) + 4, MK.ui.blue, 12, "left", 600);
-          label(ctx, "Range mid", w - M.r + 10, yM(midNow[N - 1]) + 4, MK.ui.ink, 12, "left", 600);
+          label(ctx, "Range midpoint", w - M.r + 10, yM(midNow[N - 1]) + 4, MK.ui.ink, 12, "left", 600);
           if (P.recal < 0.5 && P.ovl < 0.5) {
             var gapY = (yM(MKT[N - 1]) + yM(midNow[N - 1])) / 2;
             label(ctx, "The gap", xAt(N - 1, w) - 14, gapY + 4, MK.ui.amber, 13, "right", 600);

@@ -67,9 +67,9 @@
     var tRaw = 0, tS = 0, hoverFam = -1, time = 0;
     var capState = -1;
     var CAPS = [
-      "Titles as found — duplicated, inconsistently levelled.",
+      "Titles as found: duplicated, inconsistently leveled.",
       "Related work gathers into job families.",
-      "Twelve families, six levels. Duplicates absorbed into a single profile."
+      "Twelve job families, six management levels. Duplicates absorbed into a single job profile."
     ];
     function syncCaption() {
       var s = tS < 0.32 ? 0 : tS < 0.93 ? 1 : 2;
@@ -174,7 +174,7 @@
         var n = 0;
         for (var i2 = 0; i2 < nodes.length; i2++) if (nodes[i2].f === hoverFam && !nodes[i2].dup) n++;
         ctx.font = MK.font(12, 600); ctx.fillStyle = MK.ui.blue; ctx.textAlign = "right";
-        ctx.fillText(FAMS[hoverFam] + " — " + n + " roles, 6 levels", w - PAD.r, PAD.t + 4);
+        ctx.fillText(FAMS[hoverFam] + " · " + n + " job profiles", w - PAD.r, PAD.t + 4);
       }
       return busy;
     }, function (inst) {
