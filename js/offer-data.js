@@ -85,10 +85,11 @@ window.OFFER_DATA = {
   checked: "August 2026",
   level: "Senior IC (Radford P4-equivalent)",
 
+  /* geographic pay zones, named by where they are; `short` is the canvas label */
   zones: {
-    z1: { name: "Zone 1", mult: 1.00, metros: "SF Bay Area, NYC, Seattle" },
-    z2: { name: "Zone 2", mult: 0.92, metros: "Boston, LA, San Diego, DC, Austin, Chicago, Denver" },
-    z3: { name: "Zone 3", mult: 0.85, metros: "all other US" }
+    z1: { name: "Bay Area, NYC, Seattle", short: "top metros",   mult: 1.00, metros: "SF Bay Area, NYC, Seattle" },
+    z2: { name: "Other major metros",     short: "major metros", mult: 0.92, metros: "Boston, LA, San Diego, DC, Austin, Chicago, Denver" },
+    z3: { name: "Rest of US",             short: "rest of US",   mult: 0.85, metros: "all other US" }
   },
 
   /* market target: range midpoint = chosen percentile.

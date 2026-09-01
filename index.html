@@ -263,12 +263,13 @@
         <div class="ctl">
           <span class="ctl-label">Geographic pay zone</span>
           <div class="seg" role="group" aria-label="Geographic pay zone" id="labGeo">
-            <button type="button" data-v="z1" aria-pressed="true">Zone&nbsp;1</button>
-            <button type="button" data-v="z2">Zone&nbsp;2</button>
-            <button type="button" data-v="z3">Zone&nbsp;3</button>
+            <button type="button" data-v="z1" aria-pressed="true">Bay Area, NYC, Seattle</button>
+            <button type="button" data-v="z2">Other major metros</button>
+            <button type="button" data-v="z3">Rest of US</button>
           </div>
-          <span class="ctl-note">Multipliers applied to OTE. Zone 1 = 1.00 (SF Bay Area, NYC, Seattle) · Zone 2 = 0.92 (Boston,
-            LA, San Diego, DC, Austin, Chicago, Denver) · Zone 3 = 0.85 (all other US)</span>
+          <span class="ctl-note">Multipliers applied to OTE: 1.00 for the Bay Area, New York, and Seattle ·
+            0.92 for Boston, LA, San Diego, DC, Austin, Chicago, and Denver · 0.85 for the rest of the US.
+            Differentials follow the cost of labor, not the cost of living.</span>
         </div>
         <div class="ctl">
           <span class="ctl-label">Market target <span class="ctl-hint" id="mrpHint">match the market</span></span>
@@ -512,8 +513,8 @@
 <script src="js/instruments.js?v=21" defer></script>
 <script src="js/drift.js?v=22" defer></script>
 <script src="js/arch.js?v=20" defer></script>
-<script src="js/offer-data.js?v=3" defer></script>
-<script src="js/lab.js?v=24" defer></script>
+<script src="js/offer-data.js?v=4" defer></script>
+<script src="js/lab.js?v=25" defer></script>
 <script src="js/portal.js?v=5" defer></script>
 </body>
 </html>

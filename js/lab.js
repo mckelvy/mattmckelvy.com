@@ -282,7 +282,7 @@
         ctx.textAlign = "center"; ctx.fillText("Mid " + MK.fmtK(A.mid.v), bmid, bot + 18);
       }
       ctx.textAlign = "left"; ctx.fillStyle = C.dim;
-      ctx.fillText(M.R.short + " · " + D.zones[S.zone].name, pad - 34, bot + (narrow ? 36 : 22));
+      ctx.fillText(M.R.short + " · " + D.zones[S.zone].short, pad - 34, bot + (narrow ? 36 : 22));
 
       /* ---- lane 3: internal peers (illustrative) ---- */
       ctx.fillStyle = "rgba(245,245,247,.34)";
