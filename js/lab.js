@@ -1,167 +1,105 @@
 /* ============================================================
-   The offer model — 03
+   The offer model — section [ 03 / 04 ].
 
-   Three things a compensation partner never conflates, kept
-   deliberately separate here:
+   Reprices OTE (on-target earnings) for four GTM roles at a
+   fixed level (Senior IC, Radford P4-equivalent). Three things
+   a compensation partner never conflates, kept separate here:
 
-     STRUCTURE   the company's range for the level and zone
-                 (minimum, midpoint, maximum)
-     MARKET      surveyed base salary for the job in that labor
-                 market (P25 / P50 / P75) and the reference point
-                 the philosophy targets
+     STRUCTURE   the range for the role and zone
+                 (minimum, midpoint, maximum, on OTE)
+     MARKET      the OTE composite for the role in that market
+                 (P25 / P50 / P75 / P90) and the target
+                 percentile the philosophy sets
      INDIVIDUAL  this proposal's compa-ratio, range penetration
                  and position against internal peers
 
-   There is no weighted score. A recommendation zone comes from the
-   range segment appropriate to the assessment; everything else is a
-   guardrail that either clears or requires a justification.
-
-   Structure, survey data and peers are illustrative.
+   Every number resolves to js/offer-data.js. No survey data,
+   no employer's pay data, nothing from Cisco.
    ============================================================ */
 (function () {
   "use strict";
   MK.ready(function () {
     var host = document.getElementById("labCanvasHost");
-    if (!host) return;
+    var D = window.OFFER_DATA;
+    if (!host || !D) return;
 
     var C = {
       ink: "#F5F5F7", dim: "rgba(245,245,247,.52)", faint: "rgba(245,245,247,.30)",
       hair: "rgba(245,245,247,.16)", band: "rgba(245,245,247,.06)",
-      blue: "#2997FF", amber: "#FFB340", low: "#FF7A66", zone: "rgba(41,151,255,.14)"
+      blue: "#8FA3FF", amber: "#FFB340", low: "#FF7A66", zone: "rgba(143,163,255,.15)"
     };
 
-    /* ---------------- the world ----------------
-       Midpoints progress ~15% between levels, within the 10–15%
-       convention for professional/management structures.
-       Ranges run a 50% spread (max = min × 1.5), the common default
-       for professional roles: min = mid × 0.8, max = mid × 1.2. */
-    var LEVELS = {
-      L3: { name: "SE II",        mid: 152000 },
-      L4: { name: "Senior SE",    mid: 175000 },
-      L5: { name: "Principal SE", mid: 201000 }
-    };
-    /* Geographic pay zones. Illustrative differentials against Zone 2. */
-    var ZONES = {
-      z1: { name: "Zone 1", f: 1.12, note: "highest-cost markets" },
-      z2: { name: "Zone 2", f: 1.00, note: "national reference" },
-      z3: { name: "Zone 3", f: 0.90, note: "lower-cost markets" }
-    };
-    var MRP = {
-      p50: { name: "P50", label: "median", stance: "match the market" },
-      p60: { name: "P60", label: "60th percentile", stance: "lead slightly" },
-      p75: { name: "P75", label: "75th percentile", stance: "lead the market" }
-    };
-    /* Range segments by assessment, expressed as compa-ratio bounds —
-       how practitioners actually place a new hire in a range. */
-    var SEGMENT = {
-      dev:  { lo: 0.80, hi: 1.00, name: "developing in role" },
-      prof: { lo: 0.95, hi: 1.10, name: "fully proficient" },
-      exp:  { lo: 1.05, hi: 1.20, name: "deep expertise" }
-    };
-    var PAY_MIX = { base: 70, variable: 30 };   /* common for sales engineering */
+    var S = { role: "r2", zone: "z1", tgt: "p50", prof: "prof", ote: 250000 };
 
-    var S = { level: "L4", zone: "z2", mrp: "p50", prof: "prof", baseT: 0.5 };
+    function ln(v) { return Math.log(v); }
+    function p60(pct) { return Math.exp(MK.lerp(ln(pct.p50), ln(pct.p75), 0.4)); }
 
     function model() {
-      var z = ZONES[S.zone].f;
-      var mid = Math.round(LEVELS[S.level].mid * z / 500) * 500;
-      var min = Math.round(mid * 0.8 / 500) * 500;
-      var max = Math.round(mid * 1.2 / 500) * 500;
+      var R = D.roles[S.role], zm = D.zones[S.zone].mult;
+      var pct = {
+        p25: R.pct.p25 * zm, p50: R.pct.p50 * zm,
+        p75: R.pct.p75 * zm, p90: R.pct.p90 * zm
+      };
+      var mid = S.tgt === "p50" ? pct.p50 : S.tgt === "p75" ? pct.p75 : p60(pct);
+      mid = Math.round(mid / 100) * 100;
+      var min = Math.round(mid * D.rangeSpread.minF / 100) * 100;
+      var max = Math.round(mid * D.rangeSpread.maxF / 100) * 100;
 
-      /* Surveyed base salary for this job and labor market. The structure
-         is built around the median, so P50 sits at the midpoint here —
-         that is this example's philosophy, not a law. */
-      var p50 = mid;
-      var p25 = Math.round(p50 * 0.88 / 500) * 500;
-      var p75 = Math.round(p50 * 1.14 / 500) * 500;
-      var mrpVal = S.mrp === "p50" ? p50
-                 : S.mrp === "p75" ? p75
-                 : p50 + (p75 - p50) * 0.4;          /* P60, interpolated */
+      var seg = D.assess[S.prof];
+      var zoneLo = min + (max - min) * seg.lo;
+      var zoneHi = min + (max - min) * seg.hi;
 
-      /* Internal peers: incumbents at this level in this zone. */
-      var rng = MK.rng(S.level.charCodeAt(1) * 7919 + S.zone.charCodeAt(1) * 131);
-      var peers = [];
-      for (var i = 0; i < 14; i++) {
-        var g = (rng() + rng() + rng() + rng() - 2) / 2;
-        /* rounded like real salaries — synthetic data should not carry
-           more precision than the thing it is standing in for */
-        peers.push(Math.round(mid * 0.975 * (1 + g * 0.105) / 500) * 500);
-      }
-      peers.sort(function (a, b) { return a - b; });
-      var pMed = (peers[6] + peers[7]) / 2;
-      var p75peer = peers[10];
+      var peers = D.peerRatios.map(function (r) { return Math.round(mid * r / 500) * 500; });
+      var loB = Math.round(mid * 0.6 / 1000) * 1000;
+      var hiB = Math.round(mid * 1.5 / 1000) * 1000;
 
-      var seg = SEGMENT[S.prof];
-      var zoneLo = Math.max(min, mid * seg.lo);
-      var zoneHi = Math.min(max, mid * seg.hi);
-
-      var domLo = min * 0.86, domHi = max * 1.12;
-      var base = domLo + (domHi - domLo) * S.baseT;
-      base = Math.round(base / 500) * 500;
-
-      return { mid: mid, min: min, max: max, p25: p25, p50: p50, p75: p75,
-               mrpVal: mrpVal, peers: peers, pMed: pMed, p75peer: p75peer,
-               zoneLo: zoneLo, zoneHi: zoneHi, seg: seg,
-               domLo: domLo, domHi: domHi, base: base };
+      return { R: R, zm: zm, pct: pct, mid: mid, min: min, max: max,
+               seg: seg, zoneLo: zoneLo, zoneHi: zoneHi, peers: peers,
+               loB: loB, hiB: hiB, domLo: loB - (hiB - loB) * 0.02, domHi: hiB + (hiB - loB) * 0.02 };
     }
 
-    /* approximate survey percentile by interpolation between observations */
+    /* market position: log-linear interpolation across P25/P50/P75/P90 */
     function marketPosition(m, v) {
-      if (v < m.p25) return { txt: "below the 25th percentile", pct: null };
-      if (v > m.p75) return { txt: "above the 75th percentile", pct: null };
-      var pct = v <= m.p50
-        ? 25 + 25 * (v - m.p25) / (m.p50 - m.p25)
-        : 50 + 25 * (v - m.p50) / (m.p75 - m.p50);
-      return { txt: "≈ P" + Math.round(pct) + " of surveyed base salary", pct: pct };
+      var p = m.pct;
+      if (v < p.p25) return "below P25";
+      if (v > p.p90) return "above P90";
+      var pts = [[25, p.p25], [50, p.p50], [75, p.p75], [90, p.p90]];
+      for (var i = 0; i < 3; i++) {
+        if (v <= pts[i + 1][1]) {
+          var f = (ln(v) - ln(pts[i][1])) / (ln(pts[i + 1][1]) - ln(pts[i][1]));
+          return "≈ P" + Math.round(MK.lerp(pts[i][0], pts[i + 1][0], f));
+        }
+      }
+      return "≈ P90";
     }
 
     function verdict(m) {
-      var base = m.base;
-      var peersBelow = 0;
-      for (var i = 0; i < m.peers.length; i++) if (m.peers[i] < base) peersBelow++;
-      var mp = marketPosition(m, base);
-      var v = { peersBelow: peersBelow, mp: mp };
-
-      if (base < m.min) {
-        v.flag = "Below range minimum";
-        v.tone = "low";
-        v.text = "Below the minimum of the range for this level and zone. Raise to at least " +
-                 MK.fmt$(m.min) + ", or the level itself is the wrong question to be asking.";
-        return v;
+      var v = { peersBelow: 0 };
+      m.peers.forEach(function (p) { if (p < S.ote) v.peersBelow++; });
+      v.mp = marketPosition(m, S.ote);
+      if (S.ote < m.min) {
+        v.flag = "Below range minimum"; v.tone = "low";
+        v.text = "Below the minimum of the range for this role and zone. Raise to at least " +
+          MK.fmt$(m.min) + ", or the role and zone are the wrong frame for this candidate.";
+      } else if (S.ote > m.max) {
+        v.flag = "Above range maximum (exception, requires approval)"; v.tone = "exception";
+        var mktHigh = m.pct.p75 > m.max;
+        v.text = "Above the range maximum by " + MK.fmt$(S.ote - m.max) + ", so this needs approval, not a rationale after the fact. " +
+          (mktHigh
+            ? "Market P75 for this role already clears the range maximum, which is the case worth making (and a signal the market target may be set too low for this role)."
+            : "The market composite does not carry this on its own. Expect to justify it on scarcity or scope instead.");
+      } else if (S.ote > m.zoneHi) {
+        v.flag = "Above guideline (exception)"; v.tone = "watch";
+        v.text = "Inside the range but above the " + m.seg.name + " third. Defensible where the market or a scarce skill justifies it. Check the " +
+          m.peers.length + " incumbents first" + (v.peersBelow >= 6 ? "; this would land above most of them, and compression is the risk you inherit." : ".");
+      } else if (S.ote < m.zoneLo) {
+        v.flag = "Below guideline"; v.tone = "watch";
+        v.text = "Inside the range but below where a " + m.seg.name + " hire would normally be placed. It may be accepted; it tends to reappear as an off-cycle correction within the year.";
+      } else {
+        v.flag = "Within guidelines"; v.tone = "ok";
+        v.text = "Sits in the " + m.seg.name + " third of the range, against a market target of " +
+          D.targets[S.tgt].name + ". Defensible on the structure, the market, and the internal comparison, which is what makes it repeatable for the next one.";
       }
-      if (base > m.max) {
-        v.flag = "Exception required";
-        v.tone = "exception";
-        var marketSupports = m.mrpVal > m.max * 0.99;
-        v.text = "Above the range maximum by " + MK.fmt$(base - m.max) + ", so this needs approval, not " +
-          "a rationale after the fact. " +
-          (marketSupports
-            ? "The market reference for this job already sits at the top of the range, which is the " +
-              "case worth making — and a signal the structure itself may be due for review."
-            : "The market reference sits at " + MK.fmt$(m.mrpVal) + ", inside the range, so the market " +
-              "data does not carry this on its own. Expect to justify it on scarcity or scope instead.");
-        return v;
-      }
-      if (base > m.zoneHi) {
-        v.flag = "Above guideline";
-        v.tone = "watch";
-        v.text = "Inside the range but above the " + m.seg.name + " segment. Defensible where the market " +
-          "or the skill justifies it — worth checking against the " + m.peers.length + " incumbents at this " +
-          "level first" + (base > m.p75peer ? ", since this would land above most of them and compression is the risk you inherit." : ".");
-        return v;
-      }
-      if (base < m.zoneLo) {
-        v.flag = "Below guideline";
-        v.tone = "watch";
-        v.text = "Inside the range but below where a " + m.seg.name + " hire would normally be placed. " +
-          "It may be accepted; it tends to reappear as an off-cycle correction within the year.";
-        return v;
-      }
-      v.flag = "Within guidelines";
-      v.tone = "ok";
-      v.text = "Sits in the part of the range this assessment supports, against a market reference of " +
-        MK.fmt$(m.mrpVal) + " (" + MRP[S.mrp].name + "). Defensible on the structure, the market and the " +
-        "internal comparison — which is what makes it repeatable for the next one.";
       return v;
     }
 
@@ -174,27 +112,31 @@
       return a.v !== a.t;
     }
     var m0 = model();
+    S.ote = m0.mid;
     var A = {
       lo: anim(m0.domLo, 3.4), hi: anim(m0.domHi, 3.4),
       min: anim(m0.min, 3.8), mid: anim(m0.mid, 3.8), max: anim(m0.max, 3.8),
-      p25: anim(m0.p25, 4), p50: anim(m0.p50, 4), p75: anim(m0.p75, 4),
-      mrp: anim(m0.mrpVal, 5), base: anim(m0.base, 6),
-      zLo: anim(m0.zoneLo, 4.2), zHi: anim(m0.zoneHi, 4.2), pMed: anim(m0.pMed, 4)
+      p25: anim(m0.pct.p25, 4), p50: anim(m0.pct.p50, 4), p75: anim(m0.pct.p75, 4), p90: anim(m0.pct.p90, 4),
+      tgt: anim(m0.mid, 5), ote: anim(S.ote, 6),
+      zLo: anim(m0.zoneLo, 4.2), zHi: anim(m0.zoneHi, 4.2)
     };
     var peersA = m0.peers.map(function (p) { return anim(p, 3.6); });
     var M = m0, V = verdict(m0);
 
     var el = {
       base: document.getElementById("lvBase"),
+      roleCap: document.getElementById("lvRoleCap"),
+      derived: document.getElementById("lvDerived"),
+      quota: document.getElementById("lvQuota"),
       flag: document.getElementById("lvFlag"),
       text: document.getElementById("lvText"),
       compa: document.getElementById("mCompa"),
       pen: document.getElementById("mPen"),
       mkt: document.getElementById("mMkt"),
       peer: document.getElementById("mPeer"),
-      cash: document.getElementById("lvCash"),
       hint: document.getElementById("mrpHint"),
-      verdict: document.getElementById("labVerdict")
+      verdict: document.getElementById("labVerdict"),
+      panel: document.getElementById("mpBody")
     };
 
     var live = document.createElement("span");
@@ -202,38 +144,77 @@
     live.style.cssText = "position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)";
     host.appendChild(live);
 
-    function apply(announce) {
+    var slider = document.getElementById("labBase");
+    function syncSlider(snap) {
+      if (!slider) return;
+      slider.min = M.loB; slider.max = M.hiB; slider.step = 1000;
+      if (snap) slider.value = S.ote;
+    }
+
+    function fmtPct(x) { return Math.round(x * 100); }
+    function panelHTML() {
+      var P = D.panel[S.role], R = M.R;
+      function list(items) { return "<ul>" + items.map(function (i) { return "<li>" + i + "</li>"; }).join("") + "</ul>"; }
+      var h = "";
+      if (R.sibling) {
+        var sib = D.roles[R.sibling], zm = M.zm;
+        var d50 = R.pct.p50 - sib.pct.p50, d90 = R.pct.p90 - sib.pct.p90;
+        var b50 = R.pct.p50 * R.mix.base - sib.pct.p50 * sib.mix.base;
+        h += "<p class='mp-delta'>Versus " + sib.short + " at P50: +" + MK.fmtK(d50 * zm) + " OTE (+" +
+          Math.round(d50 / sib.pct.p50 * 100) + "%)" +
+          (S.role === "r3" ? ", +" + MK.fmtK(b50 * zm) + " base (+" + Math.round(b50 / (sib.pct.p50 * sib.mix.base) * 100) + "%)" : "") +
+          ". At P90: +" + MK.fmtK(d90 * zm) + " (+" + Math.round(d90 / sib.pct.p90 * 100) + "%).</p>";
+      }
+      h += "<h5>Priced into the range</h5>" + list(P.priced);
+      h += "<h5>Premium drivers</h5>" + list(P.drivers);
+      h += "<h5>Why it is paid here</h5><p>" + P.why + "</p>";
+      h += "<h5>Demand signal</h5><p>" + P.demand + "</p>";
+      h += "<h5>Why this is a real role</h5><p>" + P.real + "</p>";
+      if (R.sibling) h += "<p class='mp-foot'>" + D.panel.aiFooter + "</p>";
+      return h;
+    }
+
+    function apply(announce, snap) {
       M = model();
+      S.ote = MK.clamp(Math.round(S.ote / 1000) * 1000, M.loB, M.hiB);
+      if (snap) S.ote = M.mid;
+      syncSlider(true);
       A.lo.t = M.domLo; A.hi.t = M.domHi;
       A.min.t = M.min; A.mid.t = M.mid; A.max.t = M.max;
-      A.p25.t = M.p25; A.p50.t = M.p50; A.p75.t = M.p75;
-      A.mrp.t = M.mrpVal; A.base.t = M.base;
-      A.zLo.t = M.zoneLo; A.zHi.t = M.zoneHi; A.pMed.t = M.pMed;
+      A.p25.t = M.pct.p25; A.p50.t = M.pct.p50; A.p75.t = M.pct.p75; A.p90.t = M.pct.p90;
+      A.tgt.t = M.mid; A.ote.t = S.ote;
+      A.zLo.t = M.zoneLo; A.zHi.t = M.zoneHi;
       M.peers.forEach(function (p, i) { peersA[i].t = p; });
       V = verdict(M);
 
-      if (el.flag) { el.flag.textContent = V.flag; }
+      var R = M.R;
+      if (el.roleCap) el.roleCap.textContent = "Proposed OTE, " + R.short;
+      if (el.derived) el.derived.textContent = "Base " + MK.fmt$(S.ote * R.mix.base) +
+        " + " + R.varWord + " " + MK.fmt$(S.ote * R.mix.variable) +
+        " (" + fmtPct(R.mix.base) + "/" + fmtPct(R.mix.variable) + ")";
+      if (el.quota) {
+        if (R.quotaAtP50Z1) {
+          el.quota.hidden = false;
+          el.quota.textContent = "Illustrative quota ≈ 5x OTE (about " +
+            "$" + (Math.round(R.quotaAtP50Z1 * M.zm / 50000) * 50000 / 1000000).toFixed(2).replace(/0$/, "") + "M at market)";
+        } else el.quota.hidden = true;
+      }
+      if (el.flag) el.flag.textContent = V.flag;
       if (el.verdict) el.verdict.className = "lab-verdict is-" + V.tone;
       if (el.text) el.text.textContent = V.text;
-      if (el.hint) el.hint.textContent = MRP[S.mrp].stance;
+      if (el.hint) el.hint.textContent = D.targets[S.tgt].stance;
 
-      var compa = M.base / M.mid;
-      var pen = (M.base - M.min) / (M.max - M.min);
-      if (el.compa) el.compa.textContent = compa.toFixed(2);
-      if (el.pen) el.pen.textContent = Math.round(pen * 100) + "%";
-      if (el.mkt) el.mkt.textContent = V.mp.txt;
-      if (el.peer) el.peer.textContent = "above " + V.peersBelow + " of " + M.peers.length +
-        " · peer median " + MK.fmt$(M.pMed);
+      if (el.compa) el.compa.textContent = (S.ote / M.mid).toFixed(2);
+      if (el.pen) el.pen.textContent = Math.round((S.ote - M.min) / (M.max - M.min) * 100) + "%";
+      if (el.mkt) el.mkt.textContent = V.mp;
+      if (el.peer) el.peer.textContent = "above " + V.peersBelow + " of " + M.peers.length;
+      if (el.panel) el.panel.innerHTML = panelHTML();
 
-      if (el.cash) {
-        var ti = M.base * (PAY_MIX.variable / PAY_MIX.base);
-        el.cash.innerHTML =
-          "This role is incentive-eligible. At a " + PAY_MIX.base + "/" + PAY_MIX.variable +
-          " pay mix, a base of <b>" + MK.fmt$(M.base) + "</b> carries a target incentive of <b>" +
-          MK.fmt$(ti) + "</b>, for target total cash of <b>" + MK.fmt$(M.base + ti) +
-          "</b>. The range above prices base salary only — target total cash is not measured against it.";
-      }
       if (announce) live.textContent = V.flag + ". " + V.text;
+      if (inst && !inst.visible) {   /* off-screen: no spring, land instantly */
+        for (var k in A) A[k].v = A[k].t;
+        peersA.forEach(function (p) { p.v = p.t; });
+      }
       if (inst) inst.wake();
     }
 
@@ -258,40 +239,37 @@
       ctx.font = MK.font(11.5);
       ctx.textAlign = "center";
 
-      /* ---- lane 1: surveyed market ---- */
-      var x25 = X(A.p25.v, w), x50 = X(A.p50.v, w), x75 = X(A.p75.v, w);
+      /* ---- lane 1: market OTE composite ---- */
+      var x25 = X(A.p25.v, w), x50 = X(A.p50.v, w), x75 = X(A.p75.v, w), x90 = X(A.p90.v, w);
       ctx.strokeStyle = C.hair; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(x25, lanM); ctx.lineTo(x75, lanM); ctx.stroke();
-      [[x25, "P25"], [x50, "P50"], [x75, "P75"]].forEach(function (t) {
+      ctx.beginPath(); ctx.moveTo(x25, lanM); ctx.lineTo(x90, lanM); ctx.stroke();
+      [[x25, "P25"], [x50, "P50"], [x75, "P75"], [x90, "P90"]].forEach(function (t) {
         ctx.strokeStyle = C.faint;
         ctx.beginPath(); ctx.moveTo(t[0], lanM - 5); ctx.lineTo(t[0], lanM + 5); ctx.stroke();
         ctx.fillStyle = C.faint;
         ctx.fillText(t[1], t[0], lanM + 19);
       });
-      /* on narrow canvases the lane title would collide with the market
-         reference label; the ticks and the read-out carry it instead */
       if (w >= 620) {
         ctx.fillStyle = C.dim; ctx.textAlign = "left";
-        ctx.fillText("Surveyed base salary", pad - 34, lanM - 18);
+        ctx.fillText("Market OTE, composite", pad - 34, lanM - 18);
       }
 
-      /* the market reference point this philosophy targets */
-      var xm = X(A.mrp.v, w);
+      /* the market target percentile the philosophy sets */
+      var xm = X(A.tgt.v, w);
       ctx.strokeStyle = C.blue; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(xm, lanM - 11); ctx.lineTo(xm, lanM + 11); ctx.stroke();
       ctx.fillStyle = C.blue; ctx.textAlign = "center"; ctx.font = MK.font(11.5, 600);
-      ctx.fillText((w >= 620 ? "Market reference · " : "Market ref · ") + MRP[S.mrp].name, xm, lanM - 18);
+      ctx.fillText((w >= 620 ? "Market target · " : "Target · ") + D.targets[S.tgt].name, xm, lanM - 18);
 
-      /* ---- lane 2: the company's range ---- */
+      /* ---- lane 2: the range ---- */
       var bx0 = X(A.min.v, w), bx1 = X(A.max.v, w), bmid = X(A.mid.v, w);
       ctx.fillStyle = C.band;
       ctx.fillRect(bx0, lanR - barH / 2, bx1 - bx0, barH);
-      /* the segment this assessment supports */
       var zx0 = X(A.zLo.v, w), zx1 = X(A.zHi.v, w);
       ctx.fillStyle = C.zone;
       ctx.fillRect(zx0, lanR - barH / 2, zx1 - zx0, barH);
       if (zx1 - zx0 > 84) {
-        ctx.fillStyle = "rgba(41,151,255,.62)";
+        ctx.fillStyle = "rgba(143,163,255,.72)";
         ctx.font = MK.font(10.5, 600);
         ctx.textAlign = "center";
         ctx.fillText("GUIDELINE", (zx0 + zx1) / 2, lanR + barH / 2 - 6);
@@ -308,9 +286,9 @@
       ctx.fillText("Mid " + MK.fmtK(A.mid.v), bmid, lanR - barH / 2 - 11);
       ctx.fillText("Max " + MK.fmtK(A.max.v), bx1, lanR - barH / 2 - 11);
       ctx.textAlign = "left"; ctx.fillStyle = C.dim;
-      ctx.fillText(LEVELS[S.level].name + " range · " + ZONES[S.zone].name, pad - 34, lanR + barH / 2 + 22);
+      ctx.fillText(M.R.short + " · " + D.zones[S.zone].name, pad - 34, lanR + barH / 2 + 22);
 
-      /* ---- lane 3: internal peers ---- */
+      /* ---- lane 3: internal peers (illustrative) ---- */
       ctx.fillStyle = "rgba(245,245,247,.34)";
       peersA.forEach(function (p, i) {
         ctx.beginPath();
@@ -319,11 +297,11 @@
       });
       if (w >= 620) {
         ctx.fillStyle = C.faint; ctx.textAlign = "left"; ctx.font = MK.font(11.5);
-        ctx.fillText("Incumbents at this level", pad - 34, lanP + 28);
+        ctx.fillText("Internal peers, illustrative", pad - 34, lanP + 28);
       }
 
       /* ---- the proposal ---- */
-      var bx = X(A.base.v, w);
+      var bx = X(A.ote.v, w);
       var col = V.tone === "exception" ? C.amber : V.tone === "low" ? C.low : C.ink;
       ctx.strokeStyle = col; ctx.lineWidth = 1.5;
       ctx.beginPath();
@@ -334,14 +312,14 @@
       ctx.beginPath(); ctx.arc(bx, lanR, 2.4, 0, 6.2832);
       ctx.fillStyle = "#060607"; ctx.fill();
 
-      if (el.base) el.base.textContent = MK.fmt$(A.base.v);
+      if (el.base) el.base.textContent = MK.fmt$(A.ote.v);
       return busy || dragging;
     });
     if (!inst) return;
 
     MK.trackPointer(inst, {
       down: function (p) {
-        var bx = X(A.base.v, inst.w);
+        var bx = X(A.ote.v, inst.w);
         if (Math.abs(p.x - bx) < 28) {
           dragging = true;
           inst.canvas.style.cursor = "grabbing";
@@ -351,13 +329,11 @@
       },
       move: function (p) {
         if (dragging) {
-          S.baseT = MK.clamp((p.x - pad) / (inst.w - pad * 2), 0, 1);
-          var slider = document.getElementById("labBase");
-          if (slider) slider.value = Math.round(S.baseT * 1000);
-          A.base.v = VAL(p.x, inst.w);   /* follow the finger exactly */
+          S.ote = MK.clamp(Math.round(VAL(p.x, inst.w) / 1000) * 1000, M.loB, M.hiB);
+          A.ote.v = MK.clamp(VAL(p.x, inst.w), M.loB, M.hiB);  /* follow the finger */
           apply(false);
         } else {
-          hover = Math.abs(p.x - X(A.base.v, inst.w)) < 28;
+          hover = Math.abs(p.x - X(A.ote.v, inst.w)) < 28;
           inst.canvas.style.cursor = hover ? "grab" : "default";
         }
       },
@@ -373,7 +349,7 @@
     inst.canvas.tabIndex = 0;
     inst.canvas.setAttribute("role", "img");
     inst.canvas.setAttribute("aria-label",
-      "Pay range with market survey observations and internal peers. Use the proposed base slider below to move the proposal.");
+      "OTE range with a market composite at the 25th, 50th, 75th, and 90th percentiles, and internal peers. Use the proposed OTE slider below to move the proposal.");
 
     /* ---------------- controls ---------------- */
     function seg(id, key) {
@@ -385,27 +361,39 @@
           btns.forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
           b.setAttribute("aria-pressed", "true");
           S[key] = b.dataset.v;
-          apply(true);
+          apply(true, key === "role" || key === "zone");   /* snap OTE to the new midpoint */
         });
       });
     }
-    seg("labLevel", "level");
+    seg("labRole", "role");
     seg("labGeo", "zone");
-    seg("labMrp", "mrp");
+    seg("labMrp", "tgt");
     seg("labProf", "prof");
 
-    var slider = document.getElementById("labBase");
-    if (slider) MK.on(slider, "input", function () { S.baseT = slider.value / 1000; apply(false); });
+    if (slider) MK.on(slider, "input", function () { S.ote = +slider.value; apply(false); });
     if (slider) MK.on(slider, "change", function () { apply(true); });
 
-    var more = document.getElementById("lvMore"), detail = document.getElementById("lvDetail");
-    if (more && detail) MK.on(more, "click", function () {
-      var open = more.getAttribute("aria-expanded") === "true";
-      more.setAttribute("aria-expanded", String(!open));
-      detail.hidden = open;
-      more.textContent = open ? "Show the underlying position" : "Hide the underlying position";
-    });
+    function disclosure(btnId, boxId, showTxt, hideTxt) {
+      var btn = document.getElementById(btnId), box = document.getElementById(boxId);
+      if (!btn || !box) return;
+      MK.on(btn, "click", function () {
+        var open = btn.getAttribute("aria-expanded") === "true";
+        btn.setAttribute("aria-expanded", String(!open));
+        box.hidden = open;
+        btn.textContent = open ? showTxt : hideTxt;
+      });
+    }
+    disclosure("lvMore", "lvDetail", "Show the underlying position", "Hide the underlying position");
+    disclosure("mpMore", "mpDetail", "What the market is pricing", "Hide what the market is pricing");
+    disclosure("daMore", "daDetail", "Data and assumptions", "Hide data and assumptions");
 
-    apply(false);
+    var daBody = document.getElementById("daBody");
+    if (daBody) {
+      daBody.innerHTML = "<h5>Sources (checked " + D.checked + ")</h5><ul>" +
+        D.sources.map(function (s) { return "<li>" + s + "</li>"; }).join("") +
+        "</ul><p>" + D.assumptions + "</p>";
+    }
+
+    apply(false, true);
   });
 })();
