@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Contact — Matthew McKelvy</title>
+  <meta name="description" content="How to reach Matthew McKelvy.">
+  <link rel="canonical" href="https://mattmckelvy.com/contact.html">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#F6F3EC">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css?v=21">
+  <script>document.documentElement.className += " js";</script>
+</head>
+<body>
+<a class="skip" href="#cmain">Skip to content</a>
+
+<header class="nav" style="position:absolute">
+  <div class="nav-inner">
+    <a class="nav-name" href="index.html">Matthew M<span class="serif-i">c</span>Kelvy</a>
+    <nav class="nav-links" aria-label="Back">
+      <a href="index.html">← Back to the site</a>
+    </nav>
+  </div>
+</header>
+
+<main id="cmain" class="cpage">
+  <div class="container">
+    <p class="k reveal">[ Contact ]</p>
+    <h1 class="giant reveal-group" style="margin-top:18px">
+      <span class="ml"><span>SAY</span></span>
+      <span class="ml"><span>H<em class="sw">e</em>LLO.</span></span>
+    </h1>
+
+    <div class="cp-rows reveal">
+      <div class="cp-row">
+        <span class="k quiet">Email</span>
+        <a class="cp-val" href="mailto:mckelvymatthew@gmail.com">mckelvymatthew@gmail.com</a>
+      </div>
+      <div class="cp-row">
+        <span class="k quiet">LinkedIn</span>
+        <a class="cp-val" href="https://www.linkedin.com/in/mattmckelvy/" target="_blank" rel="noopener">linkedin.com/in/mattmckelvy ↗</a>
+      </div>
+      <div class="cp-row">
+        <span class="k quiet">Résumé</span>
+        <a class="cp-val" href="Matthew-McKelvy-Resume.pdf" download>Download the PDF ↓</a>
+      </div>
+      <div class="cp-row">
+        <span class="k quiet">Base</span>
+        <span class="cp-val still">Pebble Beach, California</span>
+      </div>
+      <div class="cp-row">
+        <span class="k quiet">Local time</span>
+        <span class="cp-val still" id="cTime">—</span>
+      </div>
+    </div>
+
+    <p class="support reveal" style="margin-top:clamp(28px,4vh,44px)">Email is the fastest way in.
+      I read everything.</p>
+  </div>
+  <footer class="foot container">
+    <p>© 2026 Matthew McKelvy</p>
+    <p>Hand-built</p>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var reduced = false;
+  try { reduced = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  if (reduced) document.documentElement.classList.add("reduced");
+  function go() {
+    var els = document.querySelectorAll(".reveal, .reveal-group");
+    [].forEach.call(els, function (el, i) {
+      setTimeout(function () { el.classList.add("in"); }, reduced ? 0 : 80 + i * 110);
+    });
+    var t = document.getElementById("cTime"), fmt = null;
+    try { fmt = new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", hour: "numeric", minute: "2-digit" }); } catch (e) {}
+    function tick() { if (fmt && t) t.textContent = fmt.format(new Date()) + " PT"; }
+    tick(); setInterval(tick, 30000);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);
+  else go();
+})();
+</script>
+</body>
+</html>

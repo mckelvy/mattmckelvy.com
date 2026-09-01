@@ -449,7 +449,7 @@
       { t: "Off the clock", k: "go", id: "#about", kw: "about personal squash tennis pebble beach competing" },
       { t: "Contact", k: "go", id: "#contact", kw: "email talk reach" },
       { t: "Download résumé", k: "pdf", act: "resume", kw: "cv download resume pdf" },
-      { t: "Email", k: "act", act: "email", kw: "mail contact reach out" },
+      { t: "Contact info", k: "act", act: "email", kw: "mail email contact reach out" },
       { t: "LinkedIn", k: "act", act: "li", kw: "linkedin profile social" }
     ];
     function score(item, q) {
@@ -496,7 +496,7 @@
         if (target) target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
       } else if (it.act === "resume") {
         var a = document.createElement("a"); a.href = "Matthew-McKelvy-Resume.pdf"; a.download = ""; a.click();
-      } else if (it.act === "email") location.href = "mailto:mckelvymatthew@gmail.com";
+      } else if (it.act === "email") window.open("contact.html", "_blank", "noopener");
       else if (it.act === "li") window.open("https://www.linkedin.com/in/mattmckelvy/", "_blank", "noopener");
     }
     function open() { lastFocus = document.activeElement; wrap.hidden = false; input.value = ""; render(""); input.focus(); }
