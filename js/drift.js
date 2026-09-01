@@ -24,11 +24,11 @@
     var drawT = { attr: 0, pat: 0, mkt: 0, gap: 0, recal: 0 };
 
     var READOUTS = [
-      "Attrition in one region climbed while the others held. That was the signal. It was not yet the answer.",
+      "Attrition in one region climbed while the others held, and the open roles there were not filling. That was the signal. It was not yet the answer.",
       "The exits cut across go-to-market, operations, and engineering, all in one geography. Three functions with the same problem usually share a market, not a manager.",
       "Range midpoints for that market, re-plotted against the peer median. Midpoints had moved on the annual structure adjustment. The market had moved faster, and the gap compounded.",
       "The market reference ranges for those roles had drifted below the peer median, and the attrition traced to that gap. Correlation, not proof, but the strongest explanation on the table.",
-      "Recommendation: recalibrate the ranges to the current peer median, then review the incumbents against the new midpoints, starting where the gap was widest. A range is a structure. Retention is decided one paycheck at a time."
+      "Recommendation: recalibrate the ranges to the current peer median, then review the incumbents against the new midpoints, starting where the gap was widest. Offers fix themselves once the range moves. The people already inside it do not."
     ];
 
     function setStep(s) {
