@@ -83,7 +83,7 @@
           MK.fmt$(m.min) + ", or the role and zone are the wrong frame for this candidate.";
       } else if (S.ote > m.max) {
         v.flag = "Above range maximum (exception, requires approval)"; v.tone = "exception";
-        v.text = "Above the range maximum by " + MK.fmt$(S.ote - m.max) + ", at " + v.mp + " of the market composite. That needs approval before the offer, not a rationale after it: make the case on market data, scarcity, or scope, and document it so the next one is comparable.";
+        v.text = "Above the range maximum by " + MK.fmt$(S.ote - m.max) + ", at " + v.mp + " of the market composite. It needs approval before the offer goes out. The case is usually market data, scarcity, or scope, and it is worth documenting so the next one is comparable.";
       } else if (S.ote > m.zoneHi) {
         v.flag = "Above guideline (exception)"; v.tone = "watch";
         v.text = "Inside the range but above the " + m.seg.name + " third. Defensible where the market or a scarce skill justifies it. Check the " +
