@@ -74,7 +74,7 @@
         d.y = y;
         var alpha = d.a + d.k * 0.26;
         if (d.band === 2 && d.k > 0.35) {
-          ctx.fillStyle = "rgba(0,102,204," + (d.k * 0.5).toFixed(3) + ")";
+          ctx.fillStyle = "rgba(32,54,232," + (d.k * 0.5).toFixed(3) + ")";
         } else {
           ctx.fillStyle = "rgba(29,29,31," + alpha.toFixed(3) + ")";
         }

@@ -1,6 +1,7 @@
-/* mattmckelvy.com v5 — core.
-   The MK kit (canvas instruments, springs, seeded rng) plus the light
-   engine: one continuous background color travelling with scroll.
+/* mattmckelvy.com v7 — core.
+   The MK kit (canvas instruments, seeded rng) plus the scene engine:
+   one continuous background temperature, masked type reveals,
+   scroll-linked bands, scatter→structure choreography.
    No dependencies. */
 (function () {
   "use strict";
@@ -30,11 +31,11 @@
     on: function (el, ev, fn, opts) { el.addEventListener(ev, fn, opts || false); }
   };
 
-  /* one voice for canvas type + color */
+  /* one voice for canvas type + color — v7 palette */
   MK.ui = {
-    ink: "#1D1D1F", ink2: "#6E6E73", ink3: "#86868B",
-    hair: "rgba(0,0,0,.08)", hair2: "rgba(0,0,0,.16)",
-    blue: "#0066CC", blueDark: "#2997FF",
+    ink: "#111114", ink2: "#5F5F66", ink3: "#8A8A92",
+    hair: "rgba(17,17,20,.08)", hair2: "rgba(17,17,20,.16)",
+    blue: "#2036E8", blueDark: "#8FA3FF",
     amber: "#D9820B", amberDark: "#FFB340",
     light: "#F5F5F7", light2: "rgba(245,245,247,.55)", hairDark: "rgba(245,245,247,.14)"
   };
@@ -43,7 +44,7 @@
   };
 
   /* An instrument: DPR-correct canvas whose rAF loop runs only while
-     visible AND while draw() reports motion. draw -> true keeps running. */
+     visible AND while draw() reports motion. */
   MK.instrument = function (host, draw, setup) {
     if (!host) return null;
     var canvas = document.createElement("canvas");
@@ -129,8 +130,7 @@
     MK.on(c, "pointerleave", function () { inst.pointer = null; if (handlers.leave) handlers.leave(); inst.wake(); });
   };
 
-  /* Instruments that live inside the case reader register a mount function
-     here and are built on demand, when their case is actually opened. */
+  /* instruments register mount functions; v7 mounts them on the page */
   MK.cases = {};
   MK.register = function (name, mount) { MK.cases[name] = mount; };
 
@@ -145,7 +145,7 @@
     else go();
   };
 
-  /* ============ the light engine ============ */
+  /* ============ the light engine — scene temperature ============ */
   MK.ready(function () {
     var lightEl = document.getElementById("light");
     var nav = document.getElementById("nav");
@@ -158,18 +158,28 @@
       var vh = innerHeight;
       function topOf(id) { var el = document.getElementById(id); return el ? el.getBoundingClientRect().top + scrollY : 0; }
       function bottomOf(id) { var el = document.getElementById(id); return el ? el.getBoundingClientRect().bottom + scrollY : 0; }
-      /* v6: one light page. The travel is a whisper — paper warms
-         through the middle of the argument and clears again at the end. */
+      var dTop = topOf("decisions"), dBot = bottomOf("decisions");
+      var aTop = topOf("about"), aBot = bottomOf("about");
       var raw = [
-        [0, "#FFFFFF"],
-        [topOf("approach") - vh * 0.4, "#FFFFFF"],
-        [topOf("approach") + vh * 0.3, "#FBFAF9"],
-        [topOf("example") - vh * 0.2, "#F7F6F4"],
-        [topOf("experience") - vh * 0.3, "#FAFAFB"],
-        [topOf("contact") - vh * 0.4, "#FFFFFF"],
-        [document.body.scrollHeight, "#FFFFFF"]
+        [0, "#F6F3EC"],
+        [topOf("work") - vh * 0.55, "#FDFCFA"],
+        [topOf("work") + vh * 0.2, "#FFFFFF"],
+        [topOf("structure") - vh * 0.25, "#F6F3EC"],
+        [dTop - vh * 0.75, "#A9A9B0"],
+        [dTop - vh * 0.4, "#3C3C42"],
+        [dTop - vh * 0.1, "#0B0B0D"],
+        [dBot - vh * 0.9, "#0B0B0D"],
+        [dBot - vh * 0.25, "#4A4A51"],
+        [topOf("organizations") + vh * 0.1, "#FFFFFF"],
+        [topOf("evolution") - vh * 0.2, "#F6F3EC"],
+        [topOf("experience") - vh * 0.25, "#FFFFFF"],
+        [aTop - vh * 0.6, "#93A2F2"],
+        [aTop - vh * 0.1, "#2036E8"],
+        [aBot - vh * 0.8, "#2036E8"],
+        [aBot - vh * 0.5, "#8B99EE"],
+        [aBot - vh * 0.15, "#F6F3EC"],
+        [document.body.scrollHeight, "#F6F3EC"]
       ];
-      void bottomOf;
       raw.sort(function (a, b) { return a[0] - b[0]; });
       stops = raw.map(function (s) { return { y: s[0], c: hex(s[1]) }; });
     }
@@ -190,48 +200,59 @@
       lightEl.style.backgroundColor = "rgb(" + r + "," + g + "," + bl + ")";
       var L = (0.2126 * r + 0.7152 * g + 0.0722 * bl) / 255;
       curL = L;
-      /* the nav sits in the same light, so passing content never collides */
       if (nav) {
-        nav.style.backgroundColor = "rgba(" + r + "," + g + "," + bl + ",.92)";
+        nav.style.backgroundColor = "rgba(" + r + "," + g + "," + bl + ",.9)";
         nav.style.borderBottom = y > 40
-          ? "1px solid " + (L < 0.45 ? "rgba(255,255,255,.10)" : "rgba(0,0,0,.07)")
+          ? "1px solid " + (L < 0.5 ? "rgba(255,255,255,.12)" : "rgba(17,17,20,.08)")
           : "1px solid transparent";
+        nav.classList.toggle("nav-dark", L < 0.5);
       }
-      /* a soft halo of light, visible only as the page darkens */
-      if (L < 0.72) {
-        var alpha = (0.72 - L) * 0.09;
-        var px = 34 + (y * 0.012) % 30;
-        var py = 18 + Math.sin(y * 0.0006) * 14;
+      if (L < 0.6) {
+        var alpha = (0.6 - L) * 0.07;
         lightEl.style.backgroundImage =
-          "radial-gradient(120vw 90vh at " + px + "% " + py + "%, rgba(255,255,255," + alpha.toFixed(3) + "), rgba(255,255,255,0) 62%)";
+          "radial-gradient(120vw 90vh at 30% 12%, rgba(255,255,255," + alpha.toFixed(3) + "), rgba(255,255,255,0) 62%)";
       } else lightEl.style.backgroundImage = "none";
-      if (nav) nav.classList.toggle("nav-dark", L < 0.45);
+      bandsPaint();
     }
     function onScroll() {
       if (!ticking) { ticking = true; requestAnimationFrame(paint); }
     }
+
+    /* scroll-linked capability bands */
+    var bandEls = [].slice.call(document.querySelectorAll(".band"));
+    var bandSec = document.getElementById("range");
+    function bandsPaint() {
+      if (reduced || !bandSec || !bandEls.length) return;
+      var r = bandSec.getBoundingClientRect();
+      var prog = (innerHeight - r.top);           /* px the section has travelled into view */
+      bandEls.forEach(function (b) {
+        var sp = parseFloat(b.dataset.speed || "0.1");
+        b.style.transform = "translateX(" + (prog * sp - (sp < 0 ? -60 : 60)) + "px)";
+      });
+    }
+
     build(); paint();
     MK.on(window, "scroll", onScroll, { passive: true });
     MK.on(window, "resize", function () { build(); paint(); });
-    setTimeout(function () { build(); paint(); }, 600);
+    setTimeout(function () { build(); paint(); }, 700);
     MK.lightLuma = function () { return curL; };
   });
 
   /* ============ page behaviors ============ */
   MK.ready(function () {
 
-    /* legacy hashes from earlier versions */
+    /* legacy hashes */
     var legacy = {
-      home: "top", exp: "experience", skills: "experience", story: "experience",
-      problems: "experience", capabilities: "experience", "case-offer": "experience",
-      pov: "approach", work: "experience", model: "experience", about: "contact",
-      drift: "experience", arch: "experience", mna: "experience"
+      home: "top", pov: "work", approach: "work", example: "structure",
+      model: "decisions", drift: "work", arch: "structure", mna: "experience",
+      exp: "experience", skills: "experience", story: "experience",
+      problems: "work", capabilities: "range", "case-offer": "decisions"
     };
     var h = location.hash.replace("#", "");
     if (legacy[h]) location.replace("#" + legacy[h]);
 
-    /* reveals */
-    var reveals = [].slice.call(document.querySelectorAll(".reveal"));
+    /* reveals: soft elements + masked-line groups */
+    var reveals = [].slice.call(document.querySelectorAll(".reveal, .reveal-group"));
     if (!reduced && "IntersectionObserver" in window) {
       var io = new IntersectionObserver(function (es) {
         es.forEach(function (e) {
@@ -239,9 +260,163 @@
           e.target.classList.add("in");
           io.unobserve(e.target);
         });
-      }, { rootMargin: "0px 0px -7% 0px", threshold: 0.08 });
+      }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
       reveals.forEach(function (el) { io.observe(el); });
     } else reveals.forEach(function (el) { el.classList.add("in"); });
+
+    /* mount the working instruments */
+    if (MK.cases.drift) { try { MK.cases.drift(document); } catch (e) {} }
+    if (MK.cases.arch) { try { MK.cases.arch(document); } catch (e) {} }
+
+    /* architecture stage strip — lights with the canvas timeline */
+    var archStages = [].slice.call(document.querySelectorAll("#archStages .st"));
+    var archHost = document.getElementById("archCanvasHost");
+    var archTimers = [];
+    function archLight() {
+      archTimers.forEach(clearTimeout); archTimers = [];
+      archStages.forEach(function (s) { s.classList.remove("on"); });
+      [80, 1300, 2800, 4200].forEach(function (t, i) {
+        archTimers.push(setTimeout(function () {
+          if (archStages[i]) archStages[i].classList.add("on");
+        }, reduced ? 0 : t));
+      });
+    }
+    if (archHost && archStages.length) {
+      if ("IntersectionObserver" in window && !reduced) {
+        var seen = false;
+        new IntersectionObserver(function (es) {
+          es.forEach(function (e) {
+            if (e.isIntersecting && !seen) { seen = true; archLight(); }
+          });
+        }, { threshold: 0.35 }).observe(archHost);
+      } else archStages.forEach(function (s) { s.classList.add("on"); });
+      var replay = document.getElementById("archReplay");
+      if (replay) MK.on(replay, "click", archLight);
+    }
+
+    /* organizations: scatter → column */
+    var org = document.getElementById("org"), stage = document.getElementById("orgStage");
+    if (org && stage) {
+      var words = [].slice.call(stage.querySelectorAll(".org-word"));
+      var scatter = [
+        [0.04, 0.06, -7], [0.52, 0.02, 5], [0.66, 0.34, -4],
+        [0.10, 0.44, 6], [0.42, 0.62, -6], [0.68, 0.78, 4], [0.16, 0.86, -3]
+      ];
+      function place(final) {
+        var W = stage.clientWidth, H = stage.clientHeight;
+        var rowH = Math.min(58, (H - 46) / words.length);
+        var colTop = (H - rowH * words.length - 14) / 2;
+        words.forEach(function (w, i) {
+          if (!final) {
+            var s = scatter[i] || [0.3, 0.3, 0];
+            w.style.transform = "translate(" + Math.round(s[0] * (W - w.offsetWidth)) + "px," +
+              Math.round(s[1] * (H - 46)) + "px) rotate(" + s[2] + "deg)";
+          } else {
+            var y = colTop + i * rowH + (i === words.length - 1 ? 14 : 0);
+            w.style.transitionDelay = (i * 90) + "ms";
+            w.style.transform = "translate(0px," + Math.round(y) + "px) rotate(0deg)";
+          }
+        });
+      }
+      var resolved = false;
+      place(reduced);
+      if (reduced) org.classList.add("resolved");
+      else if ("IntersectionObserver" in window) {
+        new IntersectionObserver(function (es) {
+          es.forEach(function (e) {
+            if (e.isIntersecting && !resolved) {
+              resolved = true;
+              org.classList.add("resolved");
+              place(true);
+            }
+          });
+        }, { threshold: 0.35 }).observe(stage);
+      }
+      MK.on(window, "resize", function () { place(resolved || reduced); });
+    }
+
+    /* evolution steps — light in sequence when seen */
+    var evo = document.getElementById("evoSteps");
+    if (evo) {
+      var ws = [].slice.call(evo.querySelectorAll(".w"));
+      function lightEvo() {
+        ws.forEach(function (w, i) {
+          setTimeout(function () {
+            w.classList.add("lit");
+            if (i === ws.length - 1) w.classList.add("now");
+          }, reduced ? 0 : 260 * i);
+        });
+      }
+      if ("IntersectionObserver" in window && !reduced) {
+        var evoSeen = false;
+        new IntersectionObserver(function (es) {
+          es.forEach(function (e) { if (e.isIntersecting && !evoSeen) { evoSeen = true; lightEvo(); } });
+        }, { threshold: 0.5 }).observe(evo);
+      } else lightEvo();
+    }
+
+    /* the one meaningful counter */
+    var big = document.getElementById("bigCount");
+    if (big) {
+      var target = parseInt(big.dataset.n, 10) || 25000;
+      function runCount() {
+        if (reduced) { big.textContent = target.toLocaleString("en-US"); return; }
+        var t0 = performance.now(), dur = 1300;
+        (function tick(now) {
+          var t = MK.clamp((now - t0) / dur, 0, 1);
+          big.textContent = Math.round(target * MK.easeOut(t)).toLocaleString("en-US");
+          if (t < 1) requestAnimationFrame(tick);
+        })(t0);
+      }
+      if ("IntersectionObserver" in window && !reduced) {
+        var cSeen = false;
+        new IntersectionObserver(function (es) {
+          es.forEach(function (e) { if (e.isIntersecting && !cSeen) { cSeen = true; runCount(); } });
+        }, { threshold: 0.6 }).observe(big);
+      } else big.textContent = target.toLocaleString("en-US");
+    }
+
+    /* mobile menu */
+    var menu = document.getElementById("menu"),
+        menuBtn = document.getElementById("menuBtn"),
+        menuClose = document.getElementById("menuClose");
+    function openMenu() {
+      if (!menu) return;
+      menu.hidden = false;
+      requestAnimationFrame(function () { menu.classList.add("open"); });
+      document.body.classList.add("menu-open");
+      if (menuBtn) menuBtn.setAttribute("aria-expanded", "true");
+      if (menuClose) menuClose.focus({ preventScroll: true });
+    }
+    function closeMenu() {
+      if (!menu || menu.hidden) return;
+      menu.classList.remove("open");
+      document.body.classList.remove("menu-open");
+      if (menuBtn) { menuBtn.setAttribute("aria-expanded", "false"); menuBtn.focus({ preventScroll: true }); }
+      setTimeout(function () { menu.hidden = true; }, reduced ? 0 : 340);
+    }
+    if (menuBtn) MK.on(menuBtn, "click", openMenu);
+    if (menuClose) MK.on(menuClose, "click", closeMenu);
+    if (menu) {
+      [].forEach.call(menu.querySelectorAll("[data-menu]"), function (a) {
+        MK.on(a, "click", function () { closeMenu(); });
+      });
+      MK.on(window, "keydown", function (e) {
+        if (e.key === "Escape" && !menu.hidden) { e.preventDefault(); closeMenu(); }
+      });
+    }
+
+    /* local time, Pacific */
+    var pt = document.getElementById("ptTime");
+    if (pt) {
+      var fmt;
+      try {
+        fmt = new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", hour: "numeric", minute: "2-digit" });
+      } catch (e) { fmt = null; }
+      function tickTime() { if (fmt) pt.textContent = "Local " + fmt.format(new Date()) + " PT"; }
+      tickTime();
+      setInterval(tickTime, 30000);
+    }
 
     /* copy link */
     var copyBtn = document.getElementById("copyLink");
@@ -255,7 +430,7 @@
       else done(false);
     });
 
-    /* ============ ⌘K palette (quiet power feature) ============ */
+    /* ============ ⌘K palette ============ */
     var wrap = document.getElementById("palWrap"),
         input = document.getElementById("palInput"),
         list = document.getElementById("palList"),
@@ -263,11 +438,16 @@
     if (!wrap) return;
 
     var ITEMS = [
-      { t: "Top", k: "go", id: "#top", kw: "home hero start matthew mckelvy ai skills pay" },
-      { t: "How I'd approach it", k: "go", id: "#approach", kw: "approach steps work changed market smallest change decision" },
-      { t: "Forward Deployed Engineer", k: "go", id: "#example", kw: "example fde emerging role benchmark job family level" },
-      { t: "Experience", k: "go", id: "#experience", kw: "cv resume cisco gtm architecture benchmarking tools proof" },
-      { t: "Contact", k: "go", id: "#contact", kw: "email reach talk close" },
+      { t: "Top", k: "go", id: "#top", kw: "home hero identity what work is worth" },
+      { t: "The range", k: "go", id: "#range", kw: "capabilities bands compensation analytics systems" },
+      { t: "01 — Signal · the range drift", k: "go", id: "#work", kw: "attrition market pricing apjc benchmark drift" },
+      { t: "02 — Structure · job architecture", k: "go", id: "#structure", kw: "titles families levels architecture ai workday" },
+      { t: "03 — Decisions · the offer system", k: "go", id: "#decisions", kw: "offer model exceptions compa penetration lab dark" },
+      { t: "04 — Organizations · workforce strategy", k: "go", id: "#organizations", kw: "signals headcount tenure org design playbook" },
+      { t: "The operating system", k: "go", id: "#evolution", kw: "tools spreadsheet ai evolution" },
+      { t: "Experience", k: "go", id: "#experience", kw: "cisco five years cv resume history" },
+      { t: "Off the clock", k: "go", id: "#about", kw: "about personal squash tennis pebble beach competing" },
+      { t: "Contact", k: "go", id: "#contact", kw: "email talk reach" },
       { t: "Download résumé", k: "pdf", act: "resume", kw: "cv download resume pdf" },
       { t: "Email", k: "act", act: "email", kw: "mail contact reach out" },
       { t: "LinkedIn", k: "act", act: "li", kw: "linkedin profile social" }
