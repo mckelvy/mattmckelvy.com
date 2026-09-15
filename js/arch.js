@@ -1,16 +1,21 @@
-/* 02 · Job architecture — disorder resolves into structure.
+/* 2 · Job architecture: disorder resolves into structure.
    Title-nodes settle into an illustrative lattice of job families and
-   levels. Time-based: it plays once on open, and replays on request. */
+   levels. Plays once when it is properly in view, and again on request.
+   Resting on a column uncovers the duplicate titles it absorbed. */
 (function () {
   "use strict";
   MK.register("arch", function (root) {
     var host = root.querySelector("#archCanvasHost");
     var caption = root.querySelector("#archCaption");
+    var hoverOut = root.querySelector("#archHover");
     var replay = root.querySelector("#archReplay");
     if (!host) return;
+    var T = MK.theme;
 
     var FAMS = ["Sales", "Sales eng", "Marketing", "Success", "Renewals", "Partners",
                 "Ops", "Enablement", "Deal desk", "Analytics", "Programs", "Comms"];
+    var SHORT = ["Sales", "Sales eng", "Mktg", "Success", "Renewals", "Partners",
+                 "Ops", "Enable", "Deals", "Analytics", "Programs", "Comms"];
     var LVLS = ["IC1", "IC2", "IC3", "IC4", "M1", "M2"];
     var LVL_W = [0.26, 0.24, 0.20, 0.15, 0.09, 0.06];
     var COUNT = 417, DUPS = 46;
@@ -38,7 +43,8 @@
       });
     })();
 
-    var PAD = { l: 54, r: 20, t: 16, b: 40 };
+    var PAD = { l: 54, r: 20, t: 18, b: 44 };
+    var slotCols = 5;
     function layout(w, h) {
       var iw = w - PAD.l - PAD.r, ih = h - PAD.t - PAD.b;
       var r2 = MK.rng(88);
@@ -48,7 +54,7 @@
         cy.push(PAD.t + (Math.floor(f / 4) + 0.5) / 3 * ih + (r2() - 0.5) * 20);
       }
       var colW = iw / 12, rowH = ih / 6;
-      var slotCols = Math.max(2, Math.floor((colW - 8) / 7));
+      slotCols = MK.clamp(Math.floor((colW - 8) / 7), 2, 5);
       nodes.forEach(function (nd) {
         var clump = Math.floor(nd.jr * 9);
         var ax = PAD.l + (0.08 + 0.84 * ((clump * 0.37) % 1)) * iw;
@@ -65,7 +71,7 @@
     }
 
     var tRaw = 0, tS = 0, hoverFam = -1, time = 0;
-    var capState = -1;
+    var capState = 0;   /* the markup already carries the first caption */
     var CAPS = [
       "Titles as found: duplicated, inconsistently leveled.",
       "Related work gathers into job families.",
@@ -82,10 +88,10 @@
       }, MK.reduced ? 0 : 220);
     }
 
-    /* time-based: the resolve plays itself, once, and can be replayed */
-    var playT = -0.15, playing = true;
+    /* time-based: the resolve plays itself once it is properly in view, and can be replayed */
+    var playT = -0.15, playing = false, played = false;
     var DUR = 4.6;
-    function restart() { playT = -0.1; playing = true; if (inst) inst.wake(); }
+    function restart() { playT = -0.1; playing = true; played = true; if (inst) inst.wake(); }
 
     var inst = MK.instrument(host, function (ctx, w, h, dt) {
       var busy = false;
@@ -104,23 +110,30 @@
       var tB = MK.ease(MK.clamp((tS - 0.52) / 0.44, 0, 1));
 
       var iw = w - PAD.l - PAD.r, colW = iw / 12, rowH = (h - PAD.t - PAD.b) / 6;
+      var lit = hoverFam >= 0 && tS > 0.9;
 
       /* lattice hairlines resolve in */
       if (tB > 0.15) {
         ctx.globalAlpha = MK.clamp((tB - 0.15) / 0.6, 0, 1);
-        ctx.strokeStyle = MK.ui.hair; ctx.lineWidth = 1;
+        ctx.strokeStyle = T.ruleSoft; ctx.lineWidth = 1;
         for (var l = 0; l <= 6; l++) {
           var gy = PAD.t + l * rowH;
           ctx.beginPath(); ctx.moveTo(PAD.l, gy); ctx.lineTo(w - PAD.r, gy); ctx.stroke();
         }
-        ctx.font = MK.font(12); ctx.fillStyle = MK.ui.ink3; ctx.textAlign = "right";
+        ctx.font = MK.font(12.5); ctx.fillStyle = T.ink2; ctx.textAlign = "right";
         LVLS.forEach(function (lv, i) {
           ctx.fillText(lv, PAD.l - 12, PAD.t + i * rowH + rowH / 2 + 4);
         });
+        if (lit) {
+          ctx.fillStyle = MK.alpha(T.green, 0.08);
+          ctx.fillRect(PAD.l + hoverFam * colW, PAD.t, colW, h - PAD.t - PAD.b);
+        }
         ctx.globalAlpha = 1;
       }
 
       var idle = 1 - tA; /* disorder breathes a little */
+      var inkFill = MK.alpha(T.ink, 0.30 + tB * 0.28);
+      var dupAlpha = 0.72 * Math.max(0, 1 - tB);   /* duplicates fade out as they are absorbed, gone at the end */
       nodes.forEach(function (nd) {
         var dA = MK.clamp((tA * 1.16 - nd.delay), 0, 1);
         var dB = MK.clamp((tB * 1.16 - nd.delay), 0, 1);
@@ -133,48 +146,48 @@
         nd.y += (typ - nd.y) * Math.min(1, dt * nd.spd);
         if (Math.abs(txp - nd.x) + Math.abs(typ - nd.y) > 0.35) busy = true;
         if (MK.reduced) { nd.x = txp; nd.y = typ; }
-        if (idle > 0.02) busy = true;
+        if (idle > 0.02 && playing) busy = true;
 
-        var isHover = hoverFam === nd.f && tS > 0.9;
+        var isHover = lit && hoverFam === nd.f;
         if (nd.dup) {
-          if (tB > 0.9) return; /* absorbed into its slot */
-          ctx.fillStyle = "rgba(217,130,11," + (0.65 - tB * 0.4).toFixed(3) + ")";
+          if (isHover && tB > 0.9) {
+            /* uncovered: the absorbed duplicate, ghosted beside its profile */
+            ctx.fillStyle = MK.alpha(T.ochre, 0.85);
+            ctx.beginPath(); ctx.arc(nd.k2x + 5, nd.k2y - 5, 2.1, 0, 6.2832); ctx.fill();
+            return;
+          }
+          if (dupAlpha < 0.01) return;
+          ctx.fillStyle = MK.alpha(T.ochre, dupAlpha);
         } else {
-          ctx.fillStyle = isHover ? MK.ui.blue : "rgba(29,29,31," + (0.30 + tB * 0.26).toFixed(3) + ")";
+          ctx.fillStyle = isHover ? T.green : inkFill;
         }
-        var s = isHover ? 4.4 : 3.4;
-        ctx.fillRect(nd.x - s / 2, nd.y - s / 2, s, s);
+        var r = isHover ? 2.6 : 2.1;
+        ctx.beginPath(); ctx.arc(nd.x, nd.y, r, 0, 6.2832); ctx.fill();
       });
 
       /* duplicate annotation, early */
       if (tS < 0.24) {
         ctx.globalAlpha = 1 - tS / 0.24;
-        ctx.font = MK.font(13);
-        ctx.fillStyle = MK.ui.ink3; ctx.textAlign = "left";
-        ctx.fillText("The same job, four different titles", PAD.l + iw * 0.56, PAD.t + 18);
+        ctx.font = MK.font(13, 500);
+        ctx.fillStyle = T.ochreText; ctx.textAlign = "left";
+        ctx.fillText("The same job, several titles", PAD.l + iw * 0.56, PAD.t + 18);
         ctx.globalAlpha = 1;
       }
 
-      /* family names */
+      /* family names: one row when they fit, two staggered rows when they do not */
       if (tB > 0.55) {
         ctx.globalAlpha = MK.clamp((tB - 0.55) / 0.4, 0, 1);
-        ctx.font = MK.font(11.5);
         ctx.textAlign = "center";
-        var every = colW < 62 ? 2 : 1;
-        FAMS.forEach(function (fm, i) {
-          if (i % every) return;
-          ctx.fillStyle = hoverFam === i ? MK.ui.blue : MK.ui.ink3;
-          ctx.fillText(fm, PAD.l + i * colW + colW / 2, h - PAD.b + 22);
+        var narrow = colW < 62;
+        var names = narrow ? SHORT : FAMS;
+        names.forEach(function (fm, i) {
+          var on = hoverFam === i && lit;
+          ctx.font = MK.font(narrow ? 11.5 : 12.5, on ? 500 : 400);
+          ctx.fillStyle = on ? T.greenText : T.ink2;
+          var y = h - PAD.b + 20 + (narrow && i % 2 ? 14 : 0);
+          ctx.fillText(fm, PAD.l + i * colW + colW / 2, y);
         });
         ctx.globalAlpha = 1;
-      }
-
-      /* hover readout */
-      if (hoverFam >= 0 && tS > 0.9) {
-        var n = 0;
-        for (var i2 = 0; i2 < nodes.length; i2++) if (nodes[i2].f === hoverFam && !nodes[i2].dup) n++;
-        ctx.font = MK.font(12, 600); ctx.fillStyle = MK.ui.blue; ctx.textAlign = "right";
-        ctx.fillText(FAMS[hoverFam] + " · " + n + " job profiles", w - PAD.r, PAD.t + 4);
       }
       return busy;
     }, function (inst) {
@@ -185,14 +198,38 @@
 
     if (replay) MK.on(replay, "click", restart);
 
-    MK.on(inst.canvas, "pointermove", function (e) {
+    var dupCount = [];
+    for (var f0 = 0; f0 < 12; f0++) dupCount.push(nodes.filter(function (n) { return n.dup && n.f === f0; }).length);
+    function setHover(f) {
+      hoverFam = f;
+      if (hoverOut) hoverOut.textContent = f >= 0 ? (FAMS[f] + ": " + (dupCount[f] === 1 ? "one duplicate title absorbed" : dupCount[f] + " duplicate titles absorbed")) : "";
+      inst.canvas.style.cursor = f >= 0 ? "crosshair" : "default";
+      inst.wake();
+    }
+    function famAt(clientX) {
       var r = inst.canvas.getBoundingClientRect();
-      var x = e.clientX - r.left;
+      var x = clientX - r.left;
       var iw = inst.w - PAD.l - PAD.r;
       var f = Math.floor((x - PAD.l) / (iw / 12));
-      hoverFam = (f >= 0 && f < 12 && tS > 0.9) ? f : -1;
-      inst.wake();
+      return (f >= 0 && f < 12 && tS > 0.9) ? f : -1;
+    }
+    MK.on(inst.canvas, "pointermove", function (e) {
+      if (e.pointerType === "touch") return;
+      setHover(famAt(e.clientX));
     }, { passive: true });
-    MK.on(inst.canvas, "pointerleave", function () { hoverFam = -1; inst.wake(); });
+    MK.on(inst.canvas, "pointerdown", function (e) {
+      if (e.pointerType !== "touch") return;
+      var f = famAt(e.clientX);
+      setHover(f === hoverFam ? -1 : f);   /* a tap lights a column, a second tap clears it */
+    }, { passive: true });
+    MK.on(inst.canvas, "pointerleave", function (e) { if (e.pointerType !== "touch") setHover(-1); });
+
+    /* play once it is properly in view */
+    if (MK.reduced) { tS = 1; tRaw = 1; }
+    else if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting && !played) restart(); });
+      }, { threshold: 0.55 }).observe(host);
+    } else restart();
   });
 })();
