@@ -7,12 +7,12 @@
   <meta name="description" content="How to reach Matthew McKelvy.">
   <link rel="canonical" href="https://mattmckelvy.com/contact.html">
   <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#F6F2EA">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=9">
+  <meta name="theme-color" content="#F6F3EC">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz@0,6..72;1,6..72&family=Hanken+Grotesk:wght@300..600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/site.css?v=31">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css?v=23">
   <script>document.documentElement.className += " js";</script>
 </head>
 <body>
@@ -20,48 +20,49 @@
 
 <header class="nav" style="position:absolute">
   <div class="nav-inner">
-    <a class="nav-name" href="/">Matthew McKelvy</a>
+    <a class="nav-name" href="index.html">Matthew McKelvy</a>
     <nav class="nav-links" aria-label="Back">
-      <a href="/"><span aria-hidden="true">←</span> Back to the site</a>
+      <a href="index.html">← Back to the site</a>
     </nav>
   </div>
 </header>
 
-<main id="cmain" class="cpage" tabindex="-1">
+<main id="cmain" class="cpage">
   <div class="container">
-    <p class="cue">Contact</p>
-    <h1 class="t-statement reveal-group" style="margin-top:14px"><span class="ml"><span>Say hello.</span></span></h1>
+    <p class="cue reveal">Contact</p>
+    <h1 class="giant reveal-group" style="margin-top:18px">
+      <span class="ml"><span>SAY</span></span>
+      <span class="ml"><span>HELLO.</span></span>
+    </h1>
 
     <div class="cp-rows reveal">
       <div class="cp-row">
-        <span class="cp-k">Email</span>
+        <span class="k quiet">Email</span>
         <a class="cp-val" href="mailto:mckelvymatthew@gmail.com">mckelvymatthew@gmail.com</a>
       </div>
       <div class="cp-row">
-        <span class="cp-k">LinkedIn</span>
-        <a class="cp-val" href="https://www.linkedin.com/in/mattmckelvy/">linkedin.com/in/mattmckelvy <span aria-hidden="true">↗</span></a>
+        <span class="k quiet">LinkedIn</span>
+        <a class="cp-val" href="https://www.linkedin.com/in/mattmckelvy/" target="_blank" rel="noopener">linkedin.com/in/mattmckelvy ↗</a>
       </div>
       <div class="cp-row">
-        <span class="cp-k">Résumé</span>
-        <a class="cp-val" href="Matthew-McKelvy-Resume.pdf" download>Download the PDF <span aria-hidden="true">↓</span></a>
+        <span class="k quiet">Résumé</span>
+        <a class="cp-val" href="Matthew-McKelvy-Resume.pdf" download>Download the PDF ↓</a>
       </div>
       <div class="cp-row">
-        <span class="cp-k">Location</span>
+        <span class="k quiet">Location</span>
         <span class="cp-val still">Pebble Beach, California</span>
       </div>
       <div class="cp-row">
-        <span class="cp-k">Local time</span>
+        <span class="k quiet">Local time</span>
         <span class="cp-val still" id="cTime">&hellip;</span>
       </div>
     </div>
 
-    <p class="lede reveal" style="margin-top:clamp(28px,4vh,44px)">Email is the best way to reach me. I reply faster than a salary survey.</p>
+    <p class="support reveal" style="margin-top:clamp(28px,4vh,44px)">Email is the best way to reach me. I reply faster than a salary survey.</p>
   </div>
   <footer class="foot container">
-    <div class="foot-in">
-      <p>© 2026 Matthew McKelvy</p>
-      <p>Built by me, with AI in the loop</p>
-    </div>
+    <p>© 2026 Matthew McKelvy</p>
+    <p>Built by me, with AI in the loop</p>
   </footer>
 </main>
 
@@ -77,7 +78,7 @@
     });
     var t = document.getElementById("cTime"), fmt = null;
     try { fmt = new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", hour: "numeric", minute: "2-digit" }); } catch (e) {}
-    function tick() { if (fmt && t) t.textContent = fmt.format(new Date()) + " Pacific"; }
+    function tick() { if (fmt && t) t.textContent = fmt.format(new Date()) + " PT"; }
     tick(); setInterval(tick, 30000);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);
