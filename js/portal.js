@@ -31,12 +31,12 @@ var PORTAL_CONFIG = { enabled: true };
   var easeOut = function (t) { t = clamp(t, 0, 1); return 1 - Math.pow(1 - t, 3); };
 
   /* ---------------- palette ----------------
-     cyan → the site's own blue → violet. Low alpha; the additive
-     overlaps do the work, so nothing has to shout. */
+     ink → slate → cloud, drawn on the ivory canvas. Low alpha; the
+     multiplied overlaps do the work, so nothing has to shout. */
   var STOPS = [
-    [ 96, 214, 255],
-    [ 41, 151, 255],
-    [140, 110, 250]
+    [ 20,  20,  19],
+    [ 61,  61,  58],
+    [135, 134, 127]
   ];
   function tone(u, alpha) {
     var x = clamp(u, 0, 1) * (STOPS.length - 1);
@@ -206,7 +206,7 @@ var PORTAL_CONFIG = { enabled: true };
     var fx = cx + leanX, fy = cy + leanY;
 
     ctx.clearRect(0, 0, W, H);
-    ctx.globalCompositeOperation = "lighter";
+    ctx.globalCompositeOperation = "multiply";
     ctx.lineJoin = "round";
 
     /* --- the deep field: slow horizontal ribbons, far behind --- */
@@ -225,7 +225,7 @@ var PORTAL_CONFIG = { enabled: true };
             + lu * 16;
           sx === 0 ? ctx.moveTo(sx, yy) : ctx.lineTo(sx, yy);
         }
-        ctx.strokeStyle = tone(0.25 + bi * 0.3, (0.028 + attn * 0.008) * fade);
+        ctx.strokeStyle = tone(0.25 + bi * 0.3, (0.04 + attn * 0.008) * fade);
         ctx.lineWidth = 1;
         ctx.stroke();
       }
@@ -238,25 +238,18 @@ var PORTAL_CONFIG = { enabled: true };
       var tw = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(T * d.tw + d.ph));
       ctx.beginPath();
       ctx.arc(d.x * W, dy * H, d.r, 0, TAU);
-      ctx.fillStyle = tone(d.u, 0.30 * tw * fade);
+      ctx.fillStyle = tone(d.u, 0.22 * tw * fade);
       ctx.fill();
     }
 
     /* --- the figure ---
-       Colour sweeps across the figure in space, not per curve, so the
-       light reads cyan on one shoulder and violet on the other. */
+       Each curve takes one flat warm neutral from the family, ink at
+       the centre of the ribbon and cloud at its edges. */
     var rr = R * scale;
-    var sweep = T * 0.09;
-    var gx = Math.cos(sweep) * rr * 1.25, gy = Math.sin(sweep) * rr * 1.25;
-    var grad = ctx.createLinearGradient(fx - gx, fy - gy, fx + gx, fy + gy);
-    grad.addColorStop(0.00, "rgb(104,222,255)");
-    grad.addColorStop(0.42, "rgb(48,158,255)");
-    grad.addColorStop(0.74, "rgb(112,124,252)");
-    grad.addColorStop(1.00, "rgb(168,110,246)");
-    ctx.strokeStyle = grad;
 
     for (var i = 0; i < LINES; i++) {
       var u = i / (LINES - 1);
+      ctx.strokeStyle = tone(Math.abs(u - 0.5) * 2, 1);
       ctx.beginPath();
       for (var s = 0; s <= SEGS; s++) {
         var th = (s / SEGS) * TAU;

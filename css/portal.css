@@ -1,18 +1,15 @@
 /* ============================================================
    The portal — the entry to mattmckelvy.com.
-   A living harmonic figure on midnight, resolving into the
-   white site. Fully isolated: delete this file, js/portal.js
+   A living harmonic figure drawn in ink on the ivory canvas,
+   dissolving into the site. Flat fills only, no glow; the
+   motion is unchanged. Enter is the page's one clay action. Fully isolated: delete this file, js/portal.js
    and the two includes in index.html and the site is untouched.
    ============================================================ */
 
 .portal{
   position:fixed;inset:0;z-index:200;
   overflow:hidden;
-  background-color:#05070F;
-  background-image:
-    radial-gradient(115% 85% at 14% 6%,  rgba(0,164,214,.20), rgba(0,0,0,0) 58%),
-    radial-gradient(105% 85% at 86% 94%, rgba(104,74,236,.20), rgba(0,0,0,0) 58%),
-    radial-gradient(90% 90% at 50% 44%,  rgba(18,42,96,.55),  rgba(0,0,0,0) 72%);
+  background-color:#F0EEE6;
   opacity:1;
   transition:opacity .34s ease;
   -webkit-font-smoothing:antialiased;
@@ -33,9 +30,7 @@
   width:170vmax;height:170vmax;
   margin-left:-85vmax;margin-top:-85vmax;
   border-radius:50%;
-  background:radial-gradient(closest-side,
-    #FFFFFF 0%, #FFFFFF 52%, rgba(255,255,255,.92) 68%,
-    rgba(255,255,255,.55) 82%, rgba(255,255,255,0) 100%);
+  background:#FAF9F5;           /* one tone above the canvas, so the bloom reads */
   opacity:0;
   transform:scale(.045);
   pointer-events:none;
@@ -59,19 +54,21 @@
 
 .portal-name{
   margin:0;
-  font-size:clamp(22px,2.4vw,30px);
-  font-weight:600;
-  letter-spacing:-.014em;
+  font-family:"Newsreader",Georgia,"Times New Roman",serif;
+  font-size:clamp(26px,2.6vw,34px);
+  font-weight:400;
+  letter-spacing:-.01em;
   line-height:1.1;
-  color:#F5F5F7;
+  color:#141413;
   opacity:0;
   animation:portal-rise 1.1s cubic-bezier(.25,.1,.25,1) .35s forwards;
 }
 .portal-role{
   margin:10px 0 0;
-  font-size:clamp(14px,1.2vw,16px);
-  letter-spacing:-.006em;
-  color:rgba(245,245,247,.52);
+  font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;
+  font-size:15px;
+  letter-spacing:-.08px;
+  color:#5E5D59;
   opacity:0;
   animation:portal-rise 1.1s cubic-bezier(.25,.1,.25,1) .5s forwards;
 }
@@ -80,24 +77,21 @@
   margin-top:clamp(24px,3.2vh,38px);
   position:relative;
   display:inline-flex;align-items:center;gap:9px;
-  font-family:inherit;
-  font-size:16px;letter-spacing:-.012em;font-weight:400;
-  color:#F5F5F7;
-  background:rgba(245,245,247,.04);
-  border:1px solid rgba(245,245,247,.28);
-  border-radius:980px;
-  padding:13px 28px;min-height:46px;
+  font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;
+  font-size:16px;letter-spacing:-.08px;font-weight:400;
+  color:#141413;
+  background:#D97757;
+  border:0;
+  border-radius:0 0 8px 8px;
+  padding:13px 31px;min-height:46px;
   cursor:pointer;
   opacity:0;
   animation:portal-rise 1.1s cubic-bezier(.25,.1,.25,1) .68s forwards;
-  transition:background .35s ease,border-color .35s ease,transform .5s cubic-bezier(.25,.1,.25,1);
+  transition:background-color .35s ease,transform .5s cubic-bezier(.25,.1,.25,1);
 }
-.portal-enter:hover{
-  background:rgba(245,245,247,.10);
-  border-color:rgba(245,245,247,.62);
-}
+.portal-enter:hover{background:#C6613F}
 .portal-enter:active{transform:scale(.985)}
-.portal-enter:focus-visible{outline:2px solid rgba(122,190,255,.9);outline-offset:4px}
+.portal-enter:focus-visible{outline:2px solid #141413;outline-offset:4px}
 .portal-enter svg{
   width:13px;height:13px;flex:none;
   transition:transform .5s cubic-bezier(.25,.1,.25,1);
@@ -115,11 +109,11 @@
   background:none;border:0;padding:0;cursor:pointer;
   border-radius:50%;
 }
-.portal-hit:focus-visible{outline:2px solid rgba(122,190,255,.75);outline-offset:8px}
+.portal-hit:focus-visible{outline:2px solid #141413;outline-offset:8px}
 
 @media (max-width:700px){
   .portal-copy{top:62%}
-  .portal-enter{font-size:15px;padding:12px 24px}
+  .portal-enter{font-size:15px;padding:12px 26px}
 }
 
 @media (prefers-reduced-motion:reduce){

@@ -1,4 +1,4 @@
-/* mattmckelvy.com v7 — core.
+/* mattmckelvy.com v9 — core.
    The MK kit (canvas instruments, seeded rng) plus the scene engine:
    one continuous background temperature, masked type reveals,
    scroll-linked bands, scatter→structure choreography.
@@ -31,16 +31,15 @@
     on: function (el, ev, fn, opts) { el.addEventListener(ev, fn, opts || false); }
   };
 
-  /* one voice for canvas type + color — v7 palette */
+  /* one voice for canvas type + color, mirroring the CSS tokens.
+     No accent in the instruments: emphasis is ink against warm neutrals. */
   MK.ui = {
-    ink: "#111114", ink2: "#5F5F66", ink3: "#8A8A92",
-    hair: "rgba(17,17,20,.08)", hair2: "rgba(17,17,20,.16)",
-    blue: "#2036E8", blueDark: "#8FA3FF",
-    amber: "#D9820B", amberDark: "#FFB340",
-    light: "#F5F5F7", light2: "rgba(245,245,247,.55)", hairDark: "rgba(245,245,247,.14)"
+    ink: "#141413", ink2: "#5E5D59", ink3: "#87867F",
+    hair: "rgba(20,20,19,.10)", hair2: "rgba(20,20,19,.18)",
+    page: "#F0EEE6", raised: "#FAF9F5", oat: "#E3DACC"
   };
   MK.font = function (px, w) {
-    return (w || 400) + " " + px + "px -apple-system, system-ui, 'Helvetica Neue', Helvetica, sans-serif";
+    return (w || 400) + " " + px + "px Arial, 'Helvetica Neue', Helvetica, sans-serif";
   };
 
   /* An instrument: DPR-correct canvas whose rAF loop runs only while
@@ -160,25 +159,19 @@
       function bottomOf(id) { var el = document.getElementById(id); return el ? el.getBoundingClientRect().bottom + scrollY : 0; }
       var dTop = topOf("decisions"), dBot = bottomOf("decisions");
       var aTop = topOf("about"), aBot = bottomOf("about");
+      /* ivory canvas; the offer model rises to ivory light; outside work sits on oat */
+      var PAGE = "#F0EEE6", RAISED = "#FAF9F5", OAT = "#E3DACC";
       var raw = [
-        [0, "#F6F3EC"],
-        [topOf("work") - vh * 0.55, "#FDFCFA"],
-        [topOf("work") + vh * 0.2, "#FFFFFF"],
-        [topOf("structure") - vh * 0.25, "#F6F3EC"],
-        [dTop - vh * 0.75, "#A9A9B0"],
-        [dTop - vh * 0.4, "#3C3C42"],
-        [dTop - vh * 0.1, "#0B0B0D"],
-        [dBot - vh * 0.9, "#0B0B0D"],
-        [dBot - vh * 0.25, "#4A4A51"],
-        [topOf("organizations") + vh * 0.1, "#FFFFFF"],
-        [topOf("evolution") - vh * 0.2, "#F6F3EC"],
-        [topOf("experience") - vh * 0.25, "#FFFFFF"],
-        [aTop - vh * 0.6, "#93A2F2"],
-        [aTop - vh * 0.1, "#2036E8"],
-        [aBot - vh * 0.8, "#2036E8"],
-        [aBot - vh * 0.5, "#8B99EE"],
-        [aBot - vh * 0.15, "#F6F3EC"],
-        [document.body.scrollHeight, "#F6F3EC"]
+        [0, PAGE],
+        [dTop - vh * 0.6, PAGE],
+        [dTop - vh * 0.1, RAISED],
+        [dBot - vh * 0.9, RAISED],
+        [dBot - vh * 0.25, PAGE],
+        [aTop - vh * 0.6, PAGE],
+        [aTop - vh * 0.1, OAT],
+        [aBot - vh * 0.8, OAT],
+        [aBot - vh * 0.15, PAGE],
+        [document.body.scrollHeight, PAGE]
       ];
       raw.sort(function (a, b) { return a[0] - b[0]; });
       stops = raw.map(function (s) { return { y: s[0], c: hex(s[1]) }; });
@@ -201,17 +194,9 @@
       var L = (0.2126 * r + 0.7152 * g + 0.0722 * bl) / 255;
       curL = L;
       if (nav) {
-        nav.style.backgroundColor = "rgba(" + r + "," + g + "," + bl + ",.9)";
-        nav.style.borderBottom = y > 40
-          ? "1px solid " + (L < 0.5 ? "rgba(255,255,255,.12)" : "rgba(17,17,20,.08)")
-          : "1px solid transparent";
-        nav.classList.toggle("nav-dark", L < 0.5);
+        nav.style.backgroundColor = "rgb(" + r + "," + g + "," + bl + ")";
+        nav.style.borderBottom = y > 40 ? "1px solid #E8E6DC" : "1px solid transparent";
       }
-      if (L < 0.6) {
-        var alpha = (0.6 - L) * 0.07;
-        lightEl.style.backgroundImage =
-          "radial-gradient(120vw 90vh at 30% 12%, rgba(255,255,255," + alpha.toFixed(3) + "), rgba(255,255,255,0) 62%)";
-      } else lightEl.style.backgroundImage = "none";
       bandsPaint();
     }
     function onScroll() {
@@ -234,6 +219,14 @@
     build(); paint();
     MK.on(window, "scroll", onScroll, { passive: true });
     MK.on(window, "resize", function () { build(); paint(); });
+    /* disclosures and late layout change the page height; keep the stops on their sections */
+    if ("ResizeObserver" in window) {
+      var lastH = document.body.scrollHeight;
+      new ResizeObserver(function () {
+        var nh = document.body.scrollHeight;
+        if (Math.abs(nh - lastH) > 2) { lastH = nh; build(); paint(); }
+      }).observe(document.body);
+    }
     setTimeout(function () { build(); paint(); }, 700);
     MK.lightLuma = function () { return curL; };
   });
@@ -440,13 +433,13 @@
     var ITEMS = [
       { t: "Top", k: "go", id: "#top", kw: "home hero identity what work is worth" },
       { t: "The range", k: "go", id: "#range", kw: "capabilities bands compensation analytics systems" },
-      { t: "01 · Signal · the range drift", k: "go", id: "#work", kw: "attrition market pricing apjc benchmark drift" },
-      { t: "02 · Structure · job architecture", k: "go", id: "#structure", kw: "titles families levels architecture ai workday" },
-      { t: "03 · Decisions · the offer system", k: "go", id: "#decisions", kw: "offer model exceptions compa penetration lab dark" },
+      { t: "01 · Signal · market pricing", k: "go", id: "#work", kw: "attrition hiring market pricing apjc country benchmark drift range" },
+      { t: "02 · Structure · job architecture", k: "go", id: "#structure", kw: "titles role cards families levels architecture ai workday company-wide" },
+      { t: "03 · Decisions · offer governance", k: "go", id: "#decisions", kw: "offer model exceptions compa penetration lab" },
       { t: "04 · Workforce · org strategy", k: "go", id: "#organizations", kw: "signals headcount tenure org design playbook workforce" },
-      { t: "The tools", k: "go", id: "#evolution", kw: "tools spreadsheet ai evolution" },
+      { t: "Tools", k: "go", id: "#evolution", kw: "tools spreadsheet model dashboard ai evolution" },
       { t: "Experience", k: "go", id: "#experience", kw: "cisco five years cv resume history" },
-      { t: "Off the clock", k: "go", id: "#about", kw: "about personal squash tennis pebble beach competing" },
+      { t: "Outside work", k: "go", id: "#about", kw: "about personal squash tennis pebble beach monterey" },
       { t: "Contact", k: "go", id: "#contact", kw: "email talk reach" },
       { t: "Download résumé", k: "pdf", act: "resume", kw: "cv download resume pdf" },
       { t: "Contact info", k: "act", act: "email", kw: "mail email contact reach out" },

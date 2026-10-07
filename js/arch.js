@@ -1,6 +1,7 @@
 /* 02 · Job architecture — disorder resolves into structure.
-   Title-nodes settle into an illustrative lattice of job families and
-   levels. Time-based: it plays once on open, and replays on request. */
+   Title-nodes from across the company settle into an illustrative
+   lattice of job families and levels. Duplicates are drawn hollow and
+   absorbed. Time-based: it plays once on open, and replays on request. */
 (function () {
   "use strict";
   MK.register("arch", function (root) {
@@ -9,8 +10,12 @@
     var replay = root.querySelector("#archReplay");
     if (!host) return;
 
-    var FAMS = ["Sales", "Sales eng", "Marketing", "Success", "Renewals", "Partners",
-                "Ops", "Enablement", "Deal desk", "Analytics", "Programs", "Comms"];
+    /* company-wide, every business unit: illustrative family names, not Cisco's */
+    var FAMS = ["Sales", "Sales eng", "Marketing", "Services", "Support", "Engineering",
+                "Product", "Operations", "Finance", "People", "Legal", "IT"];
+    /* the same families, short enough for every other column on a phone */
+    var FAMS_S = ["Sales", "SE", "Mktg", "Services", "Support", "Eng",
+                  "Product", "Ops", "Finance", "People", "Legal", "IT"];
     var LVLS = ["IC1", "IC2", "IC3", "IC4", "M1", "M2"];
     var LVL_W = [0.26, 0.24, 0.20, 0.15, 0.09, 0.06];
     var COUNT = 417, DUPS = 46;
@@ -113,7 +118,7 @@
           var gy = PAD.t + l * rowH;
           ctx.beginPath(); ctx.moveTo(PAD.l, gy); ctx.lineTo(w - PAD.r, gy); ctx.stroke();
         }
-        ctx.font = MK.font(12); ctx.fillStyle = MK.ui.ink3; ctx.textAlign = "right";
+        ctx.font = MK.font(12); ctx.fillStyle = MK.ui.ink2; ctx.textAlign = "right";
         LVLS.forEach(function (lv, i) {
           ctx.fillText(lv, PAD.l - 12, PAD.t + i * rowH + rowH / 2 + 4);
         });
@@ -136,13 +141,16 @@
         if (idle > 0.02) busy = true;
 
         var isHover = hoverFam === nd.f && tS > 0.9;
+        var s = isHover ? 4.4 : 3.4;
         if (nd.dup) {
           if (tB > 0.9) return; /* absorbed into its slot */
-          ctx.fillStyle = "rgba(217,130,11," + (0.65 - tB * 0.4).toFixed(3) + ")";
-        } else {
-          ctx.fillStyle = isHover ? MK.ui.blue : "rgba(29,29,31," + (0.30 + tB * 0.26).toFixed(3) + ")";
+          /* a duplicate title: hollow, so it reads by shape rather than hue */
+          ctx.strokeStyle = "rgba(20,20,19," + (0.7 - tB * 0.45).toFixed(3) + ")";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(nd.x - 2.2, nd.y - 2.2, 4.4, 4.4);
+          return;
         }
-        var s = isHover ? 4.4 : 3.4;
+        ctx.fillStyle = isHover ? MK.ui.ink : "rgba(20,20,19," + (0.30 + tB * 0.26).toFixed(3) + ")";
         ctx.fillRect(nd.x - s / 2, nd.y - s / 2, s, s);
       });
 
@@ -150,7 +158,7 @@
       if (tS < 0.24) {
         ctx.globalAlpha = 1 - tS / 0.24;
         ctx.font = MK.font(13);
-        ctx.fillStyle = MK.ui.ink3; ctx.textAlign = "left";
+        ctx.fillStyle = MK.ui.ink2; ctx.textAlign = "left";
         ctx.fillText("The same job, four different titles", PAD.l + iw * 0.56, PAD.t + 18);
         ctx.globalAlpha = 1;
       }
@@ -161,9 +169,9 @@
         ctx.font = MK.font(11.5);
         ctx.textAlign = "center";
         var every = colW < 62 ? 2 : 1;
-        FAMS.forEach(function (fm, i) {
+        (every > 1 ? FAMS_S : FAMS).forEach(function (fm, i) {
           if (i % every) return;
-          ctx.fillStyle = hoverFam === i ? MK.ui.blue : MK.ui.ink3;
+          ctx.fillStyle = hoverFam === i ? MK.ui.ink : MK.ui.ink2;
           ctx.fillText(fm, PAD.l + i * colW + colW / 2, h - PAD.b + 22);
         });
         ctx.globalAlpha = 1;
@@ -173,7 +181,7 @@
       if (hoverFam >= 0 && tS > 0.9) {
         var n = 0;
         for (var i2 = 0; i2 < nodes.length; i2++) if (nodes[i2].f === hoverFam && !nodes[i2].dup) n++;
-        ctx.font = MK.font(12, 600); ctx.fillStyle = MK.ui.blue; ctx.textAlign = "right";
+        ctx.font = MK.font(12, 700); ctx.fillStyle = MK.ui.ink; ctx.textAlign = "right";
         ctx.fillText(FAMS[hoverFam] + " · " + n + " job profiles", w - PAD.r, PAD.t + 4);
       }
       return busy;

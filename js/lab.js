@@ -1,5 +1,5 @@
 /* ============================================================
-   The offer model: section [ 03 / 04 ].
+   The offer model: section 03 / 04.
 
    Reprices OTE (on-target earnings) for four GTM roles at a
    fixed level (Senior IC, Radford P4-equivalent). Three things
@@ -23,10 +23,11 @@
     var D = window.OFFER_DATA;
     if (!host || !D) return;
 
+    /* drawn on the raised ivory surface: ink for what matters, warm neutrals for the rest */
     var C = {
-      ink: "#F5F5F7", dim: "rgba(245,245,247,.52)", faint: "rgba(245,245,247,.30)",
-      hair: "rgba(245,245,247,.16)", band: "rgba(245,245,247,.06)",
-      blue: "#8FA3FF", amber: "#FFB340", low: "#FF7A66", zone: "rgba(143,163,255,.15)"
+      ink: "#141413", dim: "#5E5D59", faint: "#87867F",
+      hair: "rgba(20,20,19,.18)", band: "#F0EEE6", zone: "#E3DACC",
+      peer: "rgba(20,20,19,.40)", surface: "#FAF9F5"
     };
 
     var S = { role: "r2", zone: "z1", tgt: "p50", prof: "prof", ote: 250000 };
@@ -233,7 +234,7 @@
       [[x25, "P25"], [x50, "P50"], [x75, "P75"], [x90, "P90"]].forEach(function (t) {
         ctx.strokeStyle = C.faint;
         ctx.beginPath(); ctx.moveTo(t[0], lanM - 5); ctx.lineTo(t[0], lanM + 5); ctx.stroke();
-        ctx.fillStyle = C.faint;
+        ctx.fillStyle = C.dim;
         ctx.fillText(t[1], t[0], lanM + 19);
       });
       if (w >= 620) {
@@ -243,9 +244,9 @@
 
       /* the market target percentile the philosophy sets */
       var xm = X(A.tgt.v, w);
-      ctx.strokeStyle = C.blue; ctx.lineWidth = 2;
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(xm, lanM - 11); ctx.lineTo(xm, lanM + 11); ctx.stroke();
-      ctx.fillStyle = C.blue; ctx.textAlign = "center"; ctx.font = MK.font(11.5, 600);
+      ctx.fillStyle = C.ink; ctx.textAlign = "center"; ctx.font = MK.font(11.5, 700);
       ctx.fillText((w >= 620 ? "Market target · " : "Target · ") + D.targets[S.tgt].name, xm, lanM - 18);
 
       /* ---- lane 2: the range ---- */
@@ -256,10 +257,10 @@
       ctx.fillStyle = C.zone;
       ctx.fillRect(zx0, lanR - barH / 2, zx1 - zx0, barH);
       if (zx1 - zx0 > 84) {
-        ctx.fillStyle = "rgba(143,163,255,.72)";
-        ctx.font = MK.font(10.5, 600);
+        ctx.fillStyle = C.dim;
+        ctx.font = MK.font(11.5);
         ctx.textAlign = "center";
-        ctx.fillText("GUIDELINE", (zx0 + zx1) / 2, lanR + barH / 2 - 6);
+        ctx.fillText("Guideline", (zx0 + zx1) / 2, lanR + barH / 2 - 6);
       }
       ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5;
       [bx0, bx1].forEach(function (x) {
@@ -278,35 +279,42 @@
       } else {
         /* narrow canvases: the range is too short for three centered labels, so they take separate rows */
         ctx.textAlign = "left";   ctx.fillText("Min " + MK.fmtK(A.min.v), bx0, top);
-        ctx.textAlign = "right";  ctx.fillText("Max " + MK.fmtK(A.max.v), bx1, top - 14);
+        ctx.textAlign = "right";  ctx.fillText("Max " + MK.fmtK(A.max.v), bx1, top - 12);
         ctx.textAlign = "center"; ctx.fillText("Mid " + MK.fmtK(A.mid.v), bmid, bot + 18);
       }
       ctx.textAlign = "left"; ctx.fillStyle = C.dim;
       ctx.fillText(M.R.short + " · " + D.zones[S.zone].short, pad - 34, bot + (narrow ? 36 : 22));
 
       /* ---- lane 3: internal peers (illustrative) ---- */
-      ctx.fillStyle = "rgba(245,245,247,.34)";
+      ctx.fillStyle = C.peer;
       peersA.forEach(function (p, i) {
         ctx.beginPath();
         ctx.arc(X(p.v, w), lanP + (i % 2) * 7, 2.6, 0, 6.2832);
         ctx.fill();
       });
       if (w >= 620) {
-        ctx.fillStyle = C.faint; ctx.textAlign = "left"; ctx.font = MK.font(11.5);
+        ctx.fillStyle = C.dim; ctx.textAlign = "left"; ctx.font = MK.font(11.5);
         ctx.fillText("Internal peers", pad - 34, lanP + 28);
       }
 
-      /* ---- the proposal ---- */
+      /* ---- the proposal ----
+         Inside the range: a solid ink handle. Outside it (an exception, or below
+         the minimum): the line breaks and the handle opens, so the state reads
+         by shape as well as by the flag. */
       var bx = X(A.ote.v, w);
-      var col = V.tone === "exception" ? C.amber : V.tone === "low" ? C.low : C.ink;
-      ctx.strokeStyle = col; ctx.lineWidth = 1.5;
+      var outside = V.tone === "exception" || V.tone === "low";
+      var rad = hover || dragging ? 9.5 : 7.5;
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5;
+      ctx.setLineDash(outside ? [4, 4] : []);
       ctx.beginPath();
       ctx.moveTo(bx, lanM + 26); ctx.lineTo(bx, lanP + 14);
       ctx.stroke();
-      ctx.beginPath(); ctx.arc(bx, lanR, hover || dragging ? 9.5 : 7.5, 0, 6.2832);
-      ctx.fillStyle = col; ctx.fill();
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.arc(bx, lanR, rad, 0, 6.2832);
+      ctx.fillStyle = outside ? C.surface : C.ink; ctx.fill();
+      if (outside) { ctx.lineWidth = 2; ctx.stroke(); }
       ctx.beginPath(); ctx.arc(bx, lanR, 2.4, 0, 6.2832);
-      ctx.fillStyle = "#060607"; ctx.fill();
+      ctx.fillStyle = outside ? C.ink : C.surface; ctx.fill();
 
       if (el.base) el.base.textContent = MK.fmt$(A.ote.v);
       return busy || dragging;

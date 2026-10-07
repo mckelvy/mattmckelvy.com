@@ -58,7 +58,6 @@
         }
       }
       var R = Math.max(130, w * 0.11);
-      var dark = MK.lightLuma ? MK.lightLuma() < 0.5 : false;
 
       for (var i = 0; i < dots.length; i++) {
         var d = dots[i];
@@ -73,10 +72,11 @@
         var y = MK.lerp(d.hy + drift, d.cy, MK.ease(d.k));
         d.y = y;
         var alpha = d.a + d.k * 0.26;
+        /* the median contour reads by weight, not hue: it darkens under attention */
         if (d.band === 2 && d.k > 0.35) {
-          ctx.fillStyle = "rgba(32,54,232," + (d.k * 0.5).toFixed(3) + ")";
+          ctx.fillStyle = "rgba(20,20,19," + (0.18 + d.k * 0.5).toFixed(3) + ")";
         } else {
-          ctx.fillStyle = "rgba(29,29,31," + alpha.toFixed(3) + ")";
+          ctx.fillStyle = "rgba(20,20,19," + alpha.toFixed(3) + ")";
         }
         var r = 1.1 + d.k * 0.7;
         ctx.beginPath();
