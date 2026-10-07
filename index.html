@@ -28,7 +28,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/site.css?v=24">
-  <link rel="stylesheet" href="css/portal.css?v=7">
+  <link rel="stylesheet" href="css/intro.css?v=1">
   <script>document.documentElement.className += " js";</script>
 
   <script type="application/ld+json">
@@ -46,6 +46,44 @@
   </script>
 </head>
 <body>
+<!-- ================= ENTRY: once per browsing session ================= -->
+<div class="intro" id="intro" role="dialog" aria-modal="true" tabindex="-1"
+     aria-labelledby="introName" aria-describedby="introRole introSR" hidden>
+  <header class="container intro-mast">
+    <p class="intro-name" id="introName">Matthew McKelvy</p>
+    <span class="rule" aria-hidden="true"></span>
+    <p class="k" id="introRole">Compensation &amp; workforce strategy</p>
+  </header>
+  <div class="container intro-body">
+    <p class="giant-2 intro-statement">
+      <span class="intro-sr" id="introSR">The numbers are rarely the whole story. This is some of the work behind them.</span>
+      <span aria-hidden="true">
+        <span class="intro-line" data-text="The numbers are rarely the whole story."><span class="it-typed"></span><span class="it-caret"></span><span class="it-rest">The numbers are rarely the whole story.</span></span>
+        <span class="intro-line" data-text="This is some of the work behind them."><span class="it-typed"></span><span class="it-caret"></span><span class="it-rest">This is some of the work behind them.</span></span>
+      </span>
+    </p>
+  </div>
+  <div class="container intro-foot">
+    <button class="intro-enter" type="button" id="introEnter">Enter <span aria-hidden="true">→</span></button>
+  </div>
+</div>
+<script>
+/* decide during parsing, so the first paint is already the right screen.
+   Deep links and ?noportal go straight in, and count as entered. */
+(function () {
+  var el = document.getElementById("intro"), show = true;
+  try { show = !sessionStorage.getItem("mkEntered"); } catch (e) {}
+  if (location.hash || /noportal|nointro/.test(location.search)) show = false;
+  if (show) {
+    el.hidden = false;
+    document.documentElement.classList.add("intro-open");
+    try { if (matchMedia("(prefers-reduced-motion: reduce)").matches) el.classList.add("intro-static"); } catch (e) {}
+  } else {
+    try { sessionStorage.setItem("mkEntered", "1"); } catch (e) {}
+    el.parentNode.removeChild(el);
+  }
+})();
+</script>
 <a class="skip" href="#main">Skip to content</a>
 <div class="light" id="light" aria-hidden="true"></div>
 
@@ -510,7 +548,7 @@
 <script src="js/arch.js?v=21" defer></script>
 <script src="js/offer-data.js?v=4" defer></script>
 <script src="js/lab.js?v=26" defer></script>
-<script src="js/portal.js?v=7" defer></script>
+<script src="js/intro.js?v=1" defer></script>
 <script data-goatcounter="https://stanhope.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>

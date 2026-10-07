@@ -13,7 +13,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/site.css?v=24">
-  <script>document.documentElement.className += " js";</script>
+  <script>document.documentElement.className += " js";
+  /* reaching any page of the site counts as entered for this session */
+  try { sessionStorage.setItem("mkEntered", "1"); } catch (e) {}</script>
 </head>
 <body>
 <a class="skip" href="#cmain">Skip to content</a>
